@@ -15,12 +15,12 @@
  * margins but never washes out content.
  */
 
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
 import { TripProvider, useTrip } from "@/lib/trip-context";
 import { PreferencesProvider, usePreferences } from "@/lib/preferences-context";
-// RevealProvider is in layout.tsx so InstallPrompt can access it too.
+import { SOURCES } from "@/lib/attraction-catalog";
 // Lazy-load the 3D reveal — Three.js (~600KB) + scene code (~3200 lines)
 // shouldn't block the initial bundle. Shows a dark overlay while loading
 // so the user sees the intended background immediately.
@@ -165,6 +165,7 @@ function AppContent() {
 }
 
 function Footer() {
+  const [showSources, setShowSources] = useState(false);
   return (
     <footer className="mt-auto bark-card text-center py-10 px-4">
       <div
@@ -181,9 +182,52 @@ function Footer() {
         </span>
       </div>
       <p className="text-xs text-rust-cream/50 max-w-md mx-auto leading-relaxed">
-        🎉 J &amp; Dee have an exciting moment to share! 💛 #JAndDeeSayIDo 🌲
+        J &amp; Dee have an exciting moment to share! #JAndDeeSayIDo
       </p>
+      <div className="mt-4 flex items-center justify-center gap-4 text-[10px] text-rust-cream/30">
+        <button
+          onClick={() => setShowSources(true)}
+          className="hover:text-rust-cream/60 transition-colors underline"
+        >
+          Sources &amp; Citations
+        </button>
+        <span>·</span>
+        <span>586 mi · 6 days · 27 stops</span>
+        <span>·</span>
+        <span>Westborough, MA → Dixville Notch, NH</span>
+      </div>
+      {showSources && <SourcesModal onClose={() => setShowSources(false)} />}
     </footer>
+  );
+}
+
+// ── Sources Modal (footer link) ─────────────────────────────────────────
+function SourcesModal({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-[250] bg-rust-bark/95 backdrop-blur-md flex items-center justify-center p-4" onClick={onClose}>
+      <div className="max-w-2xl w-full max-h-[80vh] overflow-y-auto bark-card rounded-3xl p-6 md:p-8" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-lobster text-2xl text-rust-brass">Sources &amp; Citations</h3>
+          <button onClick={onClose} className="text-rust-cream/60 hover:text-rust-cream p-2 min-h-[44px] min-w-[44px]" aria-label="Close">×</button>
+        </div>
+        <p className="text-sm text-rust-cream/70 mb-4 italic font-tinos">
+          All attraction data is sourced from official websites and trusted databases. Citations follow APA format.
+        </p>
+        <div className="space-y-2">
+          {SOURCES.map(source => (
+            <div key={source.id} className="flex items-start gap-3 p-3 rounded-xl bg-rust-cream/5 border border-rust-brass/10">
+              <sup className="text-xs font-bold text-rust-brass mt-0.5">[{source.id}]</sup>
+              <div className="flex-1">
+                <p className="text-sm text-rust-cream/80 font-tinos leading-relaxed">{source.citation}</p>
+                <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-xs text-rust-brass hover:underline mt-1 inline-block">
+                  {source.url.length > 60 ? source.url.substring(0, 60) + "..." : source.url}
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }
 

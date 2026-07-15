@@ -247,29 +247,33 @@ function ProposalPageImpl() {
               <h3 className="font-serif text-lg font-bold text-rust-bark">✨ The Afterglow</h3>
             </div>
             <div className="space-y-4">
-              <div className="border-l-2 border-rust-brass/40 pl-4">
+              <div className="border-l-2 border-rust-brass/40 pl-4 relative group">
                 <div className="text-[10px] uppercase tracking-widest text-rust-brass font-bold mb-1">8:00 PM</div>
                 <p className="text-sm text-rust-bark/80 leading-relaxed">
                   We will drive north to Coleman in a daze, windows down, warm August air rushing in. The ring will feel impossibly light.
                 </p>
+                <ShareQuote text="The ring will feel impossibly light." />
               </div>
-              <div className="border-l-2 border-rust-brass/40 pl-4">
+              <div className="border-l-2 border-rust-brass/40 pl-4 relative group">
                 <div className="text-[10px] uppercase tracking-widest text-rust-brass font-bold mb-1">8:30 PM</div>
                 <p className="text-sm text-rust-bark/80 leading-relaxed">
                   Perch Cabin will welcome us with porch lights strung above the pines. We will toast with artisan cider under the stars.
                 </p>
+                <ShareQuote text="We will toast with artisan cider under the stars." />
               </div>
-              <div className="border-l-2 border-rust-brass/40 pl-4">
+              <div className="border-l-2 border-rust-brass/40 pl-4 relative group">
                 <div className="text-[10px] uppercase tracking-widest text-rust-brass font-bold mb-1">11:00 PM</div>
                 <p className="text-sm text-rust-bark/80 leading-relaxed">
                   Under the Bortle Class 2 sky, the Milky Way will stretch from horizon to horizon. We will lie on the dock and not speak for twenty minutes.
                 </p>
+                <ShareQuote text="We will lie on the dock and not speak for twenty minutes." />
               </div>
-              <div className="border-l-2 border-rust-wax/40 pl-4">
+              <div className="border-l-2 border-rust-wax/40 pl-4 relative group">
                 <div className="text-[10px] uppercase tracking-widest text-rust-wax font-bold mb-1">2:00 AM</div>
                 <p className="text-sm text-rust-bark/80 leading-relaxed">
                   A celebratory midnight swim in Little Diamond Pond. The water will be warmer than the air. We will laugh until we can&apos;t breathe.
                 </p>
+                <ShareQuote text="We will laugh until we can't breathe." />
               </div>
             </div>
           </div>
@@ -372,5 +376,31 @@ function ThePause({ onComplete }: { onComplete: () => void }) {
         </div>
       )}
     </div>
+  );
+}
+
+// ── Share Quote button ──────────────────────────────────────────────────
+function ShareQuote({ text }: { text: string }) {
+  const handleShare = async () => {
+    const shareData = {
+      title: "The Wilderness Romance",
+      text: `"${text}" — J & Dee, 8.7.26`,
+      url: typeof window !== "undefined" ? window.location.href : "",
+    };
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try { await navigator.share(shareData); } catch {}
+    } else if (typeof navigator !== "undefined" && navigator.clipboard) {
+      try { await navigator.clipboard.writeText(`"${text}" — J & Dee, 8.7.26`); } catch {}
+    }
+  };
+
+  return (
+    <button
+      onClick={handleShare}
+      className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full hover:bg-rust-brass/10 tap-feedback"
+      aria-label="Share this moment"
+    >
+      <Share2 className="w-3 h-3 text-rust-brass/60" />
+    </button>
   );
 }

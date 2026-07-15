@@ -10,11 +10,10 @@
  * Reads currentDay from useTrip().
  */
 
-import { memo, useMemo } from "react";
+import { memo, useMemo, useState } from "react";
 import { DAY_PLANS, PLACES, DRIVE_LEGS, type DayPlan, type Place } from "@/lib/trip-data";
 import { useTrip } from "@/lib/trip-context";
 import { type QuoteTheme } from "@/lib/quotes";
-import Carousel from "./Carousel";
 import DayHeader from "./DayHeader";
 import GlassStopCard, { WaxSealBadge } from "./GlassStopCard";
 import QuoteCallout from "./QuoteCallout";
@@ -148,10 +147,7 @@ export default function DayTimeline({
   onSelectPlace: (place: Place) => void;
 }) {
   const { currentDay, setDay } = useTrip();
-  const labels = useMemo(
-    () => DAY_PLANS.map((d) => `${d.day} — ${d.title}`),
-    []
-  );
+  const [expandedDay, setExpandedDay] = useState<number | null>(currentDay);
 
   return (
     <section id="itinerary" className="relative px-3 py-8 sm:px-4 sm:py-12 md:px-6 md:py-16">
@@ -159,32 +155,116 @@ export default function DayTimeline({
       <div className="mx-auto max-w-3xl">
         <FlyIn className="mb-6 text-center">
           <div className="inline-flex items-center gap-2 rounded-full bg-rust-bark/80 px-3 py-1 text-[11px] uppercase tracking-widest text-rust-bg">
-            <span aria-hidden>🗺</span> 🌲 The Adventure Timeline
+            <span aria-hidden>🗺</span> The Adventure Timeline
           </div>
-          <h2 className="mt-3 font-serif text-2xl sm:text-3xl md:text-5xl font-bold text-rust-bark">
-            🌲 Six days of wilderness romance ✨
+          <h2 className="mt-3 font-lobster text-2xl sm:text-3xl md:text-5xl text-rust-bark">
+            Six days of wilderness romance
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-sm md:text-base text-rust-bark/70">
-            Swipe or use the arrows to move between days 👆.
+            Tap any day to expand the full itinerary. Scroll through all six days below.
           </p>
         </FlyIn>
 
-        <Carousel
-          index={currentDay}
-          onChange={setDay}
-          accents={DAY_ACCENTS}
-          labels={labels}
-        >
-          {DAY_PLANS.map((day, i) => (
-            <DaySlide
-              key={day.day}
-              day={day}
-              index={i}
-              total={DAY_PLANS.length}
-              onSelectPlace={onSelectPlace}
-            />
-          ))}
-        </Carousel>
+        {/* Vertical timeline — replaces carousel */}
+        <div className="relative">
+          {/* Timeline line */}
+          <div className="absolute left-4 sm:left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-rust-brass via-rust-ember to-rust-wax opacity-30" />
+
+          {DAY_PLANS.map((day, i) => {
+            const isExpanded = expandedDay === i;
+            const isPast = i < currentDay;
+            const isCurrent = i === currentDay;
+            const leg = day.legId ? DRIVE_LEGS.find(l => l.id === day.legId) : null;
+            const places = day.placeIds
+              .map(id => PLACES.find(p => p.id === id))
+              .filter((p): p is Place => Boolean(p));
+
+            return (
+              <div key={day.day} className="relative pl-12 sm:pl-16 mb-4">
+                {/* Timeline dot */}
+                <button
+                  onClick={() => {
+                    setExpandedDay(isExpanded ? null : i);
+                    setDay(i);
+                  }}
+                  className="absolute left-0 top-2 w-9 h-9 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold shadow-lg transition-all tap-feedback min-h-[44px] min-w-[44px]"
+                  style={{
+                    backgroundColor: isCurrent ? "#e11d48" : isPast ? "#16a34a" : DAY_ACCENTS[i] || "#b8860b",
+                    color: "white",
+                    border: isExpanded ? "3px solid #fbbf24" : "3px solid white",
+                  }}
+                  aria-label={`Day ${day.day}: ${day.title}`}
+                  aria-expanded={isExpanded}
+                >
+                  {day.day}
+                </button>
+
+                {/* Day card */}
+                <div
+                  className="rounded-2xl overflow-hidden transition-all cursor-pointer"
+                  style={{
+                    backgroundColor: isExpanded ? `${DAY_ACCENTS[i] || "#b8860b"}15` : "rgba(255,255,255,0.4)",
+                    border: `2px solid ${isExpanded ? DAY_ACCENTS[i] || "#b8860b" : "transparent"}`,
+                  }}
+                  onClick={() => {
+                    setExpandedDay(isExpanded ? null : i);
+                    setDay(i);
+                  }}
+                >
+                  {/* Day header */}
+                  <div className="p-4">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          {isCurrent && <span className="text-[9px] font-bold uppercase tracking-widest text-rose-600 bg-rose-100 px-2 py-0.5 rounded-full animate-pulse">Today</span>}
+                          {isPast && <span className="text-[9px] font-bold uppercase tracking-widest text-green-700">✓ Done</span>}
+                          <span className="text-[10px] uppercase tracking-widest text-rust-bark/50">
+                            Day {day.day} · Aug {3 + day.day}
+                          </span>
+                        </div>
+                        <h3 className="font-lobster text-lg sm:text-xl text-rust-bark">
+                          {day.emoji} {day.title}
+                        </h3>
+                        {leg && (
+                          <div className="mt-1 text-[10px] text-rust-bark/50">
+                            {leg.from} → {leg.to} · {leg.miles} mi · {leg.duration}
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-[10px] text-rust-bark/40">
+                        {isExpanded ? "▲" : "▼"}
+                      </div>
+                    </div>
+
+                    {/* Collapsed preview: show first 2 stops */}
+                    {!isExpanded && places.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {places.slice(0, 3).map(p => (
+                          <span key={p.id} className="text-[10px] px-2 py-0.5 rounded-full bg-rust-bark/10 text-rust-bark/60">
+                            {p.category === "proposal" ? "💍" : p.category === "stay" ? "🛏️" : p.category === "water" ? "🚣" : "📍"} {p.name}
+                          </span>
+                        ))}
+                        {places.length > 3 && <span className="text-[10px] text-rust-bark/40">+{places.length - 3} more</span>}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Expanded content: full day slide */}
+                  {isExpanded && (
+                    <div className="anim-fade-in-up">
+                      <DaySlide
+                        day={day}
+                        index={i}
+                        total={DAY_PLANS.length}
+                        onSelectPlace={onSelectPlace}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
