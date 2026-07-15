@@ -1176,7 +1176,7 @@ export const TRIP_STATS = {
   ringEngraving: "8.7.26 | As One",
   tripStart: "Tuesday, August 4, 2026",
   tripEnd: "Sunday, August 9, 2026",
-  majorStops: 26,
+  majorStops: 27,
   nearbyRecommendations: 18,
   freeActivities: 22,
   bortleClass: 2,

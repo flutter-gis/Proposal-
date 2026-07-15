@@ -13,7 +13,7 @@
  */
 
 import {
-  createContext, useCallback, useContext, useEffect, useState,
+  createContext, useCallback, useContext, useEffect, useRef, useState,
   type ReactNode,
 } from "react";
 import {
@@ -38,6 +38,12 @@ const PreferencesContext = createContext<PreferencesContextValue | null>(null);
 
 export function PreferencesProvider({ children }: { children: ReactNode }) {
   const [prefs, setPrefs] = useState<Preferences | null>(null);
+  // Anti-loop guard: tracks the last auto-resolved icon so we can skip
+  // unnecessary state writes when the 15-min interval or window focus
+  // event fires but the auto-icon hasn't actually changed. Without this,
+  // every focus event spreads prefs into a new object reference, causing
+  // consumers (EngagementReveal3D, AuroraRoot, etc.) to re-mount.
+  const lastAutoIconRef = useRef<IconTheme | null>(null);
 
   // Load on mount
   useEffect(() => {
@@ -66,19 +72,39 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
   }, [effectiveTheme, prefs]);
 
   // In auto mode, re-check every 15 minutes so the icon transitions
+  // naturally as time passes. Guard against unnecessary re-renders by
+  // comparing the auto-resolved icon to the last one we saw — only update
+  // state if it actually changed.
   useEffect(() => {
     if (!prefs || prefs.iconMode !== "auto") return;
     const id = setInterval(() => {
-      // Force re-render by updating prefs (which re-computes effectiveIcon)
+      const nextIcon = getEffectiveIcon(prefs);
+      if (lastAutoIconRef.current === null) {
+        lastAutoIconRef.current = nextIcon;
+        return;
+      }
+      if (nextIcon === lastAutoIconRef.current) return;
+      lastAutoIconRef.current = nextIcon;
+      // Icon changed — force re-render so consumers pick up the new icon
       setPrefs((p) => (p ? { ...p } : p));
     }, 15 * 60 * 1000); // 15 min
     return () => clearInterval(id);
   }, [prefs?.iconMode]);
 
-  // Update on tab focus (user might have been away for hours)
+  // Update on tab focus (user might have been away for hours).
+  // Same guard: only re-render if the auto-icon actually changed.
   useEffect(() => {
     if (!prefs || prefs.iconMode !== "auto") return;
-    const onFocus = () => setPrefs((p) => (p ? { ...p } : p));
+    const onFocus = () => {
+      const nextIcon = getEffectiveIcon(prefs);
+      if (lastAutoIconRef.current === null) {
+        lastAutoIconRef.current = nextIcon;
+        return;
+      }
+      if (nextIcon === lastAutoIconRef.current) return;
+      lastAutoIconRef.current = nextIcon;
+      setPrefs((p) => (p ? { ...p } : p));
+    };
     window.addEventListener("focus", onFocus);
     return () => window.removeEventListener("focus", onFocus);
   }, [prefs?.iconMode]);

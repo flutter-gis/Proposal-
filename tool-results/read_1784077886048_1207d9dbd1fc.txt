@@ -1,0 +1,786 @@
+     1→"use client";
+     2→
+     3→/**
+     4→ * EngagementReveal3D.tsx — Refined
+     5→ *
+     6→ * Full 3D engagement reveal with detailed procedural textures.
+     7→ *
+     8→ * Textures (all procedural — no external files):
+     9→ * - Velvet box: bumpy normal map via noise, deep red interior
+    10→ * - Gold ring: high metalness, low roughness, environment reflection
+    11→ * - Diamond: faceted octahedron with refraction-like sparkle
+    12→ * - Trees: bark texture via color variation, layered cone foliage
+    13→ * - Ground: gradient grass-to-dirt with noise variation
+    14→ * - Sky: custom sunset gradient shader sphere
+    15→ *
+    16→ * The full site loads behind the overlay (it's already mounted in the DOM).
+    17→ * When the user clicks "Enter", the overlay fades and the site is ready.
+    18→ */
+    19→
+    20→import { Suspense, useEffect, useRef, useState, useCallback, useMemo } from "react";
+    21→import { Canvas, useFrame, useThree } from "@react-three/fiber";
+    22→import { Sparkles, Stars, ContactShadows } from "@react-three/drei";
+    23→import * as THREE from "three";
+    24→import { cn } from "@/lib/utils";
+    25→import { usePreferences } from "@/lib/preferences-context";
+    26→import { getIconForHour, type IconTheme } from "@/lib/preferences";
+    27→
+    28→type Phase = "intro" | "box" | "opening" | "reveal" | "done";
+    29→
+    30→// ── Procedural Velvet Texture ────────────────────────────────────────────
+    31→function useVelvetTexture(color: string) {
+    32→  return useMemo(() => {
+    33→    const size = 256;
+    34→    const canvas = document.createElement("canvas");
+    35→    canvas.width = size;
+    36→    canvas.height = size;
+    37→    const ctx = canvas.getContext("2d")!;
+    38→    // Base color
+    39→    ctx.fillStyle = color;
+    40→    ctx.fillRect(0, 0, size, size);
+    41→    // Velvet texture — fine noise bumps
+    42→    const imgData = ctx.getImageData(0, 0, size, size);
+    43→    for (let i = 0; i < imgData.data.length; i += 4) {
+    44→      const noise = (Math.random() - 0.5) * 30;
+    45→      imgData.data[i] = Math.max(0, Math.min(255, imgData.data[i] + noise));
+    46→      imgData.data[i + 1] = Math.max(0, Math.min(255, imgData.data[i + 1] + noise));
+    47→      imgData.data[i + 2] = Math.max(0, Math.min(255, imgData.data[i + 2] + noise));
+    48→    }
+    49→    ctx.putImageData(imgData, 0, 0);
+    50→    // Add velvet sheen lines
+    51→    for (let i = 0; i < 40; i++) {
+    52→      ctx.strokeStyle = `rgba(255,255,255,${0.02 + Math.random() * 0.03})`;
+    53→      ctx.beginPath();
+    54→      ctx.moveTo(Math.random() * size, 0);
+    55→      ctx.lineTo(Math.random() * size, size);
+    56→      ctx.stroke();
+    57→    }
+    58→    const tex = new THREE.CanvasTexture(canvas);
+    59→    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    60→    tex.repeat.set(2, 2);
+    61→    return tex;
+    62→  }, [color]);
+    63→}
+    64→
+    65→// ── Procedural Gold Texture ──────────────────────────────────────────────
+    66→function useGoldTexture() {
+    67→  return useMemo(() => {
+    68→    const size = 128;
+    69→    const canvas = document.createElement("canvas");
+    70→    canvas.width = size;
+    71→    canvas.height = size;
+    72→    const ctx = canvas.getContext("2d")!;
+    73→    // Gold gradient base
+    74→    const grad = ctx.createLinearGradient(0, 0, size, size);
+    75→    grad.addColorStop(0, "#fde047");
+    76→    grad.addColorStop(0.3, "#eab308");
+    77→    grad.addColorStop(0.6, "#d4a017");
+    78→    grad.addColorStop(1, "#a16207");
+    79→    ctx.fillStyle = grad;
+    80→    ctx.fillRect(0, 0, size, size);
+    81→    // Micro-scratches for realism
+    82→    for (let i = 0; i < 60; i++) {
+    83→      ctx.strokeStyle = `rgba(255,240,180,${0.05 + Math.random() * 0.1})`;
+    84→      ctx.lineWidth = 0.5 + Math.random();
+    85→      ctx.beginPath();
+    86→      const x = Math.random() * size;
+    87→      const y = Math.random() * size;
+    88→      ctx.moveTo(x, y);
+    89→      ctx.lineTo(x + (Math.random() - 0.5) * 30, y + (Math.random() - 0.5) * 30);
+    90→      ctx.stroke();
+    91→    }
+    92→    // Dark oxidation spots
+    93→    for (let i = 0; i < 15; i++) {
+    94→      ctx.fillStyle = `rgba(100,70,10,${0.1 + Math.random() * 0.15})`;
+    95→      ctx.beginPath();
+    96→      ctx.arc(Math.random() * size, Math.random() * size, 1 + Math.random() * 2, 0, Math.PI * 2);
+    97→      ctx.fill();
+    98→    }
+    99→    return new THREE.CanvasTexture(canvas);
+   100→  }, []);
+   101→}
+   102→
+   103→// ── Procedural Diamond Texture ───────────────────────────────────────────
+   104→function useDiamondTexture() {
+   105→  return useMemo(() => {
+   106→    const size = 64;
+   107→    const canvas = document.createElement("canvas");
+   108→    canvas.width = size;
+   109→    canvas.height = size;
+   110→    const ctx = canvas.getContext("2d")!;
+   111→    // Clear to transparent
+   112→    ctx.clearRect(0, 0, size, size);
+   113→    // Rainbow refraction sparks
+   114→    const colors = ["#e0e7ff", "#c4b5fd", "#fef3c7", "#fde047", "#a5b4fc", "#f0abfc"];
+   115→    for (let i = 0; i < 30; i++) {
+   116→      const c = colors[Math.floor(Math.random() * colors.length)];
+   117→      ctx.fillStyle = c;
+   118→      ctx.globalAlpha = 0.3 + Math.random() * 0.4;
+   119→      ctx.beginPath();
+   120→      ctx.arc(Math.random() * size, Math.random() * size, 0.5 + Math.random() * 1.5, 0, Math.PI * 2);
+   121→      ctx.fill();
+   122→    }
+   123→    ctx.globalAlpha = 1;
+   124→    return new THREE.CanvasTexture(canvas);
+   125→  }, []);
+   126→}
+   127→
+   128→// ── Procedural Bark Texture ──────────────────────────────────────────────
+   129→function useBarkTexture() {
+   130→  return useMemo(() => {
+   131→    const size = 128;
+   132→    const canvas = document.createElement("canvas");
+   133→    canvas.width = size;
+   134→    canvas.height = size;
+   135→    const ctx = canvas.getContext("2d")!;
+   136→    // Dark bark base
+   137→    ctx.fillStyle = "#1a1208";
+   138→    ctx.fillRect(0, 0, size, size);
+   139→    // Vertical bark grooves
+   140→    for (let x = 0; x < size; x += 4) {
+   141→      const shade = 20 + Math.random() * 30;
+   142→      ctx.fillStyle = `rgb(${shade + 15},${shade + 8},${shade})`;
+   143→      ctx.fillRect(x, 0, 2 + Math.random() * 2, size);
+   144→    }
+   145→    // Horizontal cracks
+   146→    for (let i = 0; i < 8; i++) {
+   147→      ctx.strokeStyle = `rgba(0,0,0,${0.2 + Math.random() * 0.3})`;
+   148→      ctx.lineWidth = 0.5 + Math.random();
+   149→      ctx.beginPath();
+   150→      const y = Math.random() * size;
+   151→      ctx.moveTo(0, y);
+   152→      ctx.bezierCurveTo(size * 0.3, y + (Math.random() - 0.5) * 10, size * 0.7, y + (Math.random() - 0.5) * 10, size, y);
+   153→      ctx.stroke();
+   154→    }
+   155→    // Moss patches
+   156→    for (let i = 0; i < 5; i++) {
+   157→      ctx.fillStyle = `rgba(30,60,20,${0.15 + Math.random() * 0.1})`;
+   158→      ctx.beginPath();
+   159→      ctx.arc(Math.random() * size, Math.random() * size, 3 + Math.random() * 6, 0, Math.PI * 2);
+   160→      ctx.fill();
+   161→    }
+   162→    const tex = new THREE.CanvasTexture(canvas);
+   163→    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+   164→    return tex;
+   165→  }, []);
+   166→}
+   167→
+   168→// ── Procedural Ground Texture ────────────────────────────────────────────
+   169→function useGroundTexture() {
+   170→  return useMemo(() => {
+   171→    const size = 512;
+   172→    const canvas = document.createElement("canvas");
+   173→    canvas.width = size;
+   174→    canvas.height = size;
+   175→    const ctx = canvas.getContext("2d")!;
+   176→    // Dark forest floor gradient
+   177→    const grad = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+   178→    grad.addColorStop(0, "#1a2d18");
+   179→    grad.addColorStop(0.5, "#0f1f10");
+   180→    grad.addColorStop(1, "#050a08");
+   181→    ctx.fillStyle = grad;
+   182→    ctx.fillRect(0, 0, size, size);
+   183→    // Grass tufts
+   184→    for (let i = 0; i < 200; i++) {
+   185→      const x = Math.random() * size;
+   186→      const y = Math.random() * size;
+   187→      const shade = 15 + Math.random() * 25;
+   188→      ctx.fillStyle = `rgb(${shade},${shade + 20},${shade - 5})`;
+   189→      ctx.fillRect(x, y, 1 + Math.random() * 2, 2 + Math.random() * 4);
+   190→    }
+   191→    // Dead leaves
+   192→    for (let i = 0; i < 50; i++) {
+   193→      const colors = ["#4a3018", "#5c3a20", "#3a2510", "#6b4423"];
+   194→      ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
+   195→      ctx.globalAlpha = 0.4 + Math.random() * 0.3;
+   196→      ctx.beginPath();
+   197→      ctx.ellipse(Math.random() * size, Math.random() * size, 2 + Math.random() * 3, 1 + Math.random(), Math.random() * Math.PI, 0, Math.PI * 2);
+   198→      ctx.fill();
+   199→    }
+   200→    ctx.globalAlpha = 1;
+   201→    // Small rocks
+   202→    for (let i = 0; i < 20; i++) {
+   203→      ctx.fillStyle = `rgba(60,55,50,${0.3 + Math.random() * 0.3})`;
+   204→      ctx.beginPath();
+   205→      ctx.arc(Math.random() * size, Math.random() * size, 1 + Math.random() * 2.5, 0, Math.PI * 2);
+   206→      ctx.fill();
+   207→    }
+   208→    const tex = new THREE.CanvasTexture(canvas);
+   209→    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+   210→    tex.repeat.set(8, 8);
+   211→    return tex;
+   212→  }, []);
+   213→}
+   214→
+   215→// ── 3D Ring Box with Textures ────────────────────────────────────────────
+   216→function RingBox({ opened, onClick }: { opened: boolean; onClick: () => void }) {
+   217→  const lidRef = useRef<THREE.Group>(null);
+   218→  const ringRef = useRef<THREE.Group>(null);
+   219→  const exteriorTex = useVelvetTexture("#3a1a0a");
+   220→  const interiorTex = useVelvetTexture("#7a2418");
+   221→  const goldTex = useGoldTexture();
+   222→  const diamondTex = useDiamondTexture();
+   223→
+   224→  useFrame((state, delta) => {
+   225→    const t = state.clock.elapsedTime;
+   226→    const d = Math.min(delta, 0.05); // clamp delta to avoid jumps
+   227→    const lerpSpeed = (speed: number) => 1 - Math.pow(1 - speed, d * 60);
+   228→
+   229→    if (lidRef.current) {
+   230→      // Smooth ease-out for lid — opens with a satisfying arc
+   231→      const target = opened ? -1.45 : 0;
+   232→      lidRef.current.rotation.x = THREE.MathUtils.lerp(
+   233→        lidRef.current.rotation.x, target, lerpSpeed(0.15)
+   234→      );
+   235→    }
+   236→    if (ringRef.current) {
+   237→      if (opened) {
+   238→        // Ring rises with a gentle arc + floats + rotates
+   239→        const targetY = 1.3 + Math.sin(t * 1.0) * 0.06;
+   240→        ringRef.current.position.y = THREE.MathUtils.lerp(
+   241→          ringRef.current.position.y, targetY, lerpSpeed(0.06)
+   242→        );
+   243→        ringRef.current.rotation.y += d * 0.5;
+   244→        // Slight tilt for sparkle effect
+   245→        ringRef.current.rotation.z = Math.sin(t * 0.7) * 0.08;
+   246→      } else {
+   247→        // Ring sits in box when closed
+   248→        ringRef.current.position.y = THREE.MathUtils.lerp(
+   249→          ringRef.current.position.y, 0, lerpSpeed(0.1)
+   250→        );
+   251→        ringRef.current.rotation.z = 0;
+   252→      }
+   253→    }
+   254→  });
+   255→
+   256→  return (
+   257→    <group onClick={onClick} position={[0, 0, 0]}>
+   258→      {/* Box base — exterior velvet */}
+   259→      <mesh position={[0, -0.25, 0]} castShadow receiveShadow>
+   260→        <boxGeometry args={[1.8, 0.5, 1.3]} />
+   261→        <meshStandardMaterial map={exteriorTex} color="#3a1a0a" roughness={0.85} metalness={0.05} />
+   262→      </mesh>
+   263→
+   264→      {/* Box interior — red velvet */}
+   265→      <mesh position={[0, 0.02, 0]}>
+   266→        <boxGeometry args={[1.6, 0.06, 1.1]} />
+   267→        <meshStandardMaterial map={interiorTex} color="#7a2418" roughness={0.95} metalness={0} />
+   268→      </mesh>
+   269→
+   270→      {/* Ring slot cushion */}
+   271→      <mesh position={[0, 0.06, 0]}>
+   272→        <cylinderGeometry args={[0.22, 0.28, 0.1, 24]} />
+   273→        <meshStandardMaterial map={interiorTex} color="#9a2c1f" roughness={0.92} />
+   274→      </mesh>
+   275→
+   276→      {/* Gold trim around base top edge */}
+   277→      <mesh position={[0, 0.01, 0]}>
+   278→        <boxGeometry args={[1.82, 0.03, 1.32]} />
+   279→        <meshStandardMaterial map={goldTex} color="#d4a017" metalness={0.9} roughness={0.15} />
+   280→      </mesh>
+   281→
+   282→      {/* Hinged lid */}
+   283→      <group ref={lidRef} position={[0, 0, -0.65]}>
+   284→        {/* Lid body */}
+   285→        <mesh position={[0, 0, 0.65]} castShadow>
+   286→          <boxGeometry args={[1.8, 0.35, 1.3]} />
+   287→          <meshStandardMaterial map={exteriorTex} color="#4a200a" roughness={0.82} metalness={0.08} />
+   288→        </mesh>
+   289→        {/* Gold trim on lid bottom */}
+   290→        <mesh position={[0, -0.17, 0.65]}>
+   291→          <boxGeometry args={[1.82, 0.03, 1.32]} />
+   292→          <meshStandardMaterial map={goldTex} color="#d4a017" metalness={0.9} roughness={0.15} />
+   293→        </mesh>
+   294→        {/* Gold emblem on top of lid */}
+   295→        <mesh position={[0, 0.18, 0.65]}>
+   296→          <cylinderGeometry args={[0.15, 0.15, 0.02, 16]} />
+   297→          <meshStandardMaterial map={goldTex} color="#eab308" metalness={0.95} roughness={0.1} />
+   298→        </mesh>
+   299→      </group>
+   300→
+   301→      {/* The ring */}
+   302→      <group ref={ringRef} position={[0, 0, 0]}>
+   303→        {/* Gold band */}
+   304→        <mesh castShadow>
+   305→          <torusGeometry args={[0.2, 0.04, 24, 64]} />
+   306→          <meshStandardMaterial
+   307→            map={goldTex}
+   308→            color="#eab308"
+   309→            metalness={0.95}
+   310→            roughness={0.08}
+   311→            envMapIntensity={2}
+   312→          />
+   313→        </mesh>
+   314→        {/* Prongs (4 small cylinders) */}
+   315→        {[0, Math.PI / 2, Math.PI, (3 * Math.PI) / 2].map((angle, i) => (
+   316→          <mesh key={i} position={[Math.cos(angle) * 0.06, 0.12, Math.sin(angle) * 0.06]}>
+   317→            <cylinderGeometry args={[0.012, 0.015, 0.08, 6]} />
+   318→            <meshStandardMaterial map={goldTex} color="#d4a017" metalness={0.95} roughness={0.1} />
+   319→          </mesh>
+   320→        ))}
+   321→        {/* Diamond — faceted */}
+   322→        <mesh position={[0, 0.2, 0]} castShadow>
+   323→          <octahedronGeometry args={[0.1, 0]} />
+   324→          <meshPhysicalMaterial
+   325→            map={diamondTex}
+   326→            color="#e0e7ff"
+   327→            metalness={0.0}
+   328→            roughness={0.0}
+   329→            transmission={0.8}
+   330→            thickness={0.5}
+   331→            ior={2.4}
+   332→            emissive="#a78bfa"
+   333→            emissiveIntensity={0.2}
+   334→            clearcoat={1}
+   335→            clearcoatRoughness={0}
+   336→          />
+   337→        </mesh>
+   338→        {/* Diamond sparkle */}
+   339→        <Sparkles count={20} scale={0.5} size={4} speed={0.5} color="#fef3c7" position={[0, 0.2, 0]} />
+   340→      </group>
+   341→
+   342→      {/* Warm glow from box */}
+   343→      <pointLight position={[0, 0.3, 0]} intensity={3} distance={5} color="#fbbf24" />
+   344→    </group>
+   345→  );
+   346→}
+   347→
+   348→// ── 3D Pine Tree with Bark Texture ───────────────────────────────────────
+   349→function PineTree({ position, scale = 1, dark = false, sharedGeo }: {
+   350→  position: [number, number, number]; scale?: number; dark?: boolean;
+   351→  sharedGeo?: THREE.CylinderGeometry[];
+   352→}) {
+   353→  const barkTex = useBarkTexture();
+   354→  const trunkColor = dark ? "#0a0805" : "#1a1208";
+   355→  const leafColor1 = dark ? "#050a08" : "#0a1810";
+   356→  const leafColor2 = dark ? "#080f0a" : "#0f2015";
+   357→  const leafColor3 = dark ? "#030503" : "#081008";
+   358→
+   359→  return (
+   360→    <group position={position} scale={scale}>
+   361→      {/* Trunk with bark texture */}
+   362→      <mesh position={[0, 0.3, 0]} castShadow geometry={sharedGeo?.[0]}>
+   363→        <meshStandardMaterial map={barkTex} color={trunkColor} roughness={0.95} />
+   364→      </mesh>
+   365→      {/* Foliage — 3 stacked cones with color variation */}
+   366→      <mesh position={[0, 0.75, 0]} castShadow geometry={sharedGeo?.[1]}>
+   367→        <meshStandardMaterial color={leafColor1} roughness={0.95} flatShading />
+   368→      </mesh>
+   369→      <mesh position={[0, 1.1, 0]} castShadow geometry={sharedGeo?.[2]}>
+   370→        <meshStandardMaterial color={leafColor2} roughness={0.95} flatShading />
+   371→      </mesh>
+   372→      <mesh position={[0, 1.4, 0]} castShadow geometry={sharedGeo?.[3]}>
+   373→        <meshStandardMaterial color={leafColor3} roughness={0.95} flatShading />
+   374→      </mesh>
+   375→    </group>
+   376→  );
+   377→}
+   378→
+   379→// ── 3D Ground with Texture ───────────────────────────────────────────────
+   380→function Ground() {
+   381→  const groundTex = useGroundTexture();
+   382→  return (
+   383→    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.5, 0]} receiveShadow>
+   384→      <planeGeometry args={[60, 60]} />
+   385→      <meshStandardMaterial map={groundTex} color="#0a1810" roughness={1} />
+   386→    </mesh>
+   387→  );
+   388→}
+   389→
+   390→// ── 3D Confetti Burst ────────────────────────────────────────────────────
+   391→function ConfettiBurst({ active }: { active: boolean }) {
+   392→  const particlesRef = useRef<Array<{
+   393→    position: [number, number, number];
+   394→    velocity: [number, number, number];
+   395→    color: string;
+   396→    size: number;
+   397→    life: number;
+   398→    maxLife: number;
+   399→    rotation: [number, number, number];
+   400→    rotSpeed: [number, number, number];
+   401→  }>>([]);
+   402→
+   403→  const initialized = useRef(false);
+   404→
+   405→  if (active && !initialized.current) {
+   406→    initialized.current = true;
+   407→    const colors = ["#fbbf24", "#f59e0b", "#ec4899", "#f472b6", "#fef3c7", "#d4a017", "#e11d48", "#fde047", "#a78bfa", "#c4b5fd"];
+   408→    particlesRef.current = Array.from({ length: 100 }, (_, i) => {
+   409→      const angle = (Math.PI * 2 * i) / 100 + Math.random() * 0.4;
+   410→      const speed = 2.5 + Math.random() * 5;
+   411→      return {
+   412→        position: [0, 0.3, 0] as [number, number, number],
+   413→        velocity: [Math.cos(angle) * speed, Math.sin(angle) * speed + 3, (Math.random() - 0.5) * 2] as [number, number, number],
+   414→        color: colors[i % colors.length],
+   415→        size: 0.04 + Math.random() * 0.08,
+   416→        life: 0,
+   417→        maxLife: 2.5 + Math.random() * 2,
+   418→        rotation: [Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI] as [number, number, number],
+   419→        rotSpeed: [(Math.random() - 0.5) * 4, (Math.random() - 0.5) * 4, (Math.random() - 0.5) * 4] as [number, number, number],
+   420→      };
+   421→    });
+   422→  }
+   423→
+   424→  const meshRef = useRef<THREE.InstancedMesh>(null);
+   425→  const dummy = useMemo(() => new THREE.Object3D(), []);
+   426→  const colorObj = useMemo(() => new THREE.Color(), []);
+   427→
+   428→  useFrame((_, delta) => {
+   429→    if (!meshRef.current || particlesRef.current.length === 0) return;
+   430→    const particles = particlesRef.current;
+   431→
+   432→    for (let i = 0; i < particles.length; i++) {
+   433→      const p = particles[i];
+   434→      p.life += delta;
+   435→
+   436→      if (p.life < p.maxLife) {
+   437→        p.position[0] += p.velocity[0] * delta;
+   438→        p.position[1] += p.velocity[1] * delta;
+   439→        p.position[2] += p.velocity[2] * delta;
+   440→        p.velocity[1] -= 5 * delta;
+   441→        p.velocity[0] *= 0.97;
+   442→        p.velocity[2] *= 0.97;
+   443→
+   444→        p.rotation[0] += p.rotSpeed[0] * delta;
+   445→        p.rotation[1] += p.rotSpeed[1] * delta;
+   446→        p.rotation[2] += p.rotSpeed[2] * delta;
+   447→
+   448→        dummy.position.set(p.position[0], p.position[1], p.position[2]);
+   449→        dummy.rotation.set(p.rotation[0], p.rotation[1], p.rotation[2]);
+   450→        const fade = Math.max(0, 1 - p.life / p.maxLife);
+   451→        dummy.scale.setScalar(p.size * 12 * fade);
+   452→        dummy.updateMatrix();
+   453→        meshRef.current.setMatrixAt(i, dummy.matrix);
+   454→        colorObj.set(p.color);
+   455→        meshRef.current.setColorAt(i, colorObj);
+   456→      } else {
+   457→        dummy.scale.setScalar(0);
+   458→        dummy.updateMatrix();
+   459→        meshRef.current.setMatrixAt(i, dummy.matrix);
+   460→      }
+   461→    }
+   462→    meshRef.current.instanceMatrix.needsUpdate = true;
+   463→    if (meshRef.current.instanceColor) meshRef.current.instanceColor.needsUpdate = true;
+   464→  });
+   465→
+   466→  if (!active || particlesRef.current.length === 0) return null;
+   467→
+   468→  return (
+   469→    <instancedMesh ref={meshRef} args={[undefined, undefined, 100]} castShadow>
+   470→      <boxGeometry args={[1, 1, 0.3]} />
+   471→      <meshStandardMaterial vertexColors toneMapped={false} emissiveIntensity={0.3} />
+   472→    </instancedMesh>
+   473→  );
+   474→}
+   475→
+   476→// ── Sunset Sky Sphere ────────────────────────────────────────────────────
+   477→// ── Sky palettes per time-of-day theme ───────────────────────────────────
+   478→const SKY_PALETTES: Record<string, { stops: [number, string][]; clouds: string; starCount: number; fog: string }> = {
+   479→  sunrise: {
+   480→    stops: [[0, "#2d1b4e"], [0.2, "#7c3aed"], [0.35, "#dc2626"], [0.5, "#f97316"], [0.65, "#fbbf24"], [0.8, "#fef3c7"], [1, "#1a2d24"]],
+   481→    clouds: "rgba(255,200,150,", starCount: 200, fog: "#7c3aed",
+   482→  },
+   483→  morning: {
+   484→    stops: [[0, "#0c4a6e"], [0.2, "#0284c7"], [0.4, "#38bdf8"], [0.6, "#bae6fd"], [0.8, "#e0f2fe"], [1, "#0f1f15"]],
+   485→    clouds: "rgba(255,255,255,", starCount: 50, fog: "#0284c7",
+   486→  },
+   487→  afternoon: {
+   488→    stops: [[0, "#06b6d4"], [0.3, "#22d3ee"], [0.5, "#67e8f9"], [0.7, "#a7f3d0"], [0.9, "#0f1f15"], [1, "#0a1810"]],
+   489→    clouds: "rgba(255,255,255,", starCount: 0, fog: "#16a34a",
+   490→  },
+   491→  golden: {
+   492→    stops: [[0, "#7c2d12"], [0.2, "#dc2626"], [0.4, "#f97316"], [0.55, "#fbbf24"], [0.7, "#fde047"], [0.85, "#fef3c7"], [1, "#1a2d24"]],
+   493→    clouds: "rgba(255,200,100,", starCount: 100, fog: "#f97316",
+   494→  },
+   495→  sunset: {
+   496→    stops: [[0, "#1a1340"], [0.12, "#3b1d6e"], [0.25, "#6d1f5e"], [0.35, "#9c1f3f"], [0.45, "#c62a18"], [0.55, "#e8590c"], [0.65, "#f59e0b"], [0.75, "#fde047"], [0.85, "#fef3c7"], [1, "#1a2d24"]],
+   497→    clouds: "rgba(255,200,150,", starCount: 300, fog: "#831843",
+   498→  },
+   499→  dusk: {
+   500→    stops: [[0, "#0f0a2e"], [0.2, "#312e81"], [0.35, "#6d28d9"], [0.5, "#8b5cf6"], [0.65, "#c4b5fd"], [0.8, "#1e1b4b"], [1, "#050a08"]],
+   501→    clouds: "rgba(200,180,255,", starCount: 600, fog: "#4c1d95",
+   502→  },
+   503→  midnight: {
+   504→    stops: [[0, "#020617"], [0.3, "#0f0a2e"], [0.5, "#1e1b4b"], [0.7, "#312e81"], [0.85, "#1e1b4b"], [1, "#020617"]],
+   505→    clouds: "rgba(100,100,200,", starCount: 1500, fog: "#1e1b4b",
+   506→  },
+   507→  stargazing: {
+   508→    stops: [[0, "#020617"], [0.2, "#0f0a2e"], [0.4, "#1e1b4b"], [0.6, "#312e81"], [0.8, "#1e1b4b"], [1, "#020617"]],
+   509→    clouds: "rgba(100,100,200,", starCount: 2000, fog: "#0f0a2e",
+   510→  },
+   511→};
+   512→
+   513→function DynamicSky({ icon }: { icon: IconTheme }) {
+   514→  const palette = SKY_PALETTES[icon] || SKY_PALETTES.sunset;
+   515→
+   516→  const tex = useMemo(() => {
+   517→    const size = 512;
+   518→    const canvas = document.createElement("canvas");
+   519→    canvas.width = size;
+   520→    canvas.height = size;
+   521→    const ctx = canvas.getContext("2d")!;
+   522→    const grad = ctx.createLinearGradient(0, 0, 0, size);
+   523→    palette.stops.forEach(([pos, color]) => grad.addColorStop(pos, color));
+   524→    ctx.fillStyle = grad;
+   525→    ctx.fillRect(0, 0, size, size);
+   526→    // Cloud wisps
+   527→    for (let i = 0; i < 12; i++) {
+   528→      const y = size * (0.25 + ((i * 37) % 100) / 300);
+   529→      ctx.fillStyle = `${palette.clouds}${0.04 + ((i * 17) % 100) / 1000})`;
+   530→      ctx.beginPath();
+   531→      ctx.ellipse(((i * 83) % 100) / 100 * size, y, 25 + ((i * 41) % 60), 3 + ((i * 13) % 5), 0, 0, Math.PI * 2);
+   532→      ctx.fill();
+   533→    }
+   534→    return new THREE.CanvasTexture(canvas);
+   535→  }, [palette]);
+   536→
+   537→  return (
+   538→    <>
+   539→      <mesh scale={[-1, 1, 1]}>
+   540→        <sphereGeometry args={[30, 24, 24]} />
+   541→        <meshBasicMaterial map={tex} side={THREE.BackSide} fog={false} />
+   542→      </mesh>
+   543→      <Stars radius={25} depth={20} count={palette.starCount} factor={4} saturation={0.5} fade speed={1} />
+   544→    </>
+   545→  );
+   546→}
+   547→
+   548→// ── Main 3D Scene ────────────────────────────────────────────────────────
+   549→function Scene({ phase, onBoxClick }: { phase: Phase; onBoxClick: () => void }) {
+   550→  const { camera } = useThree();
+   551→  const { effectiveIcon } = usePreferences();
+   552→  const camTargetRef = useRef({ x: 0, y: 1.2, z: 4.5 });
+   553→  const camLookRef = useRef({ x: 0, y: 0.2, z: 0 });
+   554→
+   555→  // Cinematic camera dolly when box opens
+   556→  useEffect(() => {
+   557→    if (phase === "opening" || phase === "reveal") {
+   558→      // Dolly in closer and tilt down slightly
+   559→      camTargetRef.current = { x: 0, y: 0.8, z: 3.0 };
+   560→      camLookRef.current = { x: 0, y: 0.5, z: 0 };
+   561→    } else if (phase === "box") {
+   562→      camTargetRef.current = { x: 0, y: 1.2, z: 4.5 };
+   563→      camLookRef.current = { x: 0, y: 0.2, z: 0 };
+   564→    }
+   565→  }, [phase]);
+   566→
+   567→  useFrame((_, delta) => {
+   568→    const d = Math.min(delta, 0.05);
+   569→    const lerpSpeed = 1 - Math.pow(1 - 0.05, d * 60);
+   570→    // Use camera.position.set() to avoid mutating hook-returned values
+   571→    const newX = THREE.MathUtils.lerp(camera.position.x, camTargetRef.current.x, lerpSpeed);
+   572→    const newY = THREE.MathUtils.lerp(camera.position.y, camTargetRef.current.y, lerpSpeed);
+   573→    const newZ = THREE.MathUtils.lerp(camera.position.z, camTargetRef.current.z, lerpSpeed);
+   574→    camera.position.set(newX, newY, newZ);
+   575→    camera.lookAt(
+   576→      THREE.MathUtils.lerp(0, camLookRef.current.x, lerpSpeed),
+   577→      THREE.MathUtils.lerp(0.2, camLookRef.current.y, lerpSpeed),
+   578→      0
+   579→    );
+   580→  });
+   581→
+   582→  // Pre-compute tree positions (stable across renders)
+   583→  const trees = useMemo(() => {
+   584→    const arr: { pos: [number, number, number]; scale: number; dark: boolean }[] = [];
+   585→    for (let i = 0; i < 14; i++) {
+   586→      const angle = (i / 14) * Math.PI * 2 + 0.2;
+   587→      const r = 8 + ((i * 37) % 100) / 25;
+   588→      arr.push({ pos: [Math.cos(angle) * r, -0.5, Math.sin(angle) * r - 2], scale: 0.9 + ((i * 53) % 50) / 100, dark: true });
+   589→    }
+   590→    for (let i = 0; i < 8; i++) {
+   591→      const angle = (i / 8) * Math.PI * 2 + 0.5;
+   592→      const r = 5 + ((i * 29) % 100) / 50;
+   593→      arr.push({ pos: [Math.cos(angle) * r, -0.5, Math.sin(angle) * r - 1], scale: 1.1 + ((i * 43) % 50) / 100, dark: false });
+   594→    }
+   595→    arr.push({ pos: [-3.2, -0.5, 1], scale: 1.6, dark: false });
+   596→    arr.push({ pos: [3.2, -0.5, 0.5], scale: 1.4, dark: false });
+   597→    arr.push({ pos: [-2.8, -0.5, 2], scale: 1.3, dark: false });
+   598→    arr.push({ pos: [3, -0.5, 2], scale: 1.5, dark: false });
+   599→    return arr;
+   600→  }, []);
+   601→
+   602→  // Shared geometry for performance
+   603→  const trunkGeo = useMemo(() => new THREE.CylinderGeometry(0.08, 0.14, 0.6, 6), []);
+   604→  const coneGeo1 = useMemo(() => new THREE.ConeGeometry(0.45, 0.65, 6), []);
+   605→  const coneGeo2 = useMemo(() => new THREE.ConeGeometry(0.35, 0.55, 6), []);
+   606→  const coneGeo3 = useMemo(() => new THREE.ConeGeometry(0.24, 0.45, 6), []);
+   607→
+   608→  const skyPalette = SKY_PALETTES[effectiveIcon] || SKY_PALETTES.sunset;
+   609→
+   610→  return (
+   611→    <>
+   612→      <DynamicSky icon={effectiveIcon} />
+   613→      <ambientLight intensity={0.25} color="#f59e0b" />
+   614→      <directionalLight position={[3, 4, 5]} intensity={1.8} color="#fbbf24" castShadow shadow-mapSize={[1024, 1024]} shadow-camera-far={20} shadow-camera-left={-8} shadow-camera-right={8} shadow-camera-top={8} shadow-camera-bottom={-8} />
+   615→      <directionalLight position={[-4, 2, -2]} intensity={0.5} color="#ec4899" />
+   616→      <hemisphereLight args={["#fbbf24", "#0a1810", 0.6]} />
+   617→      <pointLight position={[0, 3, 0]} intensity={0.5} color="#fde047" />
+   618→
+   619→      {/* Granite cliff in the background */}
+   620→      <mesh position={[0, 2, -12]} receiveShadow>
+   621→        <boxGeometry args={[16, 8, 2]} />
+   622→        <meshStandardMaterial color="#3a3a3a" roughness={0.9} flatShading />
+   623→      </mesh>
+   624→      {/* Lake in front of cliff */}
+   625→      <mesh position={[0, -0.48, -8]} rotation={[-Math.PI / 2, 0, 0]}>
+   626→        <planeGeometry args={[14, 5]} />
+   627→        <meshStandardMaterial color="#1a3a5a" roughness={0.1} metalness={0.6} transparent opacity={0.8} />
+   628→      </mesh>
+   629→
+   630→      <Ground />
+   631→
+   632→      {trees.map((t, i) => (
+   633→        <PineTree key={i} position={t.pos} scale={t.scale} dark={t.dark} sharedGeo={[trunkGeo, coneGeo1, coneGeo2, coneGeo3]} />
+   634→      ))}
+   635→
+   636→      {/* Campfire for dusk/night themes */}
+   637→      {(effectiveIcon === "dusk" || effectiveIcon === "midnight" || effectiveIcon === "stargazing") && (
+   638→        <group position={[3, -0.3, 1.5]}>
+   639→          {/* Fire base */}
+   640→          <mesh position={[0, 0.05, 0]}>
+   641→            <cylinderGeometry args={[0.3, 0.4, 0.1, 8]} />
+   642→            <meshStandardMaterial color="#2a1810" roughness={1} />
+   643→          </mesh>
+   644→          {/* Flame */}
+   645→          <mesh position={[0, 0.3, 0]}>
+   646→            <coneGeometry args={[0.15, 0.5, 6]} />
+   647→            <meshBasicMaterial color="#f97316" transparent opacity={0.8} />
+   648→          </mesh>
+   649→          <mesh position={[0, 0.45, 0]}>
+   650→            <coneGeometry args={[0.08, 0.3, 6]} />
+   651→            <meshBasicMaterial color="#fde047" transparent opacity={0.9} />
+   652→          </mesh>
+   653→          <pointLight position={[0, 0.5, 0]} intensity={2} distance={5} color="#f97316" />
+   654→        </group>
+   655→      )}
+   656→
+   657→      {/* Ring box */}
+   658→      <RingBox opened={phase === "opening" || phase === "reveal" || phase === "done"} onClick={onBoxClick} />
+   659→
+   660→      {phase !== "intro" && (
+   661→        <Sparkles count={30} scale={4} size={5} speed={0.3} color="#fbbf24" position={[0, 0.8, 0]} />
+   662→      )}
+   663→
+   664→      <ConfettiBurst active={phase === "reveal" || phase === "done"} />
+   665→
+   666→      <ContactShadows position={[0, -0.49, 0]} opacity={0.5} scale={10} blur={2} far={4} color="#000000" />
+   667→
+   668→      <fog attach="fog" args={[skyPalette.fog, 7, 18]} />
+   669→    </>
+   670→  );
+   671→}
+   672→
+   673→// ── Main Component ───────────────────────────────────────────────────────
+   674→export default function EngagementReveal3D() {
+   675→  const [phase, setPhase] = useState<Phase>("intro");
+   676→  // Start visible=true so there's NO flicker — the overlay covers the site
+   677→  // from the very first paint. If reduced-motion is preferred, we hide it
+   678→  // in the effect below.
+   679→  const [visible, setVisible] = useState(true);
+   680→
+   681→  useEffect(() => {
+   682→    if (typeof window === "undefined") return;
+   683→    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+   684→      setVisible(false);
+   685→      return;
+   686→    }
+   687→
+   688→    // Always show the reveal — plays every time the app opens
+   689→    const t = setTimeout(() => setPhase("box"), 1200);
+   690→    return () => clearTimeout(t);
+   691→  }, []);
+   692→
+   693→  const handleBoxClick = useCallback(() => {
+   694→    if (phase !== "box") return;
+   695→    setPhase("opening");
+   696→    // Start music when box opens
+   697→    import("@/lib/sound-engine").then(({ getSoundEngine }) => {
+   698→      import("@/lib/compositions").then(({ getComposition }) => {
+   699→        const comp = getComposition("golden-hour");
+   700→        if (comp) getSoundEngine().play(comp).catch(() => {});
+   701→      });
+   702→    });
+   703→    setTimeout(() => setPhase("reveal"), 1800);
+   704→    setTimeout(() => {
+   705→      setPhase("done");
+   706→      setTimeout(() => setVisible(false), 800);
+   707→    }, 5500);
+   708→  }, [phase]);
+   709→
+   710→  if (!visible) return null;
+   711→
+   712→  return (
+   713→    <div
+   714→      className={cn(
+   715→        "fixed inset-0 z-[300] transition-opacity duration-700",
+   716→        phase === "done" ? "opacity-0" : "opacity-100"
+   717→      )}
+   718→      // Solid dark background from first paint — no transparency, no flicker
+   719→      style={{ backgroundColor: "#0f0a1e" }}
+   720→    >
+   721→      {/* 3D Canvas — full screen */}
+   722→      <Canvas
+   723→        shadows
+   724→        camera={{ position: [0, 1.2, 4.5], fov: 50 }}
+   725→        className="absolute inset-0"
+   726→        gl={{ antialias: true, alpha: false }}
+   727→        dpr={[1, 2]}
+   728→      >
+   729→        <Suspense fallback={null}>
+   730→          <Scene phase={phase} onBoxClick={handleBoxClick} />
+   731→        </Suspense>
+   732→      </Canvas>
+   733→
+   734→      {/* ── UI Overlay ─────────────────────────────────────────────────── */}
+   735→
+   736→      {/* Box phase */}
+   737→      {phase === "box" && (
+   738→        <div className="absolute inset-0 flex flex-col items-center justify-end pb-[18vh] pointer-events-none">
+   739→          <div className="text-center px-8 anim-fade-in-up">
+   740→            <p className="font-serif text-lg sm:text-xl text-amber-100 italic" style={{ textShadow: "0 2px 8px rgba(0,0,0,0.6)" }}>
+   741→              There&apos;s some exciting news…
+   742→            </p>
+   743→            <p className="mt-2 text-xs text-amber-200/70 uppercase tracking-widest" style={{ textShadow: "0 2px 8px rgba(0,0,0,0.6)" }}>
+   744→              Tap the box to open
+   745→            </p>
+   746→          </div>
+   747→        </div>
+   748→      )}
+   749→
+   750→      {/* Reveal phase */}
+   751→      {(phase === "reveal" || phase === "done") && (
+   752→        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+   753→          <div className="text-center px-8" style={{ animation: "css-pop-in 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards" }}>
+   754→            <p className="font-serif text-3xl sm:text-5xl md:text-6xl font-bold text-white mb-3" style={{ textShadow: "0 0 30px rgba(251,191,36,0.7), 0 0 60px rgba(236,72,153,0.4), 0 2px 8px rgba(0,0,0,0.5)" }}>
+   755→              J <span className="text-amber-300">&amp;</span> Dee
+   756→            </p>
+   757→            <p className="font-serif text-xl sm:text-2xl md:text-3xl text-amber-200 italic" style={{ textShadow: "0 0 20px rgba(251,191,36,0.5), 0 2px 8px rgba(0,0,0,0.5)" }}>
+   758→              are getting engaged!
+   759→            </p>
+   760→            <div className="mt-6 text-3xl anim-heartbeat">💍</div>
+   761→            <p className="mt-4 text-xs text-amber-100/70 uppercase tracking-widest" style={{ textShadow: "0 2px 8px rgba(0,0,0,0.6)" }}>
+   762→              #JAndDeeSayIDo · 8.7.26
+   763→            </p>
+   764→          </div>
+   765→        </div>
+   766→      )}
+   767→
+   768→      {/* Enter link */}
+   769→      {phase === "reveal" && (
+   770→        <div
+   771→          className="absolute bottom-10 left-1/2 -translate-x-1/2 text-center pointer-events-auto cursor-pointer"
+   772→          onClick={(e) => {
+   773→            e.stopPropagation();
+   774→            setPhase("done");
+   775→            setTimeout(() => setVisible(false), 800);
+   776→          }}
+   777→        >
+   778→          <p className="text-xs text-amber-100/60 uppercase tracking-widest anim-fade-in-up" style={{ animationDelay: "2.5s", textShadow: "0 2px 8px rgba(0,0,0,0.6)" }}>
+   779→            Enter the adventure →
+   780→          </p>
+   781→        </div>
+   782→      )}
+   783→    </div>
+   784→  );
+   785→}
+   786→

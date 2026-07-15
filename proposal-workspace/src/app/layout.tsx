@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import AppBootstrap from "@/components/pwa/AppBootstrap";
 import ServiceWorkerRegister from "@/components/pwa/ServiceWorkerRegister";
 import InstallPrompt from "@/components/pwa/InstallPrompt";
 import StructuredData from "@/components/trip/StructuredData";
@@ -139,6 +140,9 @@ export default function RootLayout({
         </a>
         {children}
         <Toaster />
+        {/* AppBootstrap runs FIRST — clears stale SW caches / sessionStorage
+            on version change, then ServiceWorkerRegister re-registers fresh. */}
+        <AppBootstrap />
         <ServiceWorkerRegister />
         <InstallPrompt />
       </body>

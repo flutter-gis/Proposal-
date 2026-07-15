@@ -10,9 +10,10 @@
  * Also fixes BUG-01 (impossible values) and BUG-08 (emoji → SVG icons).
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Gem, Compass } from "lucide-react";
 import { PROPOSAL_DATE } from "@/lib/relationship-data";
+import { haptics } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 
 function useCountdown(target: Date): {
@@ -23,6 +24,10 @@ function useCountdown(target: Date): {
   past: boolean;
 } {
   const [now, setNow] = useState<number>(0);
+  // Guard: fire the reveal haptic exactly once when the countdown crosses zero.
+  // Without this, every 1s tick after the moment would re-trigger the vibration.
+  const revealFiredRef = useRef(false);
+
   useEffect(() => {
     setNow(Date.now());
     const id = setInterval(() => setNow(Date.now()), 1000);
@@ -32,6 +37,15 @@ function useCountdown(target: Date): {
   const diff = target.getTime() - now;
   const past = diff <= 0;
   const absSeconds = Math.floor(Math.abs(diff) / 1000);
+
+  // Zero-crossing detection: when `past` flips true for the first time,
+  // fire the reveal haptic. The ref guard ensures it never re-fires.
+  useEffect(() => {
+    if (past && !revealFiredRef.current) {
+      revealFiredRef.current = true;
+      haptics.reveal();
+    }
+  }, [past]);
 
   const days = Math.floor(absSeconds / 86400);
   const safeDays = days > 400 ? 0 : days; // BUG-01 guard

@@ -131,6 +131,10 @@ function SettingsPageImpl() {
                 <button
                   key={icon.name}
                   onClick={() => {
+                    // Guard: skip the state write when the user clicks the
+                    // already-selected icon. Prevents unnecessary re-renders
+                    // (and the brief flash on the checkmark badge).
+                    if (isSelected && prefs.iconMode === "manual") return;
                     setManualIcon(icon.name);
                     if (prefs.iconMode === "auto") setIconMode("manual");
                   }}

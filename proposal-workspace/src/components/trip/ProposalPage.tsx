@@ -16,6 +16,7 @@
 
 import { memo, useState, useEffect } from "react";
 import { TRIP_STATS } from "@/lib/trip-data";
+import { haptics } from "@/lib/haptics";
 import { FlyIn, FlyInStagger, FlyInItem } from "./FlyIn";
 import QuoteCallout from "./QuoteCallout";
 import { Sparkles, Heart, Share2, CalendarPlus } from "lucide-react";
@@ -56,6 +57,8 @@ const PLAN_AFTER = [
 ];
 
 function fireCelebration() {
+  // Haptic: flourish pattern — three pulses matching the confetti burst
+  haptics.flourish();
   // CSS-only confetti via DOM — no external dependency
   if (typeof document === "undefined") return;
   const colors = ["#b8860b", "#d4a017", "#b8541f", "#7a2418", "#faf3e3"];
@@ -333,9 +336,13 @@ function ThePause({ onComplete }: { onComplete: () => void }) {
   useEffect(() => {
     if (count <= 0) {
       setDone(true);
+      // Haptic: reveal pulse — a single long vibration marking the moment
+      haptics.reveal();
       const t = setTimeout(onComplete, 3000);
       return () => clearTimeout(t);
     }
+    // Haptic: heartbeat tick on every countdown second
+    haptics.heartbeat();
     const t = setTimeout(() => setCount((c) => c - 1), 1000);
     return () => clearTimeout(t);
   }, [count, onComplete]);

@@ -4,9 +4,11 @@
  * AppShell.tsx
  *
  * Fixed top app bar (rust-bark, compacts on scroll) with brand + subtitle +
- * CountdownPill. Mobile hamburger reveals a dropdown with the 5 tabs.
+ * CountdownPill (desktop only; mobile shows it in the hamburger dropdown).
+ * Mobile hamburger reveals a dropdown with all 6 tabs.
  *
- * Fixed bottom tab bar with 5 tabs and a sliding brass indicator.
+ * Fixed bottom tab bar with 6 tabs (Home / Trip / Map / Proposal / Us / Settings)
+ * and a sliding brass indicator that animates between tabs.
  *
  * Reads `currentPage` and `setPage` from useTrip(). Scrolls to top of the
  * incoming slide.

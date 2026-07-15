@@ -24,6 +24,7 @@ import * as THREE from "three";
 import { cn } from "@/lib/utils";
 import { usePreferences } from "@/lib/preferences-context";
 import { getIconForHour, type IconTheme } from "@/lib/preferences";
+import ThemedReveal from "./ThemedReveal";
 
 type Phase = "intro" | "box" | "opening" | "reveal" | "done";
 
@@ -661,7 +662,12 @@ function Scene({ phase, onBoxClick }: { phase: Phase; onBoxClick: () => void }) 
         <Sparkles count={30} scale={4} size={5} speed={0.3} color="#fbbf24" position={[0, 0.8, 0]} />
       )}
 
-      <ConfettiBurst active={phase === "reveal" || phase === "done"} />
+      {/* Themed reveal: replaces the generic confetti burst with a unique
+          particle effect per icon theme (golden butterflies, sunset birds,
+          dusk fireflies double-helix, midnight ember sparks, stargazing
+          shooting stars, heart petals, etc.). Falls back to confetti for
+          icons without a specific effect. */}
+      <ThemedReveal active={phase === "reveal" || phase === "done"} icon={effectiveIcon} />
 
       <ContactShadows position={[0, -0.49, 0]} opacity={0.5} scale={10} blur={2} far={4} color="#000000" />
 

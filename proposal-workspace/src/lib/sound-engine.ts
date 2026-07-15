@@ -553,10 +553,64 @@ export class SoundEngine {
     this.ensureContext();
     if (!this.ctx) return;
     if (this.ctx.state === "suspended") await this.ctx.resume();
-    if (this.isPlaying) this.stop();
+    if (this.isPlaying) {
+      // Already playing — crossfade to the new composition instead of
+      // a hard stop+restart, which caused a 0.3s silent gap.
+      this.switchTo(composition);
+      return;
+    }
     this.currentComposition = composition;
     this.isPlaying = true;
     this.scheduleLoop();
+  }
+
+  /**
+   * Crossfade to a new composition without stopping audio.
+   *
+   * Strategy: cancel any pending loop timeout, then ramp the master gain
+   * down to ~0 over 0.4s while simultaneously scheduling the new
+   * composition's first loop to start at currentTime + 0.1s. Once the
+   * fade-out completes, restore the master gain to the user's volume
+   * with a matching 0.4s ramp-up. The net effect is a seamless cross-
+   * fade rather than an audible cut.
+   *
+   * This is the method the plan calls for — MusicPlayer.playTrack calls
+   * `engine.play()` which delegates here when already playing.
+   */
+  switchTo(composition: Composition) {
+    if (!this.ctx || !this.masterGain) return;
+    // Stop the next scheduled loop tick — we don't want the old composition
+    // to fire another scheduleLoop() mid-crossfade.
+    if (this.loopTimeout) {
+      clearTimeout(this.loopTimeout);
+      this.loopTimeout = null;
+    }
+    // If switching to the same composition, no-op (prevents micro-stutters
+    // when the user re-clicks the currently-playing track).
+    if (this.currentComposition === composition && this.isPlaying) return;
+
+    const now = this.ctx.currentTime;
+    const fadeOut = 0.4;
+    const fadeIn = 0.4;
+    const targetVol = this.volume;
+
+    // Fade out the old composition's tail
+    this.masterGain.gain.cancelScheduledValues(now);
+    this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
+    this.masterGain.gain.exponentialRampToValueAtTime(0.001, now + fadeOut);
+
+    // Schedule the new composition to start as the old one fades out
+    this.currentComposition = composition;
+    this.isPlaying = true;
+    // Wait for fade-out to complete, then ramp back up and schedule the loop
+    setTimeout(() => {
+      if (!this.ctx || !this.masterGain || !this.isPlaying) return;
+      const restart = this.ctx.currentTime;
+      this.masterGain.gain.cancelScheduledValues(restart);
+      this.masterGain.gain.setValueAtTime(0.001, restart);
+      this.masterGain.gain.exponentialRampToValueAtTime(Math.max(0.01, targetVol), restart + fadeIn);
+      this.scheduleLoop();
+    }, fadeOut * 1000);
   }
 
   stop() {

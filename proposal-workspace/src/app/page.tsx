@@ -18,11 +18,13 @@
 import { useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { TripProvider, useTrip } from "@/lib/trip-context";
-import { PreferencesProvider } from "@/lib/preferences-context";
+import { PreferencesProvider, usePreferences } from "@/lib/preferences-context";
 import EngagementReveal3D from "@/components/trip/EngagementReveal3D";
 import AuroraRoot from "@/components/trip/AuroraRoot";
+import MilkyWayOverlay from "@/components/trip/MilkyWayOverlay";
 import AppShell from "@/components/trip/AppShell";
 import SlideDeck, { type SlidePage } from "@/components/trip/SlideDeck";
+import ScrollProgressTrail from "@/components/trip/ScrollProgressTrail";
 import HeroSection from "@/components/trip/HeroSection";
 import TripOverview from "@/components/trip/TripOverview";
 import DayTimeline from "@/components/trip/DayTimeline";
@@ -41,6 +43,8 @@ import { PLACES, type Place } from "@/lib/trip-data";
 
 function AppContent() {
   const { selectedPlaceId, setSelectedPlaceId, dialogOpen, setDialogOpen, currentPage, setPage } = useTrip();
+  const { effectiveIcon } = usePreferences();
+  const showMilkyWay = effectiveIcon === "stargazing";
 
   const selectedPlace: Place | null = selectedPlaceId
     ? PLACES.find((p) => p.id === selectedPlaceId) ?? null
@@ -130,7 +134,12 @@ function AppContent() {
       {/* Site loads behind the overlay (hidden until reveal fades) */}
       <div className={cn("transition-opacity duration-0", undefined)}>
         <AuroraRoot />
+        {/* Milky Way overlay activates only when the user picks the
+            stargazing icon — adds a cosmic band of ~150 stars + gas haze
+            above AuroraRoot but below content. */}
+        {showMilkyWay && <MilkyWayOverlay />}
         <AppShell />
+        <ScrollProgressTrail />
         <div id="main-content" tabIndex={-1} className="outline-none">
           <SlideDeck pages={pages} current={currentPage} onChange={setPage} />
         </div>
