@@ -446,9 +446,16 @@ export function applyThemeToDocument(theme: ColorTheme): void {
     "--theme-aurora-1": palette.aurora1,
     "--theme-aurora-2": palette.aurora2,
     "--theme-aurora-3": palette.aurora3,
+    // Per-theme animation speed multiplier (0.7 = slower/calmer, 1.2 = faster/energetic)
+    "--theme-anim-speed": theme === "cosmic" ? "0.7" : theme === "love" ? "1.2" : "1",
+    // Per-theme particle density (for atmospheric effects)
+    "--theme-particle-density": theme === "cosmic" || theme === "night" ? "high" : "normal",
   };
 
   for (const [key, value] of Object.entries(vars)) {
     root.style.setProperty(key, value);
   }
+
+  // Apply theme-specific animation class to body
+  document.body.setAttribute("data-theme-anim", theme);
 }

@@ -15,6 +15,7 @@ import { usePreferences } from "@/lib/preferences-context";
 import { ICON_LIST } from "@/lib/preferences";
 import { FlyIn } from "./FlyIn";
 import ThemeIcon from "./ThemeIcon";
+import ScenePreview from "./ScenePreview";
 import { Settings as SettingsIcon, Sparkles, Clock, Check, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -226,6 +227,9 @@ function SettingsPageImpl() {
             Reset & 🔄 Replay Opening
           </button>
         </FlyIn>
+
+        {/* 3D Scene Preview */}
+        <ScenePreview />
 
         {/* About */}
         <FlyIn className="text-center text-xs text-rust-bark/50 italic">

@@ -12,6 +12,7 @@ import {
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { PLACES, POTENTIAL_SITES, DRIVE_LEGS, type Place } from "@/lib/trip-data";
+import { ROADSIDE_ATTRACTIONS, CATEGORY_META, type RoadsideAttraction } from "@/lib/roadside-attractions";
 import { cn } from "@/lib/utils";
 
 // Fix default marker icons — use locally-hosted copies instead of unpkg CDN
@@ -61,6 +62,33 @@ function createIcon(category: string, isHighlighted: boolean = false) {
         transform: ${isHighlighted ? "scale(1.1)" : "scale(1)"};
         transition: transform 0.2s;
       ">${cfg.emoji}</div>
+    `,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+    popupAnchor: [0, -size / 2],
+  });
+}
+
+// Create a small roadside attraction marker (smaller + purple ring)
+function createRoadsideIcon(attraction: RoadsideAttraction) {
+  const meta = CATEGORY_META[attraction.category];
+  const size = 22; // smaller than main markers
+  return L.divIcon({
+    className: "custom-marker roadside-marker",
+    html: `
+      <div style="
+        width: ${size}px;
+        height: ${size}px;
+        background: ${meta.color};
+        border: 2px solid white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: ${size * 0.45}px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+        opacity: 0.85;
+      ">${meta.emoji}</div>
     `,
     iconSize: [size, size],
     iconAnchor: [size / 2, size / 2],
@@ -152,11 +180,13 @@ export default function TripMap({
   selectedId,
   onSelectPlace,
   showPotential,
+  showRoadside = true,
   className,
 }: {
   selectedId: string | null;
   onSelectPlace?: (id: string) => void;
   showPotential?: boolean;
+  showRoadside?: boolean;
   className?: string;
 }) {
   const mapRef = useRef<L.Map | null>(null);
@@ -250,6 +280,49 @@ export default function TripMap({
                   <div className="text-xs italic text-emerald-700">
                     Why: {place.why}
                   </div>
+                </div>
+              </Popup>
+            </Marker>
+          ))}
+
+        {/* Road-side attractions — small purple markers */}
+        {showRoadside &&
+          ROADSIDE_ATTRACTIONS.filter((a) => a.detourMinutes <= 20).map((attraction) => (
+            <Marker
+              key={attraction.id}
+              position={[attraction.coords.lat, attraction.coords.lng]}
+              icon={createRoadsideIcon(attraction)}
+              zIndexOffset={-100}
+            >
+              <Popup>
+                <div className="min-w-[220px]">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span
+                      className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white"
+                      style={{ backgroundColor: CATEGORY_META[attraction.category].color }}
+                    >
+                      {CATEGORY_META[attraction.category].emoji} {CATEGORY_META[attraction.category].label}
+                    </span>
+                  </div>
+                  <div className="font-semibold text-sm mb-1">{attraction.name}</div>
+                  <div className="text-xs text-muted-foreground mb-2">
+                    +{attraction.detourMinutes} min detour · {attraction.cost}
+                  </div>
+                  <p className="text-xs leading-relaxed mb-2">{attraction.tagline}</p>
+                  <div className="flex items-center gap-2 text-xs">
+                    <span>⏱ {attraction.visitDuration}</span>
+                    {attraction.rating && (
+                      <span>⭐ {attraction.rating} ({attraction.reviewCount})</span>
+                    )}
+                  </div>
+                  <a
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${attraction.coords.lat},${attraction.coords.lng}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block mt-2 text-xs font-semibold text-emerald-700 hover:underline"
+                  >
+                    Get directions →
+                  </a>
                 </div>
               </Popup>
             </Marker>

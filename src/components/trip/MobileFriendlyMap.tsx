@@ -6,6 +6,7 @@ import { PLACES, type Place } from "@/lib/trip-data";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import RoadsideAttractionsCard from "./RoadsideAttractionsCard";
 import {
   Map as MapIcon,
   Eye,
@@ -363,6 +364,13 @@ export default function MobileFriendlyMap({
               ))}
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Road-side attractions section (all legs) */}
+      {!isFullscreen && (
+        <div className="mt-8">
+          <RoadsideAttractionsCard maxDetour={20} />
         </div>
       )}
 
