@@ -215,6 +215,17 @@ export default function PlaceDetailDialog({
                 </div>
               </div>
             )}
+            {place.checkOut && (
+              <div className="bg-amber-50 rounded-lg p-3 border border-amber-200">
+                <div className="flex items-center gap-1.5 text-xs text-amber-700 mb-1">
+                  <Clock className="w-3 h-3" />
+                  Check-Out
+                </div>
+                <div className="font-semibold text-sm text-slate-800">
+                  {place.checkOut}
+                </div>
+              </div>
+            )}
             {place.bookingId && (
               <div className="bg-rose-50 rounded-lg p-3 border border-rose-200">
                 <div className="flex items-center gap-1.5 text-xs text-rose-700 mb-1">

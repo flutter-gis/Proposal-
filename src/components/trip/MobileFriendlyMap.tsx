@@ -20,6 +20,7 @@ import roadPolylines from "@/lib/road-polylines.json";
 import AttractionCatalog from "./AttractionCatalog";
 import RoadsideAttractionsCard from "./RoadsideAttractionsCard";
 import { usePreferences } from "@/lib/preferences-context";
+import { useTrip } from "@/lib/trip-context";
 import { cn } from "@/lib/utils";
 import { Map as MapIcon, Maximize2, Minimize2, Clock, MapPin, Route, Calendar } from "lucide-react";
 
@@ -41,6 +42,10 @@ export default function MobileFriendlyMap({ onSelectPlace }: { onSelectPlace?: (
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const { palette } = usePreferences();
+  // H-03/L-07: When the user taps a catalog "Map" link or checkbox, the
+  // trip-context sets mapHighlightId. We surface it as the selected stop on
+  // the map so the marker is highlighted.
+  const { mapHighlightId, setMapHighlightId } = useTrip();
 
   const handleSelect = useCallback((id: string) => {
     setSelectedId(id);
@@ -54,6 +59,22 @@ export default function MobileFriendlyMap({ onSelectPlace }: { onSelectPlace?: (
       if (place) onSelectPlace(place);
     }
   }, [selectedId, onSelectPlace]);
+
+  // H-03/L-07: When mapHighlightId arrives from the trip-context (set by the
+  // Attraction Catalog's "Map" link), select it on the map.
+  useEffect(() => {
+    if (!mapHighlightId) return;
+    // Try to find as a Place first; if not found, it's an attraction id and
+    // we just clear the highlight after a moment.
+    const place = PLACES.find(p => p.id === mapHighlightId);
+    if (place) {
+      setSelectedId(place.id);
+      if (onSelectPlace) onSelectPlace(place);
+    }
+    // Clear after handling so subsequent taps re-trigger.
+    const id = setTimeout(() => setMapHighlightId(null), 500);
+    return () => clearTimeout(id);
+  }, [mapHighlightId, onSelectPlace, setMapHighlightId]);
 
   // Stats
   const totalMiles = (roadPolylines as any).totalMiles || TRIP_STATS.totalMiles;

@@ -73,7 +73,6 @@ const SCALES: Record<ScaleType, number[]> = {
 };
 
 const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-const A4 = 440;
 
 function semitoneToNote(semitone: number, baseOctave: number = 4): string {
   const noteIdx = ((semitone % 12) + 12) % 12;

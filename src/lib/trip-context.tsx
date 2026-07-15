@@ -12,8 +12,15 @@
  *   - auroraVariant — which AuroraRoot palette to use, page-driven and
  *                     day-aware when the user is on the Trip page.
  *
- * G-12: URL hash sync — the current page is reflected in the URL hash
- * (e.g. #trip, #proposal) so deep-linking and PWA shortcuts work.
+ * H-05: URL routing now extends to deep links:
+ *   /            → Home
+ *   /trip        → Trip tab
+ *   /trip#day4   → Trip tab, Day 4 expanded + scrolled into view
+ *   /trip#stop5  → Trip tab, place detail dialog opens for stop #5
+ *   /map         → Map tab
+ *   /proposal    → Proposal tab
+ *   /us          → Us tab
+ *   /settings    → Settings tab
  */
 
 import {
@@ -44,11 +51,14 @@ interface TripContextValue {
   currentDay: number; // 0-based day index in DAY_PLANS (active in Trip page)
   selectedPlaceId: string | null;
   dialogOpen: boolean;
+  /** Place ID to highlight on the Map (set when navigating from catalog "Map" checkbox). */
+  mapHighlightId: string | null;
 
   setPage: (idx: number) => void;
   setDay: (idx: number) => void;
   setSelectedPlaceId: (id: string | null) => void;
   setDialogOpen: (open: boolean) => void;
+  setMapHighlightId: (id: string | null) => void;
 
   pageId: PageId;
   auroraVariant: AuroraVariant;
@@ -80,54 +90,100 @@ const DAY_TO_AURORA: AuroraVariant[] = [
 const TripContext = createContext<TripContextValue | null>(null);
 
 export function TripProvider({ children }: { children: ReactNode }) {
-  // G-12: Initialize page from URL hash if present (e.g. #proposal)
   const [currentPage, setCurrentPage] = useState(0);
   const [currentDay, setCurrentDay] = useState(0); // Day 1 by default
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [mapHighlightId, setMapHighlightId] = useState<string | null>(null);
 
-  // I-07/I-08 FIX: Use History API (pushState) instead of hash routing.
-  // This fixes: back button, deep-linking, and refresh-on-tab.
-  // On mount, read the URL path and set the active page.
+  // ── H-05: Parse URL on mount. Using HASH routing to avoid 404s on refresh
+  //   (path-based routing requires actual Next.js route files). Supported:
+  //     #trip         → Trip tab
+  //     #trip/day4    → Trip tab, day 4 active
+  //     #trip/stop-5  → Trip tab, open dialog for stop-5
+  //     #map          → Map tab
+  //     #proposal     → Proposal tab
+  //     #us           → Us tab
+  //     #settings     → Settings tab
+  //     #attraction-X → (on any tab) highlight attraction X on map if user navigates there
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const path = window.location.pathname.replace("/", "").toLowerCase();
-    const idx = PAGE_IDS.indexOf(path as PageId);
-    if (idx >= 0) {
-      setCurrentPage(idx);
+    const hash = window.location.hash.replace(/^#\/?/, "").toLowerCase();
+    // First path segment is the page id
+    const [seg, ...rest] = hash.split("/");
+    const idx = PAGE_IDS.indexOf(seg as PageId);
+    if (idx >= 0) setCurrentPage(idx);
+    // Day reference: #trip/day4
+    const dayMatch = rest[0]?.match(/^day(\d)$/);
+    if (dayMatch) {
+      const d = parseInt(dayMatch[1], 10);
+      if (d >= 1 && d <= 6) {
+        setCurrentPage(1); // Trip
+        setCurrentDay(d - 1);
+      }
     }
-    // Also check hash for backwards compatibility with old bookmark URLs
-    const hash = window.location.hash.replace("#", "").toLowerCase();
-    const hashIdx = PAGE_IDS.indexOf(hash as PageId);
-    if (hashIdx >= 0) {
-      setCurrentPage(hashIdx);
+    // Stop reference: #trip/stop-bear-brook
+    const stopMatch = rest[0]?.match(/^stop-(.+)$/);
+    if (stopMatch) {
+      const placeId = stopMatch[1];
+      setSelectedPlaceId(placeId);
+      setDialogOpen(true);
+    }
+    // Attraction highlight: #/map/attraction-massabesic
+    const attractionMatch = hash.match(/(?:^|\/)attraction-(.+)$/);
+    if (attractionMatch) {
+      setMapHighlightId(attractionMatch[1]);
     }
   }, []);
 
-  // When the page changes, push a new history entry (so back button works)
+  // When the page changes, update the URL hash (so back button + sharing work)
   useEffect(() => {
     if (typeof window === "undefined") return;
     const expectedPage = PAGE_IDS[currentPage % PAGE_IDS.length];
-    const currentPath = window.location.pathname.replace("/", "").toLowerCase();
-    if (expectedPage !== currentPath) {
-      window.history.pushState({ page: expectedPage }, "", `/${expectedPage === "home" ? "" : expectedPage}`);
+    const currentHash = window.location.hash.replace(/^#\/?/, "").toLowerCase();
+    const currentFirstSeg = currentHash.split("/")[0];
+    if (expectedPage !== currentFirstSeg) {
+      const newHash = expectedPage === "home" ? "" : `#/${expectedPage}`;
+      window.history.pushState({ page: expectedPage }, "", `${window.location.pathname}${newHash}`);
     }
   }, [currentPage]);
 
-  // Listen for back/forward button (popstate)
+  // Listen for back/forward button (popstate + hashchange)
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const onPopState = (_e: PopStateEvent) => {
-      const path = window.location.pathname.replace("/", "").toLowerCase();
-      const idx = PAGE_IDS.indexOf(path as PageId);
+    const onPop = () => {
+      const hash = window.location.hash.replace(/^#\/?/, "").toLowerCase();
+      const [seg, ...rest] = hash.split("/");
+      const idx = PAGE_IDS.indexOf(seg as PageId);
       if (idx >= 0) {
         setCurrentPage(idx);
       } else {
         setCurrentPage(0); // home
       }
+      // Re-parse nested segments.
+      const dayMatch = rest[0]?.match(/^day(\d)$/);
+      if (dayMatch) {
+        const d = parseInt(dayMatch[1], 10);
+        if (d >= 1 && d <= 6) {
+          setCurrentPage(1);
+          setCurrentDay(d - 1);
+        }
+      }
+      const stopMatch = rest[0]?.match(/^stop-(.+)$/);
+      if (stopMatch) {
+        setSelectedPlaceId(stopMatch[1]);
+        setDialogOpen(true);
+      } else {
+        setSelectedPlaceId(null);
+        setDialogOpen(false);
+      }
     };
-    window.addEventListener("popstate", onPopState);
-    return () => window.removeEventListener("popstate", onPopState);
+    window.addEventListener("popstate", onPop);
+    window.addEventListener("hashchange", onPop);
+    return () => {
+      window.removeEventListener("popstate", onPop);
+      window.removeEventListener("hashchange", onPop);
+    };
   }, []);
 
   const setPage = useCallback((idx: number) => {
@@ -146,6 +202,10 @@ export function TripProvider({ children }: { children: ReactNode }) {
     setDialogOpen(open);
   }, []);
 
+  const setMapHighlight = useCallback((id: string | null) => {
+    setMapHighlightId(id);
+  }, []);
+
   const pageId = PAGE_IDS[currentPage % PAGE_IDS.length];
 
   const auroraVariant = useMemo<AuroraVariant>(() => {
@@ -161,14 +221,16 @@ export function TripProvider({ children }: { children: ReactNode }) {
       currentDay,
       selectedPlaceId,
       dialogOpen,
+      mapHighlightId,
       setPage,
       setDay: setDay,
       setSelectedPlaceId: setSelectedPlace,
       setDialogOpen: setOpen,
+      setMapHighlightId: setMapHighlight,
       pageId,
       auroraVariant,
     }),
-    [currentPage, currentDay, selectedPlaceId, dialogOpen, setPage, setDay, setSelectedPlace, setOpen, pageId, auroraVariant]
+    [currentPage, currentDay, selectedPlaceId, dialogOpen, mapHighlightId, setPage, setDay, setSelectedPlace, setOpen, setMapHighlight, pageId, auroraVariant]
   );
 
   return <TripContext.Provider value={value}>{children}</TripContext.Provider>;

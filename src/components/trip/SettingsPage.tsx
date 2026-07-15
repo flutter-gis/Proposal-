@@ -10,13 +10,13 @@
  *   - 🐌 Reduced motion toggle
  */
 
-import { memo } from "react";
+import { memo, useEffect, useState } from "react";
 import { usePreferences } from "@/lib/preferences-context";
 import { ICON_LIST } from "@/lib/preferences";
 import { FlyIn } from "./FlyIn";
 import ThemeIcon from "./ThemeIcon";
 import ScenePreview from "./ScenePreview";
-import { Settings as SettingsIcon, Sparkles, Clock, Check, RotateCcw } from "lucide-react";
+import { Settings as SettingsIcon, Sparkles, Clock, Check, RotateCcw, Download, WifiOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 function SettingsPageImpl() {
@@ -228,6 +228,21 @@ function SettingsPageImpl() {
           </button>
         </FlyIn>
 
+        {/* H-04: Download for Offline — caches all 6 day pages + proposal page */}
+        <FlyIn className="leather-card parchment-texture rounded-3xl p-6 mb-6">
+          <h3 className="mb-2 font-serif text-lg font-bold text-rust-bark flex items-center gap-2">
+            <Download className="w-5 h-5 text-rust-forest" aria-hidden />
+            Download for Offline
+          </h3>
+          <p className="text-xs text-rust-bark/60 mb-4 leading-relaxed">
+            Day 1 is off-grid (no service, devices in the trunk). Pre-download
+            the itinerary, proposal details, and access codes so they work
+            without internet. Tapping this caches every page, every photo,
+            and the map tiles for the route.
+          </p>
+          <DownloadForOfflineButton />
+        </FlyIn>
+
         {/* 3D Scene Preview */}
         <ScenePreview />
 
@@ -242,3 +257,99 @@ function SettingsPageImpl() {
 
 const SettingsPage = memo(SettingsPageImpl);
 export default SettingsPage;
+
+// ── Download for Offline button (H-04) ─────────────────────────────────
+// Sends a list of URLs to the service worker, which fetches and caches each.
+// Shows a progress message and confirms when complete.
+function DownloadForOfflineButton() {
+  const [status, setStatus] = useState<"idle" | "downloading" | "done" | "error">("idle");
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
+    const onMessage = (event: MessageEvent) => {
+      if (event.data?.type === "OFFLINE_DOWNLOAD_COMPLETE") {
+        setCount(event.data.count ?? 0);
+        setStatus("done");
+      }
+    };
+    navigator.serviceWorker.addEventListener("message", onMessage);
+    return () => navigator.serviceWorker.removeEventListener("message", onMessage);
+  }, []);
+
+  const handleDownload = async () => {
+    if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) {
+      setStatus("error");
+      return;
+    }
+    setStatus("downloading");
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      // Collect URLs: app pages + photo assets + leaflet marker assets.
+      const pages = ["/", "/trip", "/map", "/proposal", "/us", "/settings", "/offline"];
+      const photos = Array.from({ length: 16 }, (_, i) => `/couple/photo-${i + 1}.webp`);
+      const leaflet = [
+        "/leaflet/marker-icon.png",
+        "/leaflet/marker-icon-2x.png",
+        "/leaflet/marker-shadow.png",
+      ];
+      const urls = [...pages, ...photos, ...leaflet];
+      reg.active?.postMessage({ type: "DOWNLOAD_FOR_OFFLINE", urls });
+      // If no SW controller (e.g. dev mode), fall back to manually fetching.
+      if (!navigator.serviceWorker.controller) {
+        await Promise.all(
+          urls.map(async (u) => {
+            try {
+              const cache = await caches.open("wilderness-romance-v6");
+              const res = await fetch(u, { cache: "reload" });
+              if (res && res.status === 200) await cache.put(u, res.clone());
+            } catch {
+              // ignore individual failures
+            }
+          })
+        );
+        setCount(urls.length);
+        setStatus("done");
+      }
+    } catch {
+      setStatus("error");
+    }
+  };
+
+  if (status === "done") {
+    return (
+      <div className="rounded-xl bg-rust-forest/10 border border-rust-forest/30 px-4 py-3 text-sm text-rust-forest font-semibold flex items-center gap-2">
+        <Check className="w-4 h-4" aria-hidden />
+        {count} resources cached. Site works offline.
+      </div>
+    );
+  }
+
+  if (status === "error") {
+    return (
+      <div className="rounded-xl bg-rust-wax/10 border border-rust-wax/30 px-4 py-3 text-sm text-rust-wax">
+        Offline download isn&apos;t available in this browser. Try Chrome or Edge.
+      </div>
+    );
+  }
+
+  return (
+    <button
+      onClick={handleDownload}
+      disabled={status === "downloading"}
+      className="w-full flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold bg-rust-forest text-rust-cream hover:bg-rust-forest/90 transition-all tap-feedback disabled:opacity-60 disabled:cursor-wait min-h-[44px]"
+    >
+      {status === "downloading" ? (
+        <>
+          <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-rust-cream/40 border-t-rust-cream" aria-hidden />
+          Caching pages & photos…
+        </>
+      ) : (
+        <>
+          <WifiOff className="w-4 h-4" aria-hidden />
+          Download for Offline Use
+        </>
+      )}
+    </button>
+  );
+}

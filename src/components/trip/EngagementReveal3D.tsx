@@ -699,7 +699,7 @@ export default function EngagementReveal3D() {
       aria-label="Engagement reveal — tap the ring box to open"
       className={cn(
         "fixed inset-0 z-[300] transition-opacity duration-700",
-        phase === "done" ? "opacity-0" : "opacity-100"
+        phase === "done" ? "opacity-0 pointer-events-none" : "opacity-100"
       )}
       // Solid dark background from first paint — no transparency, no flicker
       style={{ backgroundColor: "#0f0a1e" }}

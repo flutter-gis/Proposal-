@@ -110,6 +110,7 @@ export const PLACES: Place[] = [
     bookingId: "ReserveAmerica #2-54500258",
     accessCode: "3000",
     checkIn: "Tuesday 1:00 PM – 8:00 PM",
+    checkOut: "Wednesday 11:00 AM (strict)",
     vibe: "Complete acoustic isolation within a deep pine canopy shelter",
   },
   {

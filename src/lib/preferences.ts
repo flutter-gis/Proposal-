@@ -33,16 +33,18 @@ export type IconTheme =
   | "anniversary";
 
 export type ColorTheme =
-  | "dawn"      // warm amber
-  | "day"       // bright blue
-  | "forest"    // deep green
-  | "golden"    // orange/gold
-  | "sunset"    // red/orange
-  | "dusk"      // purple/violet
-  | "night"     // deep indigo
-  | "cosmic"    // starry blue
-  | "love"      // rose/pink
-  | "brass";    // gold/brown (default)
+  | "dawn"        // warm amber
+  | "day"         // bright blue
+  | "forest"      // deep green
+  | "golden"      // orange/gold
+  | "sunset"      // red/orange
+  | "dusk"        // purple/violet
+  | "night"       // deep indigo
+  | "cosmic"      // starry blue
+  | "love"        // rose/pink
+  | "brass"       // gold/brown (default)
+  | "proposal"    // L-05: distinct from sunset — rose-gold + champagne
+  | "anniversary";// L-05: distinct from dusk — champagne gold + deep plum
 
 export interface Preferences {
   iconMode: IconMode;
@@ -97,8 +99,8 @@ export const ICON_TO_THEME: Record<IconTheme, ColorTheme> = {
   stargazing: "cosmic",
   heart: "love",
   ring: "brass",
-  proposal: "sunset",
-  anniversary: "dusk",
+  proposal: "proposal",      // L-05: now distinct
+  anniversary: "anniversary", // L-05: now distinct
 };
 
 // ── Color theme palettes ────────────────────────────────────────────────
@@ -292,6 +294,36 @@ export const THEME_PALETTES: Record<ColorTheme, ThemePalette> = {
     animGlow: "rgba(236,72,153,0.4)",
     animParticle: "rgba(253,242,248,0.6)",
   },
+  // L-05: Proposal — rose-gold + champagne, distinct from sunset's pure red
+  proposal: {
+    bg: "#fff5f0", bgDark: "#7c2d3a", cream: "#fffaf5", parchment: "#ffe8d6",
+    text: "#7c2d3a", textMuted: "#9a4456", textOnDark: "#fff5f0",
+    primary: "#d4749a", accent: "#c2185b", forest: "#a8385a", bark: "#4a1828",
+    ember: "#e91e63", wax: "#ad1457", brass: "#e8b4a0", sage: "#d4749a", leather: "#9a4456",
+    border: "#ffd6c4", borderDark: "#7c2d3a",
+    chart1: "#c2185b", chart2: "#e91e63", chart3: "#f48fb1",
+    aurora1: "#f48fb1", aurora2: "#e91e63", aurora3: "#c2185b",
+    cardGradient: "linear-gradient(135deg, #fffaf5 0%, #ffe8d6 100%)",
+    cardDarkGradient: "linear-gradient(135deg, #7c2d3a 0%, #4a1828 100%)",
+    buttonGradient: "linear-gradient(180deg, #f48fb1 0%, #e91e63 50%, #c2185b 100%)",
+    animGlow: "rgba(233,30,99,0.35)",
+    animParticle: "rgba(255,245,240,0.6)",
+  },
+  // L-05: Anniversary — champagne gold + deep plum, distinct from dusk's pure violet
+  anniversary: {
+    bg: "#faf6f0", bgDark: "#3d1f3d", cream: "#fffcf5", parchment: "#f0e0c8",
+    text: "#3d1f3d", textMuted: "#5d3a5d", textOnDark: "#faf6f0",
+    primary: "#b8860b", accent: "#8b6914", forest: "#5d3a5d", bark: "#2a0e2a",
+    ember: "#d4a017", wax: "#6d2878", brass: "#d4af37", sage: "#b8860b", leather: "#5d3a5d",
+    border: "#e8d4a8", borderDark: "#3d1f3d",
+    chart1: "#b8860b", chart2: "#d4af37", chart3: "#8b6914",
+    aurora1: "#d4af37", aurora2: "#b8860b", aurora3: "#6d2878",
+    cardGradient: "linear-gradient(135deg, #fffcf5 0%, #f0e0c8 100%)",
+    cardDarkGradient: "linear-gradient(135deg, #3d1f3d 0%, #2a0e2a 100%)",
+    buttonGradient: "linear-gradient(180deg, #e8c878 0%, #d4af37 50%, #b8860b 100%)",
+    animGlow: "rgba(212,175,55,0.4)",
+    animParticle: "rgba(250,246,240,0.6)",
+  },
 };
 
 // ── Icon metadata ───────────────────────────────────────────────────────
@@ -380,6 +412,12 @@ export function updatePWAIcons(icon: IconTheme): void {
 // ── Apply theme to document ─────────────────────────────────────────────
 // Sets ALL CSS custom properties on :root so every element that references
 // them updates instantly. This is the KEY function that makes themes work.
+//
+// Theme 7.2 (audit): For dark themes (night, cosmic), `--card` and `--popover`
+// must be dark surface colors, not the light `cream` value. Otherwise cards
+// render as bright rectangles on a near-black background.
+const DARK_THEMES: ReadonlySet<ColorTheme> = new Set(["night", "cosmic"]);
+
 export function applyThemeToDocument(theme: ColorTheme): void {
   if (typeof document === "undefined") return;
 
@@ -387,6 +425,13 @@ export function applyThemeToDocument(theme: ColorTheme): void {
   if (!palette) return;
 
   const root = document.documentElement;
+  const isDark = DARK_THEMES.has(theme);
+  // For dark themes, use a dark surface for cards; for light themes, use cream.
+  const cardSurface = isDark ? palette.bgDark : palette.cream;
+  const cardFg = isDark ? palette.textOnDark : palette.text;
+  const popoverSurface = isDark ? palette.bgDark : palette.cream;
+  const popoverFg = isDark ? palette.textOnDark : palette.text;
+  const mutedSurface = isDark ? palette.bgDark : palette.parchment;
 
   // Set data-theme attribute for any CSS that uses [data-theme="..."]
   root.setAttribute("data-theme", theme);
@@ -406,20 +451,20 @@ export function applyThemeToDocument(theme: ColorTheme): void {
     "--rust-leather": palette.leather,
     "--background": palette.bg,
     "--foreground": palette.text,
-    "--card": palette.cream,
-    "--card-foreground": palette.text,
-    "--popover": palette.cream,
-    "--popover-foreground": palette.text,
+    "--card": cardSurface,
+    "--card-foreground": cardFg,
+    "--popover": popoverSurface,
+    "--popover-foreground": popoverFg,
     "--primary": palette.primary,
     "--primary-foreground": palette.cream,
-    "--secondary": palette.parchment,
-    "--secondary-foreground": palette.text,
-    "--muted": palette.parchment,
+    "--secondary": mutedSurface,
+    "--secondary-foreground": cardFg,
+    "--muted": mutedSurface,
     "--muted-foreground": palette.textMuted,
     "--accent": palette.accent,
     "--accent-foreground": palette.cream,
     "--destructive": palette.wax,
-    "--border": palette.border,
+    "--border": isDark ? palette.borderDark : palette.border,
     "--input": palette.border,
     "--ring": palette.brass,
     "--chart-1": palette.chart1,

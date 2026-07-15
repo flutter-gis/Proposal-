@@ -217,6 +217,9 @@
   .anim-breathe { animation: css-breathe 2.4s ease-in-out infinite; }
   .anim-float { animation: css-float 4s ease-in-out infinite; }
   .anim-pulse { animation: css-pulse 2s ease-in-out infinite; }
+  /* M-06: Proposal stop — slower, larger pulse with extra glow */
+  .anim-pulse-scale { animation: css-pulse-scale 2.8s ease-in-out infinite; }
+  .anim-pulse-glow { animation: css-pulse-glow 2.8s ease-in-out infinite; }
   .anim-heartbeat { animation: css-heartbeat 1.4s ease-in-out infinite; }
   .anim-twinkle { animation: css-twinkle 2.5s ease-in-out infinite; }
   .anim-fade-in-up { animation: css-fade-in-up 0.5s ease-out forwards; }
@@ -296,6 +299,14 @@
   @keyframes css-breathe { 0%,100% { box-shadow: var(--glow-color, var(--theme-anim-glow, rgba(184,134,11,0.3))) 0 0 0 0; } 50% { box-shadow: var(--glow-color, var(--theme-anim-glow, rgba(184,134,11,0.3))) 0 0 16px 2px; } }
   @keyframes css-float { 0%,100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(0,-3px,0); } }
   @keyframes css-pulse { 0%,100% { opacity: 0.7; transform: scale(1); } 50% { opacity: 1; transform: scale(1.15); } }
+  @keyframes css-pulse-scale {
+    0%,100% { opacity: 0.85; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.25); }
+  }
+  @keyframes css-pulse-glow {
+    0%,100% { box-shadow: 0 0 0 0 rgba(251,191,36,0); }
+    50% { box-shadow: 0 0 18px 4px rgba(251,191,36,0.45); }
+  }
   @keyframes css-heartbeat { 0%,100% { transform: scale(1); } 15% { transform: scale(1.12); } 30% { transform: scale(1); } 45% { transform: scale(1.08); } 60% { transform: scale(1); } }
   @keyframes css-twinkle { 0%,100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.1); } }
   @keyframes css-fade-in-up { from { opacity: 0; transform: translate3d(0,20px,0); } to { opacity: 1; transform: translate3d(0,0,0); } }
