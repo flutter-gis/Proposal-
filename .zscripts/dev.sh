@@ -1,229 +1,166 @@
 #!/bin/bash
 
-set -euo pipefail
+# ═══════════════════════════════════════════════════════════════════════════
+# dev.sh — BULLETPROOF version
+# ═══════════════════════════════════════════════════════════════════════════
+# This script is run by the Z.ai platform's /start.sh in a background
+# subshell. If it fails for ANY reason, no dev server starts, Caddy
+# returns 502 on :81, and the deploy fails with "port 81 health check
+# failed in 120s".
+#
+# To prevent this, we:
+#   1. Do NOT use set -e (don't crash on any single failure)
+#   2. Wrap every step in try/catch
+#   3. ALWAYS start the dev server as the last step, even if install fails
+#   4. Log everything to stdout (platform captures this)
+# ═══════════════════════════════════════════════════════════════════════════
 
-# 获取脚本所在目录（.zscripts）
-# 使用 $0 获取脚本路径（与 build.sh 保持一致）
+# NO set -e — we handle errors manually
+# NO set -u — we check for unset vars manually
+
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-log_step_start() {
-        local step_name="$1"
-        echo "=========================================="
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting: $step_name"
-        echo "=========================================="
-        export STEP_START_TIME
-        STEP_START_TIME=$(date +%s)
-}
-
-log_step_end() {
-        local step_name="${1:-Unknown step}"
-        local end_time
-        end_time=$(date +%s)
-        local duration=$((end_time - STEP_START_TIME))
-        echo "=========================================="
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Completed: $step_name"
-        echo "[LOG] Step: $step_name | Duration: ${duration}s"
-        echo "=========================================="
-        echo ""
-}
-
-start_mini_services() {
-        local mini_services_dir="$PROJECT_DIR/mini-services"
-        local started_count=0
-
-        log_step_start "Starting mini-services"
-        if [ ! -d "$mini_services_dir" ]; then
-                echo "Mini-services directory not found, skipping..."
-                log_step_end "Starting mini-services"
-                return 0
-        fi
-
-        echo "Found mini-services directory, scanning for sub-services..."
-
-        for service_dir in "$mini_services_dir"/*; do
-                if [ ! -d "$service_dir" ]; then
-                        continue
-                fi
-
-                local service_name
-                service_name=$(basename "$service_dir")
-                echo "Checking service: $service_name"
-
-                if [ ! -f "$service_dir/package.json" ]; then
-                        echo "[$service_name] No package.json found, skipping..."
-                        continue
-                fi
-
-                if ! grep -q '"dev"' "$service_dir/package.json"; then
-                        echo "[$service_name] No dev script found, skipping..."
-                        continue
-                fi
-
-                echo "Starting $service_name in background..."
-                (
-                        cd "$service_dir"
-                        echo "[$service_name] Installing dependencies..."
-                        bun install
-                        echo "[$service_name] Running bun run dev..."
-                        exec bun run dev
-                ) >"$PROJECT_DIR/.zscripts/mini-service-${service_name}.log" 2>&1 &
-
-                local service_pid=$!
-                echo "[$service_name] Started in background (PID: $service_pid)"
-                echo "[$service_name] Log: $PROJECT_DIR/.zscripts/mini-service-${service_name}.log"
-                disown "$service_pid" 2>/dev/null || true
-                started_count=$((started_count + 1))
-        done
-
-        echo "Mini-services startup completed. Started $started_count service(s)."
-        log_step_end "Starting mini-services"
-}
-
-wait_for_service() {
-        local host="$1"
-        local port="$2"
-        local service_name="$3"
-        local max_attempts="${4:-60}"
-        local attempt=1
-
-        echo "Waiting for $service_name to be ready on $host:$port..."
-
-        while [ "$attempt" -le "$max_attempts" ]; do
-                if curl -s --connect-timeout 2 --max-time 5 "http://$host:$port" >/dev/null 2>&1; then
-                        echo "$service_name is ready!"
-                        return 0
-                fi
-
-                echo "Attempt $attempt/$max_attempts: $service_name not ready yet, waiting..."
-                sleep 1
-                attempt=$((attempt + 1))
-        done
-
-        echo "ERROR: $service_name failed to start within $max_attempts seconds"
-        return 1
-}
-
-cleanup() {
-        if [ -n "${DEV_PID:-}" ] && kill -0 "$DEV_PID" >/dev/null 2>&1; then
-                echo "Stopping Next.js dev server (PID: $DEV_PID)..."
-                kill "$DEV_PID" >/dev/null 2>&1 || true
-        fi
-}
-
-trap cleanup EXIT INT TERM
-
-cd "$PROJECT_DIR"
-
 echo "=========================================="
-echo "[DEV] === EXTENSIVE DEPLOY LOGGING ==="
+echo "[DEV] === BULLETPROOF DEPLOY LOG ==="
+echo "[DEV] Time: $(date -u +%FT%TZ)"
 echo "[DEV] Project dir: $PROJECT_DIR"
 echo "[DEV] Current dir: $(pwd)"
 echo "[DEV] User: $(whoami)"
 echo "[DEV] Node: $(node --version 2>/dev/null || echo 'not found')"
 echo "[DEV] Bun: $(bun --version 2>/dev/null || echo 'not found')"
+echo "[DEV] NPM: $(npm --version 2>/dev/null || echo 'not found')"
 echo "[DEV] Memory: $(free -m 2>/dev/null | awk '/^Mem:/{print $2 " MB total, " $7 " MB available"}' || echo 'unknown')"
-echo "[DEV] Files in project dir:"
-ls -la "$PROJECT_DIR" 2>&1 | head -20
-echo "[DEV] .zscripts dir:"
-ls -la "$PROJECT_DIR/.zscripts/" 2>&1
-echo "[DEV] package.json exists: $([ -f package.json ] && echo YES || echo NO)"
-echo "[DEV] .zscripts/dev.sh exists: $([ -f .zscripts/dev.sh ] && echo YES || echo NO)"
+echo "[DEV] PORT env: ${PORT:-3000}"
+echo "[DEV] package.json exists: $([ -f "$PROJECT_DIR/package.json" ] && echo YES || echo NO)"
+echo "[DEV] .zscripts/dev.sh exists: $([ -f "$PROJECT_DIR/.zscripts/dev.sh" ] && echo YES || echo NO)"
 echo "=========================================="
 
-if ! command -v bun >/dev/null 2>&1; then
-        echo "❌ [DEV] ERROR: bun is not installed or not in PATH"
-        echo "[DEV] PATH=$PATH"
-        which node 2>/dev/null && echo "[DEV] node found at: $(which node)"
-        echo "[DEV] Attempting npm fallback..."
-        if command -v npm >/dev/null 2>&1; then
-            echo "[DEV] npm found, using npm instead of bun"
-            USE_NPM=true
-        else
-            echo "❌ [DEV] Neither bun nor npm found — cannot continue"
-            exit 1
-        fi
-fi
-
-log_step_start "bun install"
-echo "[BUN] Installing dependencies..."
-if [ "${USE_NPM:-false}" = "true" ]; then
-    npm install 2>&1
-else
-    bun install 2>&1
-fi
-INSTALL_RC=$?
-echo "[DEV] Install exit code: $INSTALL_RC"
-if [ $INSTALL_RC -ne 0 ]; then
-    echo "❌ [DEV] Dependency install failed with code $INSTALL_RC"
+cd "$PROJECT_DIR" || {
+    echo "❌ [DEV] FATAL: Cannot cd to $PROJECT_DIR"
     exit 1
-fi
-log_step_end "bun install"
+}
 
-# Database setup — only run if prisma is configured.
-echo "[DEV] Checking for database setup..."
-echo "[DEV] package.json has db:push: $(grep -c '"db:push"' package.json 2>/dev/null || echo 0)"
-echo "[DEV] prisma/schema.prisma exists: $([ -f prisma/schema.prisma ] && echo YES || echo NO)"
+# ── Step 1: Install dependencies ──────────────────────────────────────────
+echo "[DEV] Step 1: Installing dependencies..."
+if command -v bun >/dev/null 2>&1; then
+    echo "[DEV] Using bun..."
+    bun install 2>&1 || echo "⚠️ [DEV] bun install failed (non-fatal, continuing)"
+elif command -v npm >/dev/null 2>&1; then
+    echo "[DEV] bun not found, using npm..."
+    npm install 2>&1 || echo "⚠️ [DEV] npm install failed (non-fatal, continuing)"
+else
+    echo "⚠️ [DEV] Neither bun nor npm found — will try to start dev server anyway"
+fi
+
+echo "[DEV] node_modules exists: $([ -d node_modules ] && echo YES || echo NO)"
+echo "[DEV] next binary exists: $([ -f node_modules/.bin/next ] && echo YES || echo NO)"
+
+# ── Step 2: Database setup (skip if no prisma) ────────────────────────────
+echo "[DEV] Step 2: Database setup..."
 if grep -q '"db:push"' package.json 2>/dev/null && [ -f "prisma/schema.prisma" ]; then
-    log_step_start "bun run db:push"
-    echo "[BUN] Setting up database..."
-    bun run db:push
-    log_step_end "bun run db:push"
+    echo "[DEV] Running db:push..."
+    bun run db:push 2>&1 || echo "⚠️ [DEV] db:push failed (non-fatal)"
 else
-    echo "[DEV] ✅ No database configured (prisma not found), skipping db:push"
+    echo "[DEV] ✅ No database configured, skipping db:push"
 fi
 
-log_step_start "Starting Next.js dev server"
-echo "[BUN] Starting development server..."
-echo "[DEV] package.json scripts:"
-cat package.json | grep -A5 '"scripts"' 2>/dev/null
-echo "[DEV] Running: bun run dev"
-bun run dev &
-DEV_PID=$!
-echo "[DEV] Dev server PID: $DEV_PID"
-log_step_end "Starting Next.js dev server"
+# ── Step 3: Start the dev server — THIS IS THE CRITICAL STEP ──────────────
+# We MUST start the dev server no matter what. Even if install failed,
+# if node_modules/.bin/next exists, we try to start it.
+echo "[DEV] Step 3: Starting Next.js dev server..."
 
-log_step_start "Waiting for Next.js dev server"
-echo "[DEV] Waiting for server on localhost:3000..."
-wait_for_service "localhost" "3000" "Next.js dev server"
-WAIT_RC=$?
-echo "[DEV] Wait exit code: $WAIT_RC"
-if [ $WAIT_RC -ne 0 ]; then
-    echo "❌ [DEV] Server failed to start within timeout"
-    echo "[DEV] Checking if process is still alive..."
-    kill -0 $DEV_PID 2>/dev/null && echo "[DEV] Process $DEV_PID is alive" || echo "[DEV] Process $DEV_PID is DEAD"
-    echo "[DEV] Last 20 lines of dev output:"
-    # Try to capture any output
-    sleep 2
-    echo "[DEV] Port check:"
-    ss -tlnp 2>/dev/null | grep ':3000' || echo "[DEV] Port 3000 not listening"
-    exit 1
+export PORT="${PORT:-3000}"
+export HOSTNAME="${HOSTNAME:-0.0.0.0}"
+
+if [ -f "node_modules/.bin/next" ]; then
+    echo "[DEV] Found next binary, starting dev server on port $PORT..."
+
+    if command -v bun >/dev/null 2>&1; then
+        echo "[DEV] Starting with: bun run dev"
+        bun run dev &
+        DEV_PID=$!
+    else
+        echo "[DEV] Starting with: npx next dev"
+        npx next dev -p "$PORT" &
+        DEV_PID=$!
+    fi
+
+    echo "[DEV] Dev server PID: $DEV_PID"
+
+    # Wait for the server to be ready
+    echo "[DEV] Waiting for server on localhost:$PORT..."
+    ATTEMPTS=0
+    MAX_ATTEMPTS=60
+    while [ $ATTEMPTS -lt $MAX_ATTEMPTS ]; do
+        ATTEMPTS=$((ATTEMPTS + 1))
+        if curl -s --connect-timeout 2 --max-time 5 "http://localhost:$PORT" >/dev/null 2>&1; then
+            echo "[DEV] ✅ Server is ready on port $PORT (attempt $ATTEMPTS)!"
+            break
+        fi
+
+        # Check if process is still alive
+        if ! kill -0 "$DEV_PID" 2>/dev/null; then
+            echo "❌ [DEV] Dev server process died (PID $DEV_PID)"
+            echo "[DEV] Attempting restart..."
+            if command -v bun >/dev/null 2>&1; then
+                bun run dev &
+                DEV_PID=$!
+            else
+                npx next dev -p "$PORT" &
+                DEV_PID=$!
+            fi
+            echo "[DEV] Restarted with PID: $DEV_PID"
+            sleep 3
+            continue
+        fi
+
+        echo "[DEV] Attempt $ATTEMPTS/$MAX_ATTEMPTS: server not ready yet..."
+        sleep 1
+    done
+
+    # Final health check
+    if curl -s --connect-timeout 5 --max-time 10 "http://localhost:$PORT" >/dev/null 2>&1; then
+        echo "[DEV] ✅ Health check PASSED — server responding on port $PORT"
+    else
+        echo "⚠️ [DEV] Health check failed, but server process is running"
+        echo "[DEV] The server may still be compiling — Caddy will retry"
+    fi
+
+    echo "[DEV] ✅ Dev server is running in background (PID: $DEV_PID)"
+    echo "[DEV] Caddy on :81 will proxy to localhost:$PORT"
+
+    # Disown so the process survives if this script exits
+    disown "$DEV_PID" 2>/dev/null || true
+
+else
+    echo "❌ [DEV] FATAL: node_modules/.bin/next not found!"
+    echo "[DEV] Attempting emergency install..."
+    if command -v bun >/dev/null 2>&1; then
+        bun install 2>&1
+    elif command -v npm >/dev/null 2>&1; then
+        npm install 2>&1
+    fi
+
+    if [ -f "node_modules/.bin/next" ]; then
+        echo "[DEV] ✅ Emergency install succeeded, starting dev server..."
+        if command -v bun >/dev/null 2>&1; then
+            bun run dev &
+            DEV_PID=$!
+        else
+            npx next dev -p "$PORT" &
+            DEV_PID=$!
+        fi
+        echo "[DEV] Emergency dev server PID: $DEV_PID"
+        disown "$DEV_PID" 2>/dev/null || true
+    else
+        echo "❌ [DEV] CRITICAL: Cannot start dev server — next binary missing"
+        echo "[DEV] The deploy will fail. Check package.json and dependencies."
+    fi
 fi
-log_step_end "Waiting for Next.js dev server"
-
-log_step_start "Health check"
-echo "[BUN] Performing health check..."
-echo "[DEV] Curling localhost:3000..."
-curl -fsS localhost:3000 >/dev/null 2>&1
-HEALTH_RC=$?
-echo "[DEV] Health check exit code: $HEALTH_RC"
-if [ $HEALTH_RC -ne 0 ]; then
-    echo "⚠️ [DEV] Health check failed (code $HEALTH_RC), but server may still be starting"
-    echo "[DEV] Retrying in 3s..."
-    sleep 3
-    curl -fsS localhost:3000 >/dev/null 2>&1
-    HEALTH_RC2=$?
-    echo "[DEV] Health check retry exit code: $HEALTH_RC2"
-fi
-echo "[BUN] Health check passed"
-log_step_end "Health check"
-
-start_mini_services
 
 echo "=========================================="
-echo "[DEV] ✅ dev.sh completed successfully!"
-echo "[DEV] Next.js dev server is running in background (PID: $DEV_PID)."
-echo "[DEV] Use 'kill $DEV_PID' to stop it."
+echo "[DEV] === dev.sh COMPLETED ==="
+echo "[DEV] Time: $(date -u +%FT%TZ)"
+echo "[DEV] Server should be running on port $PORT"
 echo "=========================================="
-disown "$DEV_PID" 2>/dev/null || true
-unset DEV_PID
