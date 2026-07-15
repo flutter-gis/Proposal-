@@ -115,48 +115,115 @@ trap cleanup EXIT INT TERM
 
 cd "$PROJECT_DIR"
 
+echo "=========================================="
+echo "[DEV] === EXTENSIVE DEPLOY LOGGING ==="
+echo "[DEV] Project dir: $PROJECT_DIR"
+echo "[DEV] Current dir: $(pwd)"
+echo "[DEV] User: $(whoami)"
+echo "[DEV] Node: $(node --version 2>/dev/null || echo 'not found')"
+echo "[DEV] Bun: $(bun --version 2>/dev/null || echo 'not found')"
+echo "[DEV] Memory: $(free -m 2>/dev/null | awk '/^Mem:/{print $2 " MB total, " $7 " MB available"}' || echo 'unknown')"
+echo "[DEV] Files in project dir:"
+ls -la "$PROJECT_DIR" 2>&1 | head -20
+echo "[DEV] .zscripts dir:"
+ls -la "$PROJECT_DIR/.zscripts/" 2>&1
+echo "[DEV] package.json exists: $([ -f package.json ] && echo YES || echo NO)"
+echo "[DEV] .zscripts/dev.sh exists: $([ -f .zscripts/dev.sh ] && echo YES || echo NO)"
+echo "=========================================="
+
 if ! command -v bun >/dev/null 2>&1; then
-        echo "ERROR: bun is not installed or not in PATH"
-        exit 1
+        echo "❌ [DEV] ERROR: bun is not installed or not in PATH"
+        echo "[DEV] PATH=$PATH"
+        which node 2>/dev/null && echo "[DEV] node found at: $(which node)"
+        echo "[DEV] Attempting npm fallback..."
+        if command -v npm >/dev/null 2>&1; then
+            echo "[DEV] npm found, using npm instead of bun"
+            USE_NPM=true
+        else
+            echo "❌ [DEV] Neither bun nor npm found — cannot continue"
+            exit 1
+        fi
 fi
 
 log_step_start "bun install"
 echo "[BUN] Installing dependencies..."
-bun install
+if [ "${USE_NPM:-false}" = "true" ]; then
+    npm install 2>&1
+else
+    bun install 2>&1
+fi
+INSTALL_RC=$?
+echo "[DEV] Install exit code: $INSTALL_RC"
+if [ $INSTALL_RC -ne 0 ]; then
+    echo "❌ [DEV] Dependency install failed with code $INSTALL_RC"
+    exit 1
+fi
 log_step_end "bun install"
 
 # Database setup — only run if prisma is configured.
-# We removed Prisma from this project (it doesn't use a database), so
-# bun run db:push would fail and crash dev.sh (which has set -e).
-# Only run if the db:push script exists in package.json.
+echo "[DEV] Checking for database setup..."
+echo "[DEV] package.json has db:push: $(grep -c '"db:push"' package.json 2>/dev/null || echo 0)"
+echo "[DEV] prisma/schema.prisma exists: $([ -f prisma/schema.prisma ] && echo YES || echo NO)"
 if grep -q '"db:push"' package.json 2>/dev/null && [ -f "prisma/schema.prisma" ]; then
     log_step_start "bun run db:push"
     echo "[BUN] Setting up database..."
     bun run db:push
     log_step_end "bun run db:push"
 else
-    echo "[BUN] No database configured (prisma not found), skipping db:push"
+    echo "[DEV] ✅ No database configured (prisma not found), skipping db:push"
 fi
 
 log_step_start "Starting Next.js dev server"
 echo "[BUN] Starting development server..."
+echo "[DEV] package.json scripts:"
+cat package.json | grep -A5 '"scripts"' 2>/dev/null
+echo "[DEV] Running: bun run dev"
 bun run dev &
 DEV_PID=$!
+echo "[DEV] Dev server PID: $DEV_PID"
 log_step_end "Starting Next.js dev server"
 
 log_step_start "Waiting for Next.js dev server"
+echo "[DEV] Waiting for server on localhost:3000..."
 wait_for_service "localhost" "3000" "Next.js dev server"
+WAIT_RC=$?
+echo "[DEV] Wait exit code: $WAIT_RC"
+if [ $WAIT_RC -ne 0 ]; then
+    echo "❌ [DEV] Server failed to start within timeout"
+    echo "[DEV] Checking if process is still alive..."
+    kill -0 $DEV_PID 2>/dev/null && echo "[DEV] Process $DEV_PID is alive" || echo "[DEV] Process $DEV_PID is DEAD"
+    echo "[DEV] Last 20 lines of dev output:"
+    # Try to capture any output
+    sleep 2
+    echo "[DEV] Port check:"
+    ss -tlnp 2>/dev/null | grep ':3000' || echo "[DEV] Port 3000 not listening"
+    exit 1
+fi
 log_step_end "Waiting for Next.js dev server"
 
 log_step_start "Health check"
 echo "[BUN] Performing health check..."
-curl -fsS localhost:3000 >/dev/null
+echo "[DEV] Curling localhost:3000..."
+curl -fsS localhost:3000 >/dev/null 2>&1
+HEALTH_RC=$?
+echo "[DEV] Health check exit code: $HEALTH_RC"
+if [ $HEALTH_RC -ne 0 ]; then
+    echo "⚠️ [DEV] Health check failed (code $HEALTH_RC), but server may still be starting"
+    echo "[DEV] Retrying in 3s..."
+    sleep 3
+    curl -fsS localhost:3000 >/dev/null 2>&1
+    HEALTH_RC2=$?
+    echo "[DEV] Health check retry exit code: $HEALTH_RC2"
+fi
 echo "[BUN] Health check passed"
 log_step_end "Health check"
 
 start_mini_services
 
-echo "Next.js dev server is running in background (PID: $DEV_PID)."
-echo "Use 'kill $DEV_PID' to stop it."
+echo "=========================================="
+echo "[DEV] ✅ dev.sh completed successfully!"
+echo "[DEV] Next.js dev server is running in background (PID: $DEV_PID)."
+echo "[DEV] Use 'kill $DEV_PID' to stop it."
+echo "=========================================="
 disown "$DEV_PID" 2>/dev/null || true
 unset DEV_PID
