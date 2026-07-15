@@ -1,8 +1,15 @@
 #!/bin/bash
 
-# 配置项
-ROOT_DIR="/home/z/my-project/mini-services"
+# Resolve paths relative to this script so it works from any clone location.
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../mini-services" 2>/dev/null && pwd)"
 DIST_DIR="/tmp/build_fullstack_$BUILD_ID/mini-services-dist"
+
+# Guard against missing mini-services/ directory.
+if [ -z "$ROOT_DIR" ] || [ ! -d "$ROOT_DIR" ]; then
+    echo "ℹ️  mini-services directory not found — skipping build"
+    return 2>/dev/null || exit 0
+fi
 
 main() {
     echo "🚀 开始批量构建..."

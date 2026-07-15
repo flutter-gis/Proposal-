@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# 配置项
-ROOT_DIR="/home/z/my-project/mini-services"
+# Resolve paths relative to this script so it works from any clone location.
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../mini-services" 2>/dev/null && pwd)"
 
 main() {
     echo "🚀 开始批量安装依赖..."

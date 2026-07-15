@@ -1,122 +1,99 @@
 #!/bin/bash
 
-# 将 stderr 重定向到 stdout，避免 execute_command 因为 stderr 输出而报错
+# Redirect stderr to stdout so the parent shell sees all output.
 exec 2>&1
 
 set -e
 
-# 获取脚本所在目录（.zscripts 目录，即 workspace-agent/.zscripts）
-# 使用 $0 获取脚本路径（兼容 sh 和 bash）
+# Resolve paths relative to this script so the build is portable.
+# NEXTJS_PROJECT_DIR becomes the parent of the .zscripts/ directory.
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+NEXTJS_PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-# Next.js 项目路径
-NEXTJS_PROJECT_DIR="/home/z/my-project"
-
-# 检查 Next.js 项目目录是否存在
 if [ ! -d "$NEXTJS_PROJECT_DIR" ]; then
-    echo "❌ 错误: Next.js 项目目录不存在: $NEXTJS_PROJECT_DIR"
+    echo "❌ ERROR: Next.js project directory does not exist: $NEXTJS_PROJECT_DIR"
     exit 1
 fi
 
-echo "🚀 开始构建 Next.js 应用和 mini-services..."
-echo "📁 Next.js 项目路径: $NEXTJS_PROJECT_DIR"
+echo "🚀 Building Next.js app + mini-services..."
+echo "📁 Project: $NEXTJS_PROJECT_DIR"
 
-# 切换到 Next.js 项目目录
 cd "$NEXTJS_PROJECT_DIR" || exit 1
 
-# 设置环境变量
 export NEXT_TELEMETRY_DISABLED=1
 
 BUILD_DIR="/tmp/build_fullstack_$BUILD_ID"
-echo "📁 清理并创建构建目录: $BUILD_DIR"
+echo "📁 Preparing build dir: $BUILD_DIR"
 mkdir -p "$BUILD_DIR"
 
-# 安装依赖
-echo "📦 安装依赖..."
+# Install dependencies (use bun; bun.lock is authoritative).
+echo "📦 Installing dependencies..."
 bun install
 
-# 构建 Next.js 应用
-echo "🔨 构建 Next.js 应用..."
+# Build Next.js (produces .next/standalone + copies static/public into it
+# via the `build` script in package.json).
+echo "🔨 Building Next.js..."
 bun run build
 
-# 构建 mini-services
-# 检查 Next.js 项目目录下是否有 mini-services 目录
-if [ -d "$NEXTJS_PROJECT_DIR/mini-services" ]; then
-    echo "🔨 构建 mini-services..."
-    # 使用 workspace-agent 目录下的 mini-services 脚本
+# Build mini-services if the directory has any projects.
+if [ -d "$NEXTJS_PROJECT_DIR/mini-services" ] && [ -n "$(ls -A "$NEXTJS_PROJECT_DIR/mini-services" 2>/dev/null)" ]; then
+    echo "🔨 Building mini-services..."
     sh "$SCRIPT_DIR/mini-services-install.sh"
     sh "$SCRIPT_DIR/mini-services-build.sh"
 
-    # 复制 mini-services-start.sh 到 mini-services-dist 目录
-    echo "  - 复制 mini-services-start.sh 到 $BUILD_DIR"
+    echo "  - Copy mini-services-start.sh → $BUILD_DIR"
     cp "$SCRIPT_DIR/mini-services-start.sh" "$BUILD_DIR/mini-services-start.sh"
     chmod +x "$BUILD_DIR/mini-services-start.sh"
 else
-    echo "ℹ️  mini-services 目录不存在，跳过"
+    echo "ℹ️  mini-services directory is empty or missing — skipping"
 fi
 
-# 将所有构建产物复制到临时构建目录
-echo "📦 收集构建产物到 $BUILD_DIR..."
+# Collect build artifacts into the staging directory.
+echo "📦 Collecting artifacts into $BUILD_DIR..."
 
-# 复制 Next.js standalone 构建输出
 if [ -d ".next/standalone" ]; then
-    echo "  - 复制 .next/standalone"
+    echo "  - Copy .next/standalone → next-service-dist/"
     cp -r .next/standalone "$BUILD_DIR/next-service-dist/"
+else
+    echo "❌ ERROR: .next/standalone missing — did the build fail?"
+    exit 1
 fi
 
-# 复制 Next.js 静态文件
 if [ -d ".next/static" ]; then
-    echo "  - 复制 .next/static"
+    echo "  - Copy .next/static"
     mkdir -p "$BUILD_DIR/next-service-dist/.next"
     cp -r .next/static "$BUILD_DIR/next-service-dist/.next/"
 fi
 
-# 复制 public 目录
 if [ -d "public" ]; then
-    echo "  - 复制 public"
+    echo "  - Copy public/"
     cp -r public "$BUILD_DIR/next-service-dist/"
 fi
 
-# 将测试环境数据库复制到构建产物中，生产环境直接使用这份数据库
-if [ -f "./db/custom.db" ]; then
-    echo "🗄️  复制测试环境数据库到构建产物..."
-    mkdir -p "$BUILD_DIR/db"
-    cp -r ./db/. "$BUILD_DIR/db/"
+# NOTE: We no longer ship a database. The app does not use Prisma.
+# If you re-add a database later, copy/migrate it here instead of bundling
+# the dev DB into production.
 
-    echo "🗄️  同步构建产物中的数据库结构..."
-    DATABASE_URL="file:$BUILD_DIR/db/custom.db" bun run db:push
-    echo "✅ 构建产物数据库已准备完成"
-    ls -lah "$BUILD_DIR/db"
-else
-    echo "❌ 未找到测试环境数据库文件 ./db/custom.db，无法继续构建生产包"
-    exit 1
-fi
-
-# 复制 Caddyfile（如果存在）
 if [ -f "Caddyfile" ]; then
-    echo "  - 复制 Caddyfile"
+    echo "  - Copy Caddyfile (for reference; platform runs its own Caddy on :81)"
     cp Caddyfile "$BUILD_DIR/"
 else
-    echo "ℹ️  Caddyfile 不存在，跳过"
+    echo "ℹ️  Caddyfile not found — skipping"
 fi
 
-# 复制 start.sh 脚本
-echo "  - 复制 start.sh 到 $BUILD_DIR"
+echo "  - Copy start.sh → $BUILD_DIR"
 cp "$SCRIPT_DIR/start.sh" "$BUILD_DIR/start.sh"
 chmod +x "$BUILD_DIR/start.sh"
 
-# 打包到 $BUILD_DIR.tar.gz
+# Pack everything into a tarball.
 PACKAGE_FILE="${BUILD_DIR}.tar.gz"
 echo ""
-echo "📦 打包构建产物到 $PACKAGE_FILE..."
+echo "📦 Packing artifacts → $PACKAGE_FILE..."
 cd "$BUILD_DIR" || exit 1
 tar -czf "$PACKAGE_FILE" .
 cd - > /dev/null || exit 1
 
-# # 清理临时目录
-# rm -rf "$BUILD_DIR"
-
 echo ""
-echo "✅ 构建完成！所有产物已打包到 $PACKAGE_FILE"
-echo "📊 打包文件大小:"
+echo "✅ Build complete. Artifacts: $PACKAGE_FILE"
+echo "📊 Size:"
 ls -lh "$PACKAGE_FILE"
