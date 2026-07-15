@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils";
 import { usePreferences } from "@/lib/preferences-context";
 import { getIconForHour, type IconTheme } from "@/lib/preferences";
 import ThemedReveal from "./ThemedReveal";
+import { getSceneForIcon } from "./WildernessScenes";
 
 type Phase = "intro" | "box" | "opening" | "reveal" | "done";
 
@@ -580,7 +581,8 @@ function Scene({ phase, onBoxClick }: { phase: Phase; onBoxClick: () => void }) 
     );
   });
 
-  // Pre-compute tree positions (stable across renders)
+  // Pre-compute tree positions (stable across renders) — used only for
+  // fallback when no wilderness scene is selected.
   const trees = useMemo(() => {
     const arr: { pos: [number, number, number]; scale: number; dark: boolean }[] = [];
     for (let i = 0; i < 14; i++) {
@@ -608,52 +610,16 @@ function Scene({ phase, onBoxClick }: { phase: Phase; onBoxClick: () => void }) 
 
   const skyPalette = SKY_PALETTES[effectiveIcon] || SKY_PALETTES.sunset;
 
+  // Select the wilderness scene for this icon theme
+  const WildernessScene = getSceneForIcon(effectiveIcon);
+
   return (
     <>
       <DynamicSky icon={effectiveIcon} />
-      <ambientLight intensity={0.25} color="#f59e0b" />
-      <directionalLight position={[3, 4, 5]} intensity={1.8} color="#fbbf24" castShadow shadow-mapSize={[1024, 1024]} shadow-camera-far={20} shadow-camera-left={-8} shadow-camera-right={8} shadow-camera-top={8} shadow-camera-bottom={-8} />
-      <directionalLight position={[-4, 2, -2]} intensity={0.5} color="#ec4899" />
-      <hemisphereLight args={["#fbbf24", "#0a1810", 0.6]} />
-      <pointLight position={[0, 3, 0]} intensity={0.5} color="#fde047" />
 
-      {/* Granite cliff in the background */}
-      <mesh position={[0, 2, -12]} receiveShadow>
-        <boxGeometry args={[16, 8, 2]} />
-        <meshStandardMaterial color="#3a3a3a" roughness={0.9} flatShading />
-      </mesh>
-      {/* Lake in front of cliff */}
-      <mesh position={[0, -0.48, -8]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[14, 5]} />
-        <meshStandardMaterial color="#1a3a5a" roughness={0.1} metalness={0.6} transparent opacity={0.8} />
-      </mesh>
-
-      <Ground />
-
-      {trees.map((t, i) => (
-        <PineTree key={i} position={t.pos} scale={t.scale} dark={t.dark} sharedGeo={[trunkGeo, coneGeo1, coneGeo2, coneGeo3]} />
-      ))}
-
-      {/* Campfire for dusk/night themes */}
-      {(effectiveIcon === "dusk" || effectiveIcon === "midnight" || effectiveIcon === "stargazing") && (
-        <group position={[3, -0.3, 1.5]}>
-          {/* Fire base */}
-          <mesh position={[0, 0.05, 0]}>
-            <cylinderGeometry args={[0.3, 0.4, 0.1, 8]} />
-            <meshStandardMaterial color="#2a1810" roughness={1} />
-          </mesh>
-          {/* Flame */}
-          <mesh position={[0, 0.3, 0]}>
-            <coneGeometry args={[0.15, 0.5, 6]} />
-            <meshBasicMaterial color="#f97316" transparent opacity={0.8} />
-          </mesh>
-          <mesh position={[0, 0.45, 0]}>
-            <coneGeometry args={[0.08, 0.3, 6]} />
-            <meshBasicMaterial color="#fde047" transparent opacity={0.9} />
-          </mesh>
-          <pointLight position={[0, 0.5, 0]} intensity={2} distance={5} color="#f97316" />
-        </group>
-      )}
+      {/* Render the selected wilderness scene — provides terrain, lighting,
+          decorative meshes, and atmospheric effects unique to this icon. */}
+      <WildernessScene phase={phase} />
 
       {/* Ring box */}
       <RingBox opened={phase === "opening" || phase === "reveal" || phase === "done"} onClick={onBoxClick} />
