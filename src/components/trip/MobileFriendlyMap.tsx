@@ -132,7 +132,7 @@ export default function MobileFriendlyMap({
             <TripMap
               selectedId={selectedId}
               onSelectPlace={handleSelect}
-              showPotential={showPotential}
+              showRoadside={true}
               className={cn(
                 "shadow-2xl border border-slate-200 h-full",
                 isFullscreen && "border-0 rounded-none"

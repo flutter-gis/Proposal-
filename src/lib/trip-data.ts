@@ -91,7 +91,7 @@ export const PLACES: Place[] = [
     coords: { lat: 43.1145, lng: -71.3917 },
     address: "15 Bear Hill Pond Rd, Allenstown, NH 03275",
     description:
-      "New Hampshire's largest developed state park — over 10,000 acres of pine forest, ponds, and trails just 80 miles north of Central MA. Oaks Cabin 1 sits on the Bear Hill Loop, offering a true off-grid retreat with no electricity, no heat, and complete acoustic isolation under a deep pine canopy. The park was originally built by the Civilian Conservation Corps in the 1930s, and that rustic character has been preserved across the decades.",
+      "New Hampshire's largest developed state park — over 10,000 acres of pine forest, ponds, and trails just 80 miles north of Westborough, MA. Oaks Cabin 1 sits on the Bear Hill Loop, offering a true off-grid retreat with no electricity, no heat, and complete acoustic isolation under a deep pine canopy. The park was originally built by the Civilian Conservation Corps in the 1930s, and that rustic character has been preserved across the decades.",
     highlights: [
       "Oaks Cabin 1 — Bear Hill Loop",
       "10,000+ acres of pine forest",
@@ -787,7 +787,7 @@ export const PLACES: Place[] = [
 export const DRIVE_LEGS: DriveLeg[] = [
   {
     id: "leg-1",
-    from: "Central MA Home Base",
+    from: "Westborough, MA",
     to: "Bear Brook State Park",
     miles: 80,
     duration: "1h 30m",
@@ -833,7 +833,7 @@ export const DRIVE_LEGS: DriveLeg[] = [
   {
     id: "leg-6",
     from: "Coleman State Park",
-    to: "Central MA Home Base",
+    to: "Westborough, MA",
     miles: 212,
     duration: "3h 50m",
     day: "Sunday Return",
@@ -850,11 +850,11 @@ export const DAY_PLANS: DayPlan[] = [
     emoji: "🚗",
     theme: "DETOX",
     description:
-      "Pack up camp gear in Central MA and drive 80 miles north to Bear Brook State Park. Check into Oaks Cabin 1 by 1:00 PM. Unwind, lock devices in the trunk, and ignite the first campfire cookbook dinner under the pines. This is the deep detox window — no screens, no electricity, no schedule except the sun and the fire.",
+      "Pack up camp gear in Westborough, MA and drive 81 miles north to Bear Brook State Park. Check into Oaks Cabin 1 by 1:00 PM. Unwind, lock devices in the trunk, and ignite the first campfire cookbook dinner under the pines. This is the deep detox window — no screens, no electricity, no schedule except the sun and the fire.",
     placeIds: ["bear-brook"],
     legId: "leg-1",
     highlights: [
-      "80-mile drive from Central MA",
+      "81-mile drive from Westborough, MA",
       "Check-in at Oaks Cabin 1 by 1:00 PM",
       "Devices locked in trunk",
       "First campfire dinner",
@@ -944,7 +944,7 @@ export const DAY_PLANS: DayPlan[] = [
     emoji: "🥐",
     theme: "GRAND FINALE",
     description:
-      "Morning: Toast your engagement with fresh almond croissants and espresso at Le Rendez-Vous French Bakery in Colebrook. 10:15 AM: Flat 5-min stroll to Huntington Cascades double-tiered waterfall. Noon: Sunday Double-Header Stop 1 'The Beautiful' — Flume Gorge, walking the 2-mi boardwalk through an 800-ft granite gorge. 2 PM: Mountain lunch in Lincoln. 3:30 PM: Sunday Double-Header Stop 2 'The Weird' — Benson Park, exploring the eerie ruins of an abandoned 1927 wild animal farm. 4:30 PM: Smooth cruise home to Central MA.",
+      "Morning: Toast your engagement with fresh almond croissants and espresso at Le Rendez-Vous French Bakery in Colebrook. 10:15 AM: Flat 5-min stroll to Huntington Cascades double-tiered waterfall. Noon: Sunday Double-Header Stop 1 'The Beautiful' — Flume Gorge, walking the 2-mi boardwalk through an 800-ft granite gorge. 2 PM: Mountain lunch in Lincoln. 3:30 PM: Sunday Double-Header Stop 2 'The Weird' — Benson Park, exploring the eerie ruins of an abandoned 1927 wild animal farm. 4:30 PM: Smooth cruise home to Westborough, MA.",
     placeIds: ["le-rendez-vous", "huntington-falls", "flume-gorge", "benson-park"],
     legId: "leg-6",
     highlights: [
@@ -1169,7 +1169,7 @@ export const POTENTIAL_SITES: PotentialSite[] = [
 // ============= TRIP STATS =============
 export const TRIP_STATS = {
   totalDays: 6,
-  totalMiles: 484,
+  totalMiles: 586,
   stateParks: 3,
   stateParksList: ["Bear Brook", "Pawtuckaway", "Coleman"],
   proposalTimestamp: "Friday, August 7, 2026 @ 7:30 PM",
