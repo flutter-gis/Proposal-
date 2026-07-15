@@ -1,190 +1,169 @@
 #!/bin/sh
 
-set -e
+# ═══════════════════════════════════════════════════════════════════════════
+# start.sh — Production container entrypoint for Z.ai FC deploy
+# ═══════════════════════════════════════════════════════════════════════════
+# This script is the container CMD in the FC (Function Compute) deployment.
+# It MUST:
+#   1. Start Next.js standalone server on 0.0.0.0:3000
+#   2. Start Caddy on 0.0.0.0:81 (reverse proxy :81 → :3000)
+#   3. Keep running in the foreground (Caddy is the foreground process)
+#
+# The FC health check does a TCP connect to port 81 within 120 seconds.
+# If Caddy isn't listening on 0.0.0.0:81 within 120s, the deploy fails.
+# ═══════════════════════════════════════════════════════════════════════════
 
-# Build directory is the directory containing this script.
+# NO set -e — we handle errors manually to avoid crashing on non-fatal issues
+
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 BUILD_DIR="$SCRIPT_DIR"
 
-# Stored PIDs of background services (mini-services, if any).
 pids=""
 
-# Graceful shutdown of background services on SIGTERM/SIGINT.
 cleanup() {
     echo ""
     echo "🛑 Shutting down services..."
     for pid in $pids; do
-        if kill -0 "$pid" 2>/dev/null; then
-            service_name=$(ps -p "$pid" -o comm= 2>/dev/null || echo "unknown")
-            echo "   stopping $pid ($service_name)..."
-            kill -TERM "$pid" 2>/dev/null
-        fi
+        kill -TERM "$pid" 2>/dev/null
     done
-
     sleep 1
     for pid in $pids; do
-        if kill -0 "$pid" 2>/dev/null; then
-            timeout=4
-            while [ $timeout -gt 0 ] && kill -0 "$pid" 2>/dev/null; do
-                sleep 1
-                timeout=$((timeout - 1))
-            done
-            if kill -0 "$pid" 2>/dev/null; then
-                echo "   force-killing $pid..."
-                kill -KILL "$pid" 2>/dev/null
-            fi
-        fi
+        kill -KILL "$pid" 2>/dev/null
     done
-
     echo "✅ All services stopped"
     exit 0
 }
 
 trap cleanup TERM INT
 
-echo "🚀 Starting services..."
-echo ""
+echo "=========================================="
+echo "[START] === PRODUCTION DEPLOY START ==="
+echo "[START] Time: $(date -u +%FT%TZ)"
+echo "[START] Build dir: $BUILD_DIR"
+echo "[START] User: $(whoami)"
+echo "[START] Caddy available: $(command -v caddy 2>/dev/null && echo YES || echo NO)"
+echo "[START] Bun available: $(command -v bun 2>/dev/null && echo YES || echo NO)"
+echo "[START] Node available: $(command -v node 2>/dev/null && echo YES || echo NO)"
+echo "=========================================="
 
 cd "$BUILD_DIR" || exit 1
 
-ls -lah
+# ── Step 1: Start Next.js standalone server ────────────────────────────────
+export NODE_ENV=production
+export PORT="${PORT:-3000}"
+export HOSTNAME="0.0.0.0"  # MUST be 0.0.0.0, not localhost, for FC health check
 
-# ---------------------------------------------------------------------------
-# Next.js standalone server
-# ---------------------------------------------------------------------------
-# Try multiple locations for the standalone server:
-#   1. ./next-service-dist/server.js  (created by build.sh, used in deploy)
-#   2. ./.next/standalone/server.js   (exists after a local build)
-#   3. Fall back to dev mode if neither exists
-# ---------------------------------------------------------------------------
-STANDALONE_SERVER=""
+# Find the standalone server
+STANDALONE_DIR=""
 if [ -f "./next-service-dist/server.js" ]; then
-    STANDALONE_SERVER="./next-service-dist/server.js"
-    cd next-service-dist/ || exit 1
+    STANDALONE_DIR="./next-service-dist"
+    echo "[START] Found standalone server in next-service-dist/"
 elif [ -f "./.next/standalone/server.js" ]; then
-    STANDALONE_SERVER="./.next/standalone/server.js"
-    echo "ℹ️  Using local .next/standalone/ (not a deploy tarball)"
-    # Copy static + public into standalone if not already there
+    STANDALONE_DIR="./.next/standalone"
+    echo "[START] Found standalone server in .next/standalone/"
+    # Copy static + public if not already there
     if [ -d "../.next/static" ] && [ ! -d "./.next/static" ]; then
-        mkdir -p .next && cp -r ../.next/static .next/
+        mkdir -p .next && cp -r ../.next/static .next/ 2>/dev/null
     fi
     if [ -d "../public" ] && [ ! -d "./public" ]; then
-        cp -r ../public .
+        cp -r ../public . 2>/dev/null
     fi
 fi
 
-if [ -n "$STANDALONE_SERVER" ]; then
-    echo "🚀 Starting Next.js (standalone)..."
-    export NODE_ENV=production
-    export PORT="${PORT:-3000}"
-    export HOSTNAME="${HOSTNAME:-0.0.0.0}"
+if [ -n "$STANDALONE_DIR" ]; then
+    echo "[START] Starting Next.js standalone on $HOSTNAME:$PORT..."
+    cd "$STANDALONE_DIR"
 
-    # Bun is preferred (faster startup, lower memory) but fall back to node.
-    if command -v bun >/dev/null 2>&1; then
+    # Use node (more reliable than bun for standalone server in FC)
+    if command -v node >/dev/null 2>&1; then
+        RUNNER=node
+    elif command -v bun >/dev/null 2>&1; then
         RUNNER=bun
     else
-        RUNNER=node
+        echo "❌ [START] Neither node nor bun found!"
+        exit 1
     fi
 
-    # Background launch so we can also start mini-services, then wait.
+    echo "[START] Runner: $RUNNER"
+    echo "[START] HOSTNAME=$HOSTNAME PORT=$PORT"
+
     $RUNNER server.js &
     NEXT_PID=$!
     pids="$NEXT_PID"
 
-    # Wait longer (3s) for the server to bind — 1s was too short on slower
-    # containers and caused false "failed to start" errors.
-    sleep 3
+    echo "[START] Next.js PID: $NEXT_PID"
+
+    # Wait for Next.js to start
+    sleep 2
     if ! kill -0 "$NEXT_PID" 2>/dev/null; then
-        echo "❌ Next.js failed to start (process exited within 3s)"
-        echo "   Runner: $RUNNER"
-        echo "   Port: $PORT"
-        echo "   Checking if port is in use..."
-        ss -tlnp 2>/dev/null | grep ":$PORT" || echo "   Port $PORT is free"
+        echo "❌ [START] Next.js failed to start"
         exit 1
     fi
-    echo "✅ Next.js started (PID: $NEXT_PID, Port: $PORT, Runner: $RUNNER)"
-
-    # Health check — verify the server actually responds to HTTP requests.
-    # The platform may require this before marking the deploy as successful.
-    echo "🏥 Running health check..."
-    HEALTH_OK=false
-    for i in 1 2 3 4 5; do
-        if curl -s -o /dev/null -w "%{http_code}" "http://localhost:$PORT/" 2>/dev/null | grep -q "200\|301\|302"; then
-            HEALTH_OK=true
-            echo "   ✅ Health check passed (attempt $i)"
-            break
-        fi
-        echo "   ⏳ Waiting for server to respond (attempt $i)..."
-        sleep 2
-    done
-    if [ "$HEALTH_OK" = "false" ]; then
-        echo "   ⚠️  Health check failed — server is running but not responding"
-        echo "   The deploy may still succeed if the platform retries"
-    fi
+    echo "✅ [START] Next.js started (PID: $NEXT_PID)"
 
     cd "$BUILD_DIR"
 else
-    # No standalone server found — fall back to dev mode.
-    # This happens when start.sh is run directly without a prior build.
-    echo "⚠️  No standalone server found, falling back to dev mode..."
-    export PORT="${PORT:-3000}"
-    export HOSTNAME="${HOSTNAME:-0.0.0.0}"
-
+    echo "⚠️ [START] No standalone server found, starting dev mode..."
     if command -v bun >/dev/null 2>&1; then
-        RUNNER=bun
+        bun run dev &
+        NEXT_PID=$!
+    elif command -v npx >/dev/null 2>&1; then
+        npx next dev -p "$PORT" &
+        NEXT_PID=$!
     else
-        RUNNER=npx
-    fi
-
-    echo "🚀 Starting Next.js in dev mode..."
-    $RUNNER run dev &
-    NEXT_PID=$!
-    pids="$NEXT_PID"
-
-    sleep 5
-    if ! kill -0 "$NEXT_PID" 2>/dev/null; then
-        echo "❌ Next.js dev server failed to start"
+        echo "❌ [START] Cannot start Next.js — no runner available"
         exit 1
     fi
-    echo "✅ Next.js dev server started (PID: $NEXT_PID, Port: $PORT)"
+    pids="$NEXT_PID"
+    echo "[START] Dev server PID: $NEXT_PID"
+    sleep 5
 fi
 
-# ---------------------------------------------------------------------------
-# mini-services (optional, only if a build exists)
-# ---------------------------------------------------------------------------
+# ── Step 2: Start mini-services (optional) ─────────────────────────────────
 if [ -f "./mini-services-start.sh" ]; then
-    echo "🚀 Starting mini-services..."
+    echo "[START] Starting mini-services..."
     sh ./mini-services-start.sh &
     MINI_PID=$!
     pids="$pids $MINI_PID"
-
     sleep 1
-    if ! kill -0 "$MINI_PID" 2>/dev/null; then
-        echo "⚠️  mini-services may have failed, continuing..."
-    else
-        echo "✅ mini-services started (PID: $MINI_PID)"
-    fi
-elif [ -d "./mini-services-dist" ]; then
-    echo "⚠️  mini-services-dist exists but no start script — skipping"
-else
-    echo "ℹ️  No mini-services — skipping"
+    echo "[START] Mini-services PID: $MINI_PID"
 fi
 
-# ---------------------------------------------------------------------------
-# NOTE: We deliberately DO NOT start Caddy here.
-# The Z.ai deploy platform already runs Caddy as a root-level reverse proxy
-# on :81, forwarding to localhost:3000. Starting a second Caddy here would
-# fail with "bind: address already in use" and crash the container.
-# ---------------------------------------------------------------------------
+# ── Step 3: Start Caddy (CRITICAL — FC health check targets port 81) ───────
+# Caddy MUST be started on 0.0.0.0:81 and run in the FOREGROUND.
+# This is the process that keeps the container alive.
+echo ""
+echo "[START] Starting Caddy on :81..."
 
-echo ""
-echo "🎉 All services started."
-echo "   Next.js listening on http://${HOSTNAME:-0.0.0.0}:${PORT}"
-echo "   (Platform Caddy on :81 proxies here.)"
-echo ""
-echo "💡 Press Ctrl+C to stop."
+if [ -f "./Caddyfile" ]; then
+    CADDYFILE="./Caddyfile"
+elif [ -f "/app/Caddyfile" ]; then
+    CADDYFILE="/app/Caddyfile"
+else
+    # Create a minimal Caddyfile if none exists
+    echo ":81 {
+    reverse_proxy localhost:${PORT:-3000}
+}" > /tmp/Caddyfile
+    CADDYFILE="/tmp/Caddyfile"
+fi
+
+echo "[START] Caddyfile: $CADDYFILE"
+echo "[START] Caddy config:"
+cat "$CADDYFILE"
 echo ""
 
-# Block forever, waiting for either signal or Next.js exit.
-wait "$NEXT_PID"
-exit $?
+if command -v caddy >/dev/null 2>&1; then
+    echo "✅ [START] Starting Caddy in FOREGROUND (this keeps the container alive)..."
+    echo ""
+    echo "🎉 All services started:"
+    echo "   Next.js on 0.0.0.0:${PORT:-3000}"
+    echo "   Caddy on 0.0.0.0:81 (FC health check target)"
+    echo ""
+    exec caddy run --config "$CADDYFILE" --adapter caddyfile
+else
+    echo "❌ [START] Caddy not found! Falling back to wait..."
+    echo "⚠️ [START] FC health check on :81 will FAIL without Caddy"
+    # Last resort: keep the process alive
+    wait "$NEXT_PID"
+    exit $?
+fi
