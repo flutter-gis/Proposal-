@@ -935,7 +935,6 @@ export function StargazingDockScene({ phase: _phase }: SceneProps) {
     const positions = new Float32Array(1000 * 3);
     for (let i = 0; i < 1000; i++) {
       const t = rng();
-      const bandCenter = 30 + t * 40;
       const bandJitter = (rng() - 0.5) * 25;
       const angle = -25 * (Math.PI / 180);
       const dx = (t - 0.5) * 100;

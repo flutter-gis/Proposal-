@@ -27,10 +27,10 @@ import {
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { PLACES, DRIVE_LEGS, type Place } from "@/lib/trip-data";
+import { PLACES, type Place } from "@/lib/trip-data";
 import { ROADSIDE_ATTRACTIONS, CATEGORY_META } from "@/lib/roadside-attractions";
 import roadPolylinesData from "@/lib/road-polylines.json";
-import type { RoadPolylines, RoadLeg } from "@/lib/road-polylines";
+import type { RoadPolylines } from "@/lib/road-polylines";
 import { usePreferences } from "@/lib/preferences-context";
 import { cn } from "@/lib/utils";
 

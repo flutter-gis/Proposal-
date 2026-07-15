@@ -117,7 +117,7 @@ export function TripProvider({ children }: { children: ReactNode }) {
   // Listen for back/forward button (popstate)
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const onPopState = (e: PopStateEvent) => {
+    const onPopState = (_e: PopStateEvent) => {
       const path = window.location.pathname.replace("/", "").toLowerCase();
       const idx = PAGE_IDS.indexOf(path as PageId);
       if (idx >= 0) {

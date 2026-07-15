@@ -523,7 +523,7 @@ export class NatureAmbience {
   private stopFns: Array<() => void> = [];
   private gain: GainNode;
 
-  constructor(ctx: AudioContext, dest: AudioNode, volume = 0.15) {
+  constructor(ctx: AudioContext, dest: AudioNode, _volume = 0.15) {
     this.ctx = ctx;
     this.dest = dest;
     this.gain = ctx.createGain();

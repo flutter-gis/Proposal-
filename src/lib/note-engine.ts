@@ -75,16 +75,6 @@ const SCALES: Record<ScaleType, number[]> = {
 const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const A4 = 440;
 
-function noteToFreq(note: string): number {
-  note = note.replace("Bb", "A#").replace("Eb", "D#").replace("Ab", "G#").replace("Db", "C#").replace("Gb", "F#");
-  const match = note.match(/^([A-G]#?)(\d)$/);
-  if (!match) return A4;
-  const [, name, octaveStr] = match;
-  const octave = parseInt(octaveStr);
-  const semitones = NOTE_NAMES.indexOf(name) + (octave - 4) * 12 - 9;
-  return A4 * Math.pow(2, semitones / 12);
-}
-
 function semitoneToNote(semitone: number, baseOctave: number = 4): string {
   const noteIdx = ((semitone % 12) + 12) % 12;
   const octave = baseOctave + Math.floor(semitone / 12);

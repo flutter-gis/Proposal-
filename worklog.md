@@ -244,3 +244,40 @@ Stage Summary:
   - NEW: `src/components/trip/PageNav.tsx`
   - MODIFIED: `src/app/page.tsx` (complete rewrite as 5-slide assembly)
   - MODIFIED: `src/components/trip/LifeStory.tsx` (TS type fix for donut chart accumulator)
+
+---
+Task ID: 5
+Agent: main (cleanup pass)
+Task: Full-scale cleanup of junk code, junk files, and cache after audit items completion.
+
+Work Log:
+- Wrote `scripts/audit-imports.sh` to identify orphan source files (components & lib files imported nowhere).
+- Verified true orphans vs false positives (e.g. note-engine.ts is imported by compositions.ts via relative path; TripMap.tsx is dynamically imported by MobileFriendlyMap).
+- Identified 2 truly-orphan components: Carousel.tsx (replaced by SlideDeck), SourcesPage.tsx (replaced by inline SourcesModal in page.tsx).
+- Wrote `scripts/cleanup.sh` — comprehensive cleanup script that:
+  * Removes orphan source files (2 files)
+  * Removes root-level junk markdown (MUSIC_SYNTHESIS_RESEARCH.md, RESEARCH_REPORT.md, tsconfig.tsbuildinfo)
+  * Removes junk scratch directories (tool-results, screenshots, upload contents, mini-services)
+  * Cleans scripts/ from 105 files down to 5 (kept only audit-imports.sh, convert-photos.js, optimize-photos-v2.js, fetch-routes.ts, cleanup.sh)
+  * Clears build caches (.next, node_modules/.cache)
+  * Removes stale empty directories
+- Ran cleanup.sh: project size 961M → 859M (mostly node_modules, ~100M of junk removed from project tree).
+- Cleaned trivially-dead code flagged by ESLint:
+  * TripMap.tsx: removed unused `DRIVE_LEGS` import and `RoadLeg` type import
+  * WildernessScenes.tsx: removed unused `bandCenter` variable
+  * note-engine.ts: removed unused `noteToFreq` function (replaced by semitoneToNote)
+  * trip-context.tsx: prefixed unused `e` arg with `_`
+  * sound-engine.ts: prefixed unused `volume` arg with `_`
+- Verified: `npx eslint .` — 0 errors, 46 warnings (down from 51)
+- Verified: `npx next build` — succeeds, all 8 routes prerendered.
+- Committed to git.
+
+Stage Summary:
+- 2 orphan components deleted (Carousel.tsx, SourcesPage.tsx)
+- 3 junk root files deleted (~380K)
+- 4 junk scratch dirs deleted (~4.4M)
+- 50 one-time-use scripts deleted from scripts/ (~2.5M)
+- 1 build cache cleared (.next, 95M)
+- 5 unused vars/functions removed across 5 source files
+- Build still green, lint still green
+- Project tree clean and ready for hand-off
