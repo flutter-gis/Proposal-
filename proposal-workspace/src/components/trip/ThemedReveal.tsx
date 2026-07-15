@@ -455,22 +455,36 @@ export default function ThemedReveal({
 
   const count = particlesRef.current.length;
 
+  // Stable material config per kind — avoid toggling depthTest which causes
+  // z-fighting flicker when particles overlap scene geometry.
+  const isGlowing = kind === "fireflies" || kind === "embers" || kind === "shootingStars";
+
   return (
     <instancedMesh
       ref={meshRef}
       args={[geometry, undefined, count]}
       castShadow={false}
+      // frustumCulled=false ensures the instanced mesh is never culled
+      // mid-animation (which would cause pop-in flicker)
+      frustumCulled={false}
     >
       <meshStandardMaterial
         vertexColors
         toneMapped={false}
-        emissiveIntensity={kind === "fireflies" || kind === "embers" || kind === "shootingStars" ? 0.8 : 0.2}
+        emissiveIntensity={isGlowing ? 0.8 : 0.2}
         emissive="#ffffff"
         transparent
         opacity={0.95}
         side={THREE.DoubleSide}
-        // No depth test for glowing effects so they shine over the sky
-        depthTest={kind !== "shootingStars" && kind !== "fireflies" && kind !== "embers"}
+        // Keep depthTest=true for ALL kinds — disabling it caused the
+        // glowing particles to render on top of everything, creating
+        // flicker when they overlapped the sky sphere. With depthTest
+        // enabled, they properly occlude behind geometry.
+        depthTest={true}
+        depthWrite={false}
+        // For glowing effects, use additive blending so overlapping
+        // particles brighten naturally instead of z-fighting
+        blending={isGlowing ? THREE.AdditiveBlending : THREE.NormalBlending}
       />
     </instancedMesh>
   );

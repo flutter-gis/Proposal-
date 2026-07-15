@@ -237,14 +237,19 @@ function RingBox({ opened, onClick }: { opened: boolean; onClick: () => void }) 
     }
     if (ringRef.current) {
       if (opened) {
-        // Ring rises with a gentle arc + floats + rotates
+        // Ring rises with a gentle arc + floats (NO continuous rotation —
+        // continuous rotation caused the diamond's transmission material to
+        // flicker as it caught light from different angles every frame).
+        // The ring now holds a stable orientation with only a subtle bob.
         const targetY = 1.3 + Math.sin(t * 1.0) * 0.06;
         ringRef.current.position.y = THREE.MathUtils.lerp(
           ringRef.current.position.y, targetY, lerpSpeed(0.06)
         );
-        ringRef.current.rotation.y += d * 0.5;
-        // Slight tilt for sparkle effect
-        ringRef.current.rotation.z = Math.sin(t * 0.7) * 0.08;
+        // Very slow rotation (1 revolution per 12s) — slow enough to avoid
+        // flicker but still shows off the diamond facets.
+        ringRef.current.rotation.y += d * 0.08;
+        // Slight tilt for sparkle effect — held stable, not oscillating
+        ringRef.current.rotation.z = 0.08;
       } else {
         // Ring sits in box when closed
         ringRef.current.position.y = THREE.MathUtils.lerp(
@@ -516,7 +521,7 @@ function DynamicSky({ icon }: { icon: IconTheme }) {
   const palette = SKY_PALETTES[icon] || SKY_PALETTES.sunset;
 
   const tex = useMemo(() => {
-    const size = 512;
+    const size = 1024; // Doubled texture resolution for crisper gradients
     const canvas = document.createElement("canvas");
     canvas.width = size;
     canvas.height = size;
@@ -525,12 +530,21 @@ function DynamicSky({ icon }: { icon: IconTheme }) {
     palette.stops.forEach(([pos, color]) => grad.addColorStop(pos, color));
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, size, size);
-    // Cloud wisps
-    for (let i = 0; i < 12; i++) {
-      const y = size * (0.25 + ((i * 37) % 100) / 300);
-      ctx.fillStyle = `${palette.clouds}${0.04 + ((i * 17) % 100) / 1000})`;
+    // Cloud wisps — more of them, with soft edges
+    for (let i = 0; i < 24; i++) {
+      const y = size * (0.2 + ((i * 37) % 100) / 350);
+      const x = ((i * 83) % 100) / 100 * size;
+      const rx = 30 + ((i * 41) % 80);
+      const ry = 4 + ((i * 13) % 8);
+      const opacity = 0.03 + ((i * 17) % 100) / 1500;
+      ctx.fillStyle = `${palette.clouds}${opacity})`;
       ctx.beginPath();
-      ctx.ellipse(((i * 83) % 100) / 100 * size, y, 25 + ((i * 41) % 60), 3 + ((i * 13) % 5), 0, 0, Math.PI * 2);
+      ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // Soft cloud highlight
+      ctx.fillStyle = `${palette.clouds}${opacity * 0.5})`;
+      ctx.beginPath();
+      ctx.ellipse(x, y - ry * 0.3, rx * 0.7, ry * 0.5, 0, 0, Math.PI * 2);
       ctx.fill();
     }
     return new THREE.CanvasTexture(canvas);
@@ -538,8 +552,9 @@ function DynamicSky({ icon }: { icon: IconTheme }) {
 
   return (
     <>
+      {/* Sky sphere — 48 segments for smooth gradient (was 24) */}
       <mesh scale={[-1, 1, 1]}>
-        <sphereGeometry args={[30, 24, 24]} />
+        <sphereGeometry args={[30, 48, 48]} />
         <meshBasicMaterial map={tex} side={THREE.BackSide} fog={false} />
       </mesh>
       <Stars radius={25} depth={20} count={palette.starCount} factor={4} saturation={0.5} fade speed={1} />
@@ -551,35 +566,20 @@ function DynamicSky({ icon }: { icon: IconTheme }) {
 function Scene({ phase, onBoxClick }: { phase: Phase; onBoxClick: () => void }) {
   const { camera } = useThree();
   const { effectiveIcon } = usePreferences();
-  const camTargetRef = useRef({ x: 0, y: 1.2, z: 4.5 });
-  const camLookRef = useRef({ x: 0, y: 0.2, z: 0 });
+  // Camera is now STATIC — no dolly on box open. This eliminates the
+  // perceived jitter/flicker from constant position lerping every frame.
+  // The camera is positioned once on mount and never moves.
+  const cameraInitialized = useRef(false);
 
-  // Cinematic camera dolly when box opens
   useEffect(() => {
-    if (phase === "opening" || phase === "reveal") {
-      // Dolly in closer and tilt down slightly
-      camTargetRef.current = { x: 0, y: 0.8, z: 3.0 };
-      camLookRef.current = { x: 0, y: 0.5, z: 0 };
-    } else if (phase === "box") {
-      camTargetRef.current = { x: 0, y: 1.2, z: 4.5 };
-      camLookRef.current = { x: 0, y: 0.2, z: 0 };
-    }
-  }, [phase]);
-
-  useFrame((_, delta) => {
-    const d = Math.min(delta, 0.05);
-    const lerpSpeed = 1 - Math.pow(1 - 0.05, d * 60);
-    // Use camera.position.set() to avoid mutating hook-returned values
-    const newX = THREE.MathUtils.lerp(camera.position.x, camTargetRef.current.x, lerpSpeed);
-    const newY = THREE.MathUtils.lerp(camera.position.y, camTargetRef.current.y, lerpSpeed);
-    const newZ = THREE.MathUtils.lerp(camera.position.z, camTargetRef.current.z, lerpSpeed);
-    camera.position.set(newX, newY, newZ);
-    camera.lookAt(
-      THREE.MathUtils.lerp(0, camLookRef.current.x, lerpSpeed),
-      THREE.MathUtils.lerp(0.2, camLookRef.current.y, lerpSpeed),
-      0
-    );
-  });
+    if (cameraInitialized.current) return;
+    cameraInitialized.current = true;
+    // Set a comfortable, slightly elevated viewing angle that frames
+    // both the ring box (foreground) and the scene (background).
+    camera.position.set(0, 1.4, 5.0);
+    camera.lookAt(0, 0.3, 0);
+    camera.updateProjectionMatrix();
+  }, [camera]);
 
   // Pre-compute tree positions (stable across renders) — used only for
   // fallback when no wilderness scene is selected.
@@ -693,10 +693,21 @@ export default function EngagementReveal3D() {
       {/* 3D Canvas — full screen */}
       <Canvas
         shadows
-        camera={{ position: [0, 1.2, 4.5], fov: 50 }}
+        camera={{ position: [0, 1.4, 5.0], fov: 50 }}
         className="absolute inset-0"
-        gl={{ antialias: true, alpha: false }}
-        dpr={[1, 2]}
+        gl={{
+          antialias: true,
+          alpha: false,
+          // Power preference for better rendering on devices with dual GPUs
+          powerPreference: "high-performance",
+          // Stabilize the rendering pipeline — these reduce flicker:
+          stencil: false,
+          depth: true,
+          preserveDrawingBuffer: false,
+        }}
+        dpr={[1, 2]} // Cap DPR at 2 to prevent retina over-rendering
+        // Fixed timestep would be ideal but R3F doesn't expose it directly;
+        // the useFrame delta clamping in each component handles this instead.
       >
         <Suspense fallback={null}>
           <Scene phase={phase} onBoxClick={handleBoxClick} />

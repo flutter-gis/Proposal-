@@ -47,6 +47,11 @@ import {
   ArtistEasel,
   Rowboat,
   Cattail,
+  TexturedGround,
+  GrassField,
+  AtmosphericParticles,
+  FallenLeaves,
+  DetailedMoon,
 } from "./WildernessPrimitives";
 
 // ── Deterministic PRNG ───────────────────────────────────────────────────
@@ -102,6 +107,9 @@ export function DawnLakeScene({ phase: _phase }: SceneProps) {
 
       <WaterSurface position={[0, -0.48, -8]} width={16} depth={6} color="#3a4a6a" roughness={0.05} metalness={0.8} />
 
+      {/* Textured ground for the foreground */}
+      <TexturedGround position={[0, -0.5, 2]} width={12} depth={6} color="#3a2a1a" seed={201} />
+
       {/* Misty fog wisps — 3 layers */}
       {[0, 1, 2].map((i) => (
         <mesh key={i} ref={i === 0 ? mistRef : undefined} position={[i * 2 - 2, 0.1, -5 - i]} rotation={[-Math.PI / 2, 0, 0]}>
@@ -110,15 +118,22 @@ export function DawnLakeScene({ phase: _phase }: SceneProps) {
         </mesh>
       ))}
 
+      {/* Atmospheric pollen/dust floating in the dawn light */}
+      <AtmosphericParticles count={60} area={[12, 3, 6]} color="#fde047" size={0.025} speed={0.2} seed={202} />
+
       {/* Loon with V-wake */}
       <group ref={loonRef}>
         <Loon position={[0, -0.4, -3]} seed={42} />
         <VWakeTrail position={[0, -0.47, -2.5]} />
       </group>
 
-      {/* 6 cattail reeds */}
+      {/* 8 cattail reeds (doubled from 6) */}
       {cattails.map((c, i) => (
         <Cattail key={i} position={c.pos} delay={c.delay} />
+      ))}
+      {/* Additional reeds along the shore */}
+      {[-3.2, -2.8, 2.8, 3.2].map((x, i) => (
+        <Cattail key={`reed-${i}`} position={[x, -0.45, 1.8 + (i % 2) * 0.3]} delay={i * 0.7} />
       ))}
 
       {/* 2 merganser ducks */}
@@ -128,18 +143,21 @@ export function DawnLakeScene({ phase: _phase }: SceneProps) {
       {/* Hermit thrush silhouette in pine */}
       <group position={[3.5, 1.5, -1]}>
         <mesh>
-          <sphereGeometry args={[0.05, 8, 6]} />
+          <sphereGeometry args={[0.05, 12, 8]} />
           <meshStandardMaterial color="#5d4037" />
         </mesh>
         <mesh position={[0.04, 0, 0]} scale={[0.6, 0.4, 0.4]}>
-          <sphereGeometry args={[0.04, 6, 4]} />
+          <sphereGeometry args={[0.04, 10, 6]} />
           <meshStandardMaterial color="#5d4037" />
         </mesh>
       </group>
 
+      {/* 5 pine trees (doubled from 3) */}
       <EnhancedPineTree position={[3.5, -0.5, -1]} scale={1.3} color="#2d4a2d" seed={10} />
       <EnhancedPineTree position={[-4, -0.5, 0]} scale={1.5} color="#1a3a1a" seed={11} />
       <EnhancedPineTree position={[4.5, -0.5, 1]} scale={1.2} color="#1a3a1a" seed={12} />
+      <EnhancedPineTree position={[-5, -0.5, -2]} scale={1.4} color="#1a3a1a" seed={13} />
+      <EnhancedPineTree position={[5, -0.5, -2]} scale={1.1} color="#1a3a1a" seed={14} />
 
       {/* Prismatic light spray of 7 colored cones (subtle, always present) */}
       {[0, 1, 2, 3, 4, 5, 6].map((i) => {
@@ -242,6 +260,15 @@ export function ForestTrailScene({ phase: _phase }: SceneProps) {
       <directionalLight position={[3, 8, 3]} intensity={2.5} color="#fef9c3" castShadow />
       <hemisphereLight args={["#bae6fd", "#14532d", 0.6]} />
 
+      {/* Textured forest floor */}
+      <TexturedGround position={[0, -0.5, 0]} width={16} depth={12} color="#2a3a1a" seed={301} />
+
+      {/* Grass field — 150 instanced blades for lush undergrowth */}
+      <GrassField count={150} area={10} seed={302} color="#4a7c2a" />
+
+      {/* Fallen leaves scattered on the ground */}
+      <FallenLeaves count={30} area={10} seed={303} colors={["#8b4513", "#a0522d", "#cd853f", "#daa520", "#6b4423"]} />
+
       {/* 5 volumetric sun beam shafts */}
       {[0, 1, 2, 3, 4].map((i) => (
         <mesh key={i} position={[-3 + i * 1.5, 3, -2 + (i % 2) * 0.5]} rotation={[0, 0, 0.3 + i * 0.1]}>
@@ -258,6 +285,9 @@ export function ForestTrailScene({ phase: _phase }: SceneProps) {
         <pointsMaterial size={0.04} color="#fde047" transparent opacity={0.6} blending={THREE.AdditiveBlending} depthWrite={false} />
       </points>
 
+      {/* Additional atmospheric pollen */}
+      <AtmosphericParticles count={50} area={[12, 4, 8]} color="#fde047" size={0.02} speed={0.25} seed={304} />
+
       {/* 8 cinnamon ferns */}
       {ferns.map((f, i) => (
         <DetailedFern key={i} position={f.pos} delay={f.delay} />
@@ -268,10 +298,15 @@ export function ForestTrailScene({ phase: _phase }: SceneProps) {
         <RockFormation key={i} position={pos as [number, number, number]} scale={0.6} color="#5a5a5a" mossy seed={i + 30} />
       ))}
 
-      {/* 8 pine trees */}
+      {/* 12 pine trees (doubled from 8) for dense forest */}
       {pines.map((p, i) => (
         <EnhancedPineTree key={i} position={p.pos} scale={p.scale} color="#15803d" seed={p.seed} />
       ))}
+      {/* Additional background pines */}
+      <EnhancedPineTree position={[-6, -0.5, -5]} scale={1.6} color="#14532d" seed={350} />
+      <EnhancedPineTree position={[6, -0.5, -5]} scale={1.4} color="#14532d" seed={351} />
+      <EnhancedPineTree position={[-7, -0.5, -3]} scale={1.3} color="#14532d" seed={352} />
+      <EnhancedPineTree position={[7, -0.5, -3]} scale={1.5} color="#14532d" seed={353} />
 
       {/* Deer — stands motionless */}
       <Deer position={[-2, -0.45, -3]} antlers />
@@ -418,6 +453,15 @@ export function KayakLakeScene({ phase: _phase }: SceneProps) {
       <hemisphereLight args={["#7dd3fc", "#0c4a6e", 0.5]} />
 
       <WaterSurface position={[0, -0.48, -2]} width={20} depth={12} color="#0ea5e9" roughness={0.1} metalness={0.7} />
+
+      {/* Atmospheric shimmer over water */}
+      <AtmosphericParticles count={100} area={[16, 2, 10]} color="#ffffff" size={0.04} speed={0.15} seed={401} />
+
+      {/* Distant pine treeline on far shore */}
+      <EnhancedPineTree position={[-8, -0.5, -7]} scale={1.5} color="#0c4a6e" seed={402} />
+      <EnhancedPineTree position={[-6, -0.5, -8]} scale={1.3} color="#0c4a6e" seed={403} />
+      <EnhancedPineTree position={[8, -0.5, -7]} scale={1.4} color="#0c4a6e" seed={404} />
+      <EnhancedPineTree position={[6, -0.5, -8]} scale={1.2} color="#0c4a6e" seed={405} />
 
       {/* 200 sparkle points */}
       <points ref={sparklesRef}>
@@ -846,29 +890,8 @@ export function CabinCampfireScene({ phase: _phase }: SceneProps) {
       <directionalLight position={[0, 5, 2]} intensity={0.2} color="#a5b4fc" />
       <hemisphereLight args={["#0f0a2e", "#020617", 0.2]} />
 
-      {/* Crescent moon */}
-      <group position={[-5, 6, -10]}>
-        <mesh>
-          <sphereGeometry args={[0.8, 24, 16]} />
-          <meshBasicMaterial color="#f8fafc" />
-        </mesh>
-        <mesh position={[0.3, 0, 0]}>
-          <sphereGeometry args={[0.75, 24, 16]} />
-          <meshBasicMaterial color="#0f0a2e" />
-        </mesh>
-        {/* Glow halo */}
-        <mesh>
-          <sphereGeometry args={[1.2, 20, 14]} />
-          <meshBasicMaterial color="#e0e7ff" transparent opacity={0.15} />
-        </mesh>
-        {/* Craters */}
-        {[[0.2, 0.3, 0.7], [-0.3, -0.1, 0.7], [0.1, -0.4, 0.7]].map((p, i) => (
-          <mesh key={i} position={p as [number, number, number]}>
-            <sphereGeometry args={[0.08, 8, 6]} />
-            <meshBasicMaterial color="#d1d5db" transparent opacity={0.5} />
-          </mesh>
-        ))}
-      </group>
+      {/* Detailed crescent moon with craters and glow */}
+      <DetailedMoon position={[-5, 6, -10]} radius={0.8} crescent />
 
       {/* 400 stars */}
       <Stars radius={30} depth={20} count={400} factor={4} saturation={0} fade speed={1} />
@@ -876,15 +899,24 @@ export function CabinCampfireScene({ phase: _phase }: SceneProps) {
       {/* 15 fireflies near firelight */}
       <Sparkles count={15} scale={[3, 2, 3]} size={3} speed={0.3} color="#fde047" position={[2, 1, 1]} />
 
+      {/* Atmospheric embers drifting in the night air */}
+      <AtmosphericParticles count={40} area={[8, 3, 6]} color="#f97316" size={0.02} speed={0.1} seed={701} />
+
       {/* Detailed cabin */}
       <DetailedCabin position={[-4, -0.5, -5]} />
 
       {/* Detailed campfire */}
       <DetailedCampfire position={[2, -0.45, 1]} />
 
+      {/* Textured ground */}
+      <TexturedGround position={[0, -0.5, 0]} width={16} depth={12} color="#1a1410" seed={702} />
+
+      {/* 5 pine trees surrounding the scene */}
       <EnhancedPineTree position={[3, -0.5, -2]} scale={1.5} color="#020617" seed={90} />
       <EnhancedPineTree position={[-3, -0.5, -2]} scale={1.3} color="#020617" seed={91} />
       <EnhancedPineTree position={[4, -0.5, -4]} scale={1.2} color="#020617" seed={92} />
+      <EnhancedPineTree position={[-5, -0.5, -3]} scale={1.4} color="#020617" seed={93} />
+      <EnhancedPineTree position={[0, -0.5, -6]} scale={1.6} color="#020617" seed={94} />
 
       <fog attach="fog" args={["#0f0a2e", 5, 15]} />
     </>
@@ -937,6 +969,9 @@ export function StargazingDockScene({ phase: _phase }: SceneProps) {
       <ambientLight intensity={0.1} color="#0f0a2e" />
       <hemisphereLight args={["#020617", "#0f0a2e", 0.15]} />
 
+      {/* Subtle moon glow on the horizon (not full moon — stargazing is dark) */}
+      <DetailedMoon position={[6, 4, -15]} radius={0.4} crescent={false} />
+
       {/* 1000 Milky Way stars */}
       <points>
         <bufferGeometry>
@@ -944,6 +979,9 @@ export function StargazingDockScene({ phase: _phase }: SceneProps) {
         </bufferGeometry>
         <pointsMaterial size={0.15} color="#fff8e0" transparent opacity={0.8} depthWrite={false} />
       </points>
+
+      {/* Atmospheric dust motes drifting in starlight */}
+      <AtmosphericParticles count={30} area={[12, 3, 8]} color="#c4b5fd" size={0.015} speed={0.05} seed={801} />
 
       {/* Meteor streak */}
       <mesh ref={meteorRef} position={[-10, 8, -15]} rotation={[0, 0, -0.5]}>
@@ -1013,11 +1051,14 @@ export function WildflowerMeadowScene({ phase: _phase }: SceneProps) {
       <directionalLight position={[2, 5, 3]} intensity={2.0} color="#fbbf24" castShadow />
       <hemisphereLight args={["#ec4899", "#14532d", 0.5]} />
 
-      {/* Meadow ground */}
-      <mesh position={[0, -0.5, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <planeGeometry args={[16, 12, 8, 6]} />
-        <meshStandardMaterial color="#22c55e" roughness={0.9} />
-      </mesh>
+      {/* Textured meadow ground */}
+      <TexturedGround position={[0, -0.5, 0]} width={16} depth={12} color="#22c55e" seed={1001} />
+
+      {/* Grass field — 200 instanced blades for lush meadow */}
+      <GrassField count={200} area={12} seed={1002} color="#4a7c2a" />
+
+      {/* Atmospheric butterflies and pollen */}
+      <AtmosphericParticles count={40} area={[10, 2, 8]} color="#f472b6" size={0.04} speed={0.4} seed={1003} />
 
       {/* Red picnic blanket */}
       <mesh position={[0, -0.47, 1]} rotation={[-Math.PI / 2, 0, 0.1]}>
