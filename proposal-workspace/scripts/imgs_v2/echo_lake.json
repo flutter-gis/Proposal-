@@ -1,0 +1,43 @@
+{
+  "success": true,
+  "query": "Echo Lake Franconia Notch New Hampshire beach swimming",
+  "count": 5,
+  "ranked": false,
+  "results": [
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/f850ada79d74.jpg",
+      "caption": "",
+      "source": "Cannon Mountain",
+      "original_width": "3000px",
+      "original_height": "1992px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/9cb083570025.jpg",
+      "caption": "",
+      "source": "Tripadvisor",
+      "original_width": "1200px",
+      "original_height": "1200px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/b504450e2afd.jpg",
+      "caption": "",
+      "source": "Alamy",
+      "original_width": "866px",
+      "original_height": "1390px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/acc427a2f509.jpg",
+      "caption": "",
+      "source": "The Park Explorer - WordPress.com",
+      "original_width": "3648px",
+      "original_height": "2056px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/e73e705fce54.jpg",
+      "caption": "",
+      "source": "two worlds treasures",
+      "original_width": "768px",
+      "original_height": "1024px"
+    }
+  ]
+}

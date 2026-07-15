@@ -1,0 +1,29 @@
+{
+  "success": true,
+  "query": "Milky Way night sky dark sky wilderness stars",
+  "count": 3,
+  "ranked": false,
+  "results": [
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/02b502fe6789.jpg",
+      "caption": "",
+      "source": "Matador Network",
+      "original_width": "4474px",
+      "original_height": "4452px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/cbe962626f6c.jpg",
+      "caption": "",
+      "source": "National Park Service",
+      "original_width": "1785px",
+      "original_height": "2400px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/19bcdd4c0b4c.jpeg",
+      "caption": "",
+      "source": "Explore With Alec",
+      "original_width": "2560px",
+      "original_height": "1707px"
+    }
+  ]
+}

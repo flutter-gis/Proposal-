@@ -1,0 +1,43 @@
+{
+  "success": true,
+  "query": "solar shower camping outdoor lake",
+  "count": 5,
+  "ranked": false,
+  "results": [
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/1e11c19c8c1f.jpg",
+      "caption": "",
+      "source": "Treeline Review",
+      "original_width": "1200px",
+      "original_height": "800px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/475ba2b6ef9d.jpg",
+      "caption": "",
+      "source": "Treeline Review",
+      "original_width": "2400px",
+      "original_height": "1600px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/5ad76cfc6bca.jpg",
+      "caption": "",
+      "source": "Amazon.ae",
+      "original_width": "2560px",
+      "original_height": "2560px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/a2e78a5f2b8c.jpg",
+      "caption": "",
+      "source": "Visit Mammoth",
+      "original_width": "1280px",
+      "original_height": "700px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/5a348d2b2750.jpg",
+      "caption": "",
+      "source": "Ubuy Martinique",
+      "original_width": "1500px",
+      "original_height": "1500px"
+    }
+  ]
+}

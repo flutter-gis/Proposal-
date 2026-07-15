@@ -1,0 +1,43 @@
+{
+  "success": true,
+  "query": "Granite State Scenic Railway Lincoln NH train ride",
+  "count": 5,
+  "ranked": false,
+  "results": [
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/7b27998c7507.jpg",
+      "caption": "",
+      "source": "Tripadvisor",
+      "original_width": "1200px",
+      "original_height": "901px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/8764fe4438f6.jpg",
+      "caption": "",
+      "source": "White Mountains",
+      "original_width": "1200px",
+      "original_height": "1000px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/476313f7c791.jpg",
+      "caption": "",
+      "source": "Tripadvisor",
+      "original_width": "1200px",
+      "original_height": "1200px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/4bee4e4a0af6.jpg",
+      "caption": "",
+      "source": "YouTube",
+      "original_width": "1280px",
+      "original_height": "720px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/4b66fa765f10.png",
+      "caption": "",
+      "source": "White Mountains",
+      "original_width": "1200px",
+      "original_height": "676px"
+    }
+  ]
+}

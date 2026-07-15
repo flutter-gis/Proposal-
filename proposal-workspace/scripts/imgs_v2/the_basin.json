@@ -1,0 +1,43 @@
+{
+  "success": true,
+  "query": "The Basin Franconia Notch New Hampshire waterfall",
+  "count": 5,
+  "ranked": false,
+  "results": [
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/d0ec0024a71f.jpg",
+      "caption": "",
+      "source": "Tripadvisor",
+      "original_width": "1200px",
+      "original_height": "1200px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/06127398fa67.jpg",
+      "caption": "",
+      "source": "Marjorie Turner Hollman",
+      "original_width": "1024px",
+      "original_height": "768px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/1f7b5bc05182.jpg",
+      "caption": "",
+      "source": "YouTube",
+      "original_width": "1280px",
+      "original_height": "720px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/b4ea51d6533f.jpg",
+      "caption": "",
+      "source": "Reddit",
+      "original_width": "2693px",
+      "original_height": "3591px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/9dcc42618663.jpg",
+      "caption": "",
+      "source": "Adventure Tactician",
+      "original_width": "3600px",
+      "original_height": "2400px"
+    }
+  ]
+}

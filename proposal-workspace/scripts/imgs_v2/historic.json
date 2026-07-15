@@ -1,0 +1,43 @@
+{
+  "success": true,
+  "query": "Civilian Conservation Corps CCC museum 1930s barracks New Hampshire",
+  "count": 5,
+  "ranked": false,
+  "results": [
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/00b83a3baa1d.jpg",
+      "caption": "",
+      "source": "Nutfield Genealogy",
+      "original_width": "1600px",
+      "original_height": "1200px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/dacb0746882f.jpg",
+      "caption": "",
+      "source": "Alamy",
+      "original_width": "1300px",
+      "original_height": "956px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/14eaf944d286.jpg",
+      "caption": "",
+      "source": "GovDelivery",
+      "original_width": "3045px",
+      "original_height": "2362px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/12c4ec0293ca.jpg",
+      "caption": "",
+      "source": "Union Leader",
+      "original_width": "1500px",
+      "original_height": "844px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/18f194407050.png",
+      "caption": "",
+      "source": "Small State Big History",
+      "original_width": "1253px",
+      "original_height": "734px"
+    }
+  ]
+}

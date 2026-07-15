@@ -1,0 +1,29 @@
+{
+  "success": true,
+  "query": "mountain lake sunset golden hour reflection granite cliff",
+  "count": 3,
+  "ranked": false,
+  "results": [
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/e749a323cb42.jpg",
+      "caption": "",
+      "source": "The Well Worn Shoes",
+      "original_width": "2560px",
+      "original_height": "1707px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/dbc7cedb032d.jpg",
+      "caption": "",
+      "source": "The Well Worn Shoes",
+      "original_width": "1024px",
+      "original_height": "768px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/4f8fca967287.jpg",
+      "caption": "",
+      "source": "Best of Sierra",
+      "original_width": "1200px",
+      "original_height": "675px"
+    }
+  ]
+}

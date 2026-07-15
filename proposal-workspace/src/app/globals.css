@@ -1,0 +1,495 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-playfair);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-rust-bg: var(--rust-bg);
+  --color-rust-bg-dark: var(--rust-bg-dark);
+  --color-rust-cream: var(--rust-cream);
+  --color-rust-parchment: var(--rust-parchment);
+  --color-rust-forest: var(--rust-forest);
+  --color-rust-moss: var(--rust-moss);
+  --color-rust-leather: var(--rust-leather);
+  --color-rust-bark: var(--rust-bark);
+  --color-rust-ember: var(--rust-ember);
+  --color-rust-wax: var(--rust-wax);
+  --color-rust-brass: var(--rust-brass);
+  --color-rust-stone: var(--rust-stone);
+  --color-rust-sage: var(--rust-sage);
+}
+
+:root {
+  --radius: 0.75rem;
+  --rust-bg: #f5ebd6;
+  --rust-bg-dark: #1a1410;
+  --rust-cream: #faf3e3;
+  --rust-parchment: #ede0c4;
+  --rust-forest: #2d4a3a;
+  --rust-moss: #5a6f4a;
+  --rust-leather: #6b4423;
+  --rust-bark: #3d2817;
+  --rust-ember: #b8541f;
+  --rust-wax: #7a2418;
+  --rust-brass: #b8860b;
+  --rust-stone: #5c5550;
+  --rust-sage: #8a9a7a;
+  --background: #f5ebd6;
+  --foreground: #2d1f15;
+  --card: #faf3e3;
+  --card-foreground: #2d1f15;
+  --popover: #faf3e3;
+  --popover-foreground: #2d1f15;
+  --primary: #2d4a3a;
+  --primary-foreground: #f5ebd6;
+  --secondary: #ede0c4;
+  --secondary-foreground: #3d2817;
+  --muted: #ede0c4;
+  --muted-foreground: #6b4423;
+  --accent: #b8541f;
+  --accent-foreground: #faf3e3;
+  --destructive: #7a2418;
+  --border: #d4c4a4;
+  --input: #d4c4a4;
+  --ring: #b8860b;
+  --chart-1: #2d4a3a;
+  --chart-2: #b8541f;
+  --chart-3: #b8860b;
+  --chart-4: #7a2418;
+  --chart-5: #5a6f4a;
+  --sidebar: #ede0c4;
+  --sidebar-foreground: #3d2817;
+  --sidebar-primary: #2d4a3a;
+  --sidebar-primary-foreground: #f5ebd6;
+  --sidebar-accent: #b8541f;
+  --sidebar-accent-foreground: #faf3e3;
+  --sidebar-border: #d4c4a4;
+  --sidebar-ring: #b8860b;
+}
+
+@layer base {
+  * { @apply border-border outline-ring/50; }
+  body {
+    @apply bg-background text-foreground antialiased;
+    /* Rich textured background — multiple gradient layers + noise pattern.
+       NO flat solid colors. Every background has depth and texture. */
+    background-image:
+      /* Layer 1: Large soft aurora glows (theme-colored, visible) */
+      radial-gradient(ellipse 80% 60% at 20% 15%, var(--theme-aurora-1, rgba(0,0,0,0.08)) 0%, transparent 60%),
+      radial-gradient(ellipse 70% 50% at 80% 85%, var(--theme-aurora-2, rgba(0,0,0,0.08)) 0%, transparent 55%),
+      radial-gradient(ellipse 60% 40% at 50% 50%, var(--theme-aurora-3, rgba(0,0,0,0.06)) 0%, transparent 50%),
+      /* Layer 2: Visible grain texture (SVG noise) */
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+      /* Layer 3: Cross-hatch pattern for paper-like texture (more visible) */
+      repeating-linear-gradient(45deg, transparent 0px, transparent 3px, rgba(0,0,0,0.015) 3px, rgba(0,0,0,0.015) 4px),
+      repeating-linear-gradient(-45deg, transparent 0px, transparent 3px, rgba(0,0,0,0.015) 3px, rgba(0,0,0,0.015) 4px);
+    background-attachment: fixed, fixed, fixed, fixed, fixed, fixed;
+    transition: background-color 0.5s ease, color 0.5s ease;
+  }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--theme-aurora-2, rgba(0,0,0,0.3)); border-radius: 4px; opacity: 0.5; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--theme-aurora-2, rgba(0,0,0,0.5)); opacity: 0.8; }
+}
+
+@layer components {
+  .leather-card {
+    background: var(--theme-card-gradient, linear-gradient(135deg, var(--rust-cream) 0%, var(--rust-parchment) 100%));
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset, 0 4px 12px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.12);
+    position: relative;
+  }
+  /* Add subtle texture overlay to leather cards */
+  .leather-card::after {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      repeating-linear-gradient(45deg, transparent 0px, transparent 3px, rgba(0,0,0,0.012) 3px, rgba(0,0,0,0.012) 4px),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.025 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    border-radius: inherit; pointer-events: none; opacity: 0.8;
+  }
+  .bark-card {
+    background: var(--theme-card-dark-gradient, linear-gradient(135deg, var(--rust-bark) 0%, var(--rust-bg-dark) 100%));
+    border: 1px solid var(--theme-border-dark, var(--border));
+    box-shadow: 0 1px 0 rgba(255,255,255,0.04) inset, 0 4px 16px rgba(0,0,0,0.4);
+    position: relative;
+  }
+  /* Add subtle texture overlay to dark cards */
+  .bark-card::after {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      repeating-linear-gradient(45deg, transparent 0px, transparent 3px, rgba(255,255,255,0.015) 3px, rgba(255,255,255,0.015) 4px),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.02 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    border-radius: inherit; pointer-events: none; opacity: 0.6;
+  }
+  .wax-seal {
+    background: radial-gradient(circle at 30% 30%, var(--rust-ember) 0%, var(--rust-wax) 70%, var(--rust-bark) 100%);
+    color: var(--theme-text-on-dark, var(--rust-cream));
+    box-shadow: 0 0 0 2px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.15);
+  }
+  .brass-button {
+    background: var(--theme-button-gradient, linear-gradient(180deg, var(--rust-brass) 0%, var(--rust-brass) 50%, var(--rust-brass) 100%));
+    color: var(--rust-bark);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 0 rgba(0,0,0,0.2), 0 2px 6px var(--theme-anim-glow, rgba(0,0,0,0.2));
+  }
+  .forest-gradient { background: linear-gradient(180deg, var(--rust-forest) 0%, var(--rust-bark) 100%); }
+  .ember-gradient { background: linear-gradient(180deg, var(--rust-ember) 0%, var(--rust-wax) 100%); }
+  .parchment-texture { position: relative; }
+  .parchment-texture::before {
+    content: ''; position: absolute; inset: 0;
+    background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.02) 0px, rgba(0,0,0,0.02) 1px, transparent 1px, transparent 4px);
+    pointer-events: none; border-radius: inherit;
+  }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .tap-feedback { transition: transform 0.1s ease-out; }
+  .tap-feedback:active { transform: scale(0.96); }
+  .lift-on-hover { transition: transform 0.25s ease-out, box-shadow 0.25s ease-out; }
+  .lift-on-hover:hover { transform: translateY(-3px); }
+
+  /* #5 FIX: Global focus-visible ring — keyboard users always see focus.
+     Must use !important + explicit outline-style:solid because Tailwind's
+     base reset and `outline-ring/50` utility set outline-style:none,
+     which makes the outline invisible even with color/width set. */
+  *:focus-visible {
+    outline: 2px solid var(--rust-brass, #b8860b) !important;
+    outline-offset: 2px !important;
+    outline-style: solid !important;
+    border-radius: 4px;
+    transition: outline-color 0.5s ease;
+  }
+  /* Remove default outline only when focus-visible ring is NOT shown (mouse clicks) */
+  *:focus:not(:focus-visible) {
+    outline: none !important;
+  }
+}
+
+@layer utilities {
+  .anim-shimmer { background-size: 200% 200% !important; animation: css-shimmer 6s ease-in-out infinite; }
+  .anim-breathe { animation: css-breathe 2.4s ease-in-out infinite; }
+  .anim-float { animation: css-float 4s ease-in-out infinite; }
+  .anim-pulse { animation: css-pulse 2s ease-in-out infinite; }
+  .anim-heartbeat { animation: css-heartbeat 1.4s ease-in-out infinite; }
+  .anim-twinkle { animation: css-twinkle 2.5s ease-in-out infinite; }
+  .anim-fade-in-up { animation: css-fade-in-up 0.5s ease-out forwards; }
+  .anim-hover-lift { transition: transform 0.2s ease-out, box-shadow 0.2s ease-out; will-change: transform; }
+  .anim-hover-lift:hover { transform: translate3d(0, -3px, 0); }
+  .anim-glow-sweep { position: relative; overflow: hidden; }
+  .anim-glow-sweep::after {
+    content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.6s ease-out; pointer-events: none;
+  }
+  .anim-glow-sweep:hover::after { left: 150%; }
+  .anim-wobble:hover { animation: css-wobble 0.5s ease-in-out; }
+  .anim-stagger > * { opacity: 0; animation: css-fade-in-up 0.5s ease-out forwards; }
+  .anim-stagger > *:nth-child(1) { animation-delay: 0.05s; }
+  .anim-stagger > *:nth-child(2) { animation-delay: 0.12s; }
+  .anim-stagger > *:nth-child(3) { animation-delay: 0.19s; }
+  .anim-stagger > *:nth-child(4) { animation-delay: 0.26s; }
+  .anim-stagger > *:nth-child(5) { animation-delay: 0.33s; }
+  .anim-stagger > *:nth-child(6) { animation-delay: 0.40s; }
+  .anim-stagger > *:nth-child(7) { animation-delay: 0.47s; }
+  .anim-stagger > *:nth-child(8) { animation-delay: 0.54s; }
+
+  .css-dust::before, .css-dust::after {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 10% 80%, rgba(251,235,200,0.4) 0%, transparent 0.5%),
+      radial-gradient(circle at 30% 60%, rgba(251,235,200,0.3) 0%, transparent 0.5%),
+      radial-gradient(circle at 50% 90%, rgba(251,235,200,0.35) 0%, transparent 0.5%),
+      radial-gradient(circle at 70% 70%, rgba(251,235,200,0.25) 0%, transparent 0.5%),
+      radial-gradient(circle at 85% 85%, rgba(251,235,200,0.3) 0%, transparent 0.5%),
+      radial-gradient(circle at 20% 40%, rgba(251,235,200,0.2) 0%, transparent 0.5%),
+      radial-gradient(circle at 60% 30%, rgba(251,235,200,0.25) 0%, transparent 0.5%);
+    animation: dust-drift 8s ease-in-out infinite alternate; will-change: transform, opacity;
+  }
+  .css-dust::after { animation-delay: -4s; opacity: 0.5; }
+  .css-mist::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 8% at 30% 50%, rgba(100,160,180,0.15), transparent),
+                radial-gradient(ellipse 50% 6% at 70% 60%, rgba(80,140,160,0.12), transparent);
+    filter: blur(8px); animation: mist-drift 12s ease-in-out infinite alternate; will-change: transform;
+  }
+  .css-sparkles::before, .css-sparkles::after {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 15% 30%, rgba(255,215,100,0.6) 0%, transparent 0.3%),
+      radial-gradient(circle at 35% 70%, rgba(255,215,100,0.5) 0%, transparent 0.3%),
+      radial-gradient(circle at 55% 20%, rgba(255,215,100,0.4) 0%, transparent 0.3%),
+      radial-gradient(circle at 75% 60%, rgba(255,215,100,0.5) 0%, transparent 0.3%),
+      radial-gradient(circle at 90% 40%, rgba(255,215,100,0.4) 0%, transparent 0.3%);
+    animation: sparkle-twinkle 3s ease-in-out infinite alternate; will-change: opacity;
+  }
+  .css-sparkles::after { animation-delay: -1.5s; opacity: 0.6; }
+  .css-stardust::before, .css-stardust::after {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(200,180,255,0.5) 0%, transparent 0.3%),
+      radial-gradient(circle at 30% 50%, rgba(200,180,255,0.4) 0%, transparent 0.3%),
+      radial-gradient(circle at 50% 80%, rgba(200,180,255,0.3) 0%, transparent 0.3%),
+      radial-gradient(circle at 70% 30%, rgba(200,180,255,0.4) 0%, transparent 0.3%),
+      radial-gradient(circle at 90% 70%, rgba(200,180,255,0.3) 0%, transparent 0.3%);
+    animation: stardust-drift 10s linear infinite; will-change: transform, opacity;
+  }
+  .css-stardust::after { animation-delay: -5s; opacity: 0.5; }
+  .css-embers::before, .css-embers::after {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 15% 80%, rgba(255,140,40,0.5) 0%, transparent 0.3%),
+      radial-gradient(circle at 35% 90%, rgba(255,140,40,0.4) 0%, transparent 0.3%),
+      radial-gradient(circle at 55% 70%, rgba(255,140,40,0.45) 0%, transparent 0.3%),
+      radial-gradient(circle at 75% 85%, rgba(255,140,40,0.35) 0%, transparent 0.3%);
+    animation: ember-rise 6s ease-in infinite; will-change: transform, opacity;
+  }
+  .css-embers::after { animation-delay: -3s; opacity: 0.5; }
+
+  @keyframes css-shimmer { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+  @keyframes css-breathe { 0%,100% { box-shadow: var(--glow-color, var(--theme-anim-glow, rgba(184,134,11,0.3))) 0 0 0 0; } 50% { box-shadow: var(--glow-color, var(--theme-anim-glow, rgba(184,134,11,0.3))) 0 0 16px 2px; } }
+  @keyframes css-float { 0%,100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(0,-3px,0); } }
+  @keyframes css-pulse { 0%,100% { opacity: 0.7; transform: scale(1); } 50% { opacity: 1; transform: scale(1.15); } }
+  @keyframes css-heartbeat { 0%,100% { transform: scale(1); } 15% { transform: scale(1.12); } 30% { transform: scale(1); } 45% { transform: scale(1.08); } 60% { transform: scale(1); } }
+  @keyframes css-twinkle { 0%,100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.1); } }
+  @keyframes css-fade-in-up { from { opacity: 0; transform: translate3d(0,20px,0); } to { opacity: 1; transform: translate3d(0,0,0); } }
+  @keyframes css-wobble { 0%,100% { transform: rotate(var(--rot,0deg)); } 25% { transform: rotate(calc(var(--rot,0deg) + 3deg)); } 75% { transform: rotate(calc(var(--rot,0deg) - 3deg)); } }
+  @keyframes dust-drift { 0% { transform: translate3d(0,5px,0); opacity: 0.3; } 100% { transform: translate3d(3px,-8px,0); opacity: 0.5; } }
+  @keyframes mist-drift { 0% { transform: translate3d(-10px,0,0); } 100% { transform: translate3d(10px,3px,0); } }
+  @keyframes sparkle-twinkle { 0% { opacity: 0.2; } 100% { opacity: 0.7; } }
+  @keyframes stardust-drift { 0% { transform: translate3d(0,-5px,0); opacity: 0.3; } 50% { opacity: 0.6; } 100% { transform: translate3d(2px,5px,0); opacity: 0.3; } }
+  @keyframes ember-rise { 0% { transform: translate3d(0,5px,0); opacity: 0.4; } 100% { transform: translate3d(-2px,-10px,0); opacity: 0.2; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .anim-shimmer, .anim-breathe, .anim-float, .anim-pulse, .anim-heartbeat, .anim-twinkle,
+    .anim-fade-in-up, .anim-stagger > *, .css-dust::before, .css-dust::after,
+    .css-mist::before, .css-sparkles::before, .css-sparkles::after,
+    .css-stardust::before, .css-stardust::after, .css-embers::before, .css-embers::after,
+    .anim-page-forward, .anim-page-backward {
+      animation: none !important;
+    }
+    .anim-fade-in-up, .anim-stagger > *,
+    .anim-page-forward, .anim-page-backward { opacity: 1 !important; transform: none !important; filter: none !important; }
+  }
+
+  /* ── Fun animations (clean + robust, all GPU-composited) ────────────── */
+
+  /* Pop-in — scale from 0 to 1 with bounce (for badges, dots, icons) */
+  @keyframes css-pop-in {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .anim-pop-in { animation: css-pop-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+  /* Slide-in-left — enter from left (for drive leg info) */
+  @keyframes css-slide-in-left {
+    from { opacity: 0; transform: translate3d(-20px, 0, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+  }
+  .anim-slide-in-left { animation: css-slide-in-left 0.5s ease-out forwards; }
+
+  /* Slide-in-right — enter from right (for mini map) */
+  @keyframes css-slide-in-right {
+    from { opacity: 0; transform: translate3d(20px, 0, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+  }
+  .anim-slide-in-right { animation: css-slide-in-right 0.5s ease-out forwards; }
+
+  /* Zoom-in — for map elements (Google Earth style) */
+  @keyframes css-zoom-in {
+    from { opacity: 0; transform: scale(0.7); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  .anim-zoom-in { animation: css-zoom-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+  /* Count-up shimmer — for stat numbers */
+  @keyframes css-count-glow {
+    0%, 100% { text-shadow: 0 0 0px transparent; }
+    50% { text-shadow: 0 0 12px var(--glow-color, rgba(184,134,11,0.4)); }
+  }
+  .anim-count-glow { animation: css-count-glow 3s ease-in-out infinite; }
+
+  /* Route draw — SVG path stroke animation (for mini map route line) */
+  @keyframes css-route-draw {
+    from { stroke-dashoffset: 200; }
+    to { stroke-dashoffset: 0; }
+  }
+  .anim-route-draw {
+    stroke-dasharray: 4 3;
+    animation: css-route-draw 1.5s ease-out forwards;
+  }
+
+  /* Marker drop — bounce in from above (for map pins) */
+  @keyframes css-marker-drop {
+    0% { transform: translateY(-15px) scale(0.5); opacity: 0; }
+    50% { transform: translateY(2px) scale(1.1); opacity: 1; }
+    75% { transform: translateY(-1px) scale(0.95); }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+  }
+  .anim-marker-drop { animation: css-marker-drop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+  /* Gentle rotate — for wax seals, compass icons */
+  @keyframes css-gentle-rotate {
+    0%, 100% { transform: rotate(var(--rot, 0deg)); }
+    50% { transform: rotate(calc(var(--rot, 0deg) + 5deg)); }
+  }
+  .anim-gentle-rotate { animation: css-gentle-rotate 4s ease-in-out infinite; }
+
+  /* Ripple — expanding circle (for map marker pulse) */
+  @keyframes css-ripple {
+    0% { transform: scale(1); opacity: 0.6; }
+    100% { transform: scale(2.5); opacity: 0; }
+  }
+  .anim-ripple { animation: css-ripple 2s ease-out infinite; }
+
+  /* ── G-03: Direction-aware page transitions ─────────────────────────── */
+  /* Forward (next page): slide in from right with subtle scale + blur */
+  @keyframes css-page-enter-forward {
+    from {
+      opacity: 0;
+      transform: translate3d(24px, 0, 0) scale(0.985);
+      filter: blur(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale(1);
+      filter: blur(0);
+    }
+  }
+  .anim-page-forward {
+    animation: css-page-enter-forward 0.42s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+    will-change: transform, opacity, filter;
+  }
+
+  /* Backward (previous page): slide in from left with subtle scale + blur */
+  @keyframes css-page-enter-backward {
+    from {
+      opacity: 0;
+      transform: translate3d(-24px, 0, 0) scale(0.985);
+      filter: blur(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale(1);
+      filter: blur(0);
+    }
+  }
+  .anim-page-backward {
+    animation: css-page-enter-backward 0.42s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+    will-change: transform, opacity, filter;
+  }
+
+  /* ── TH-03: Slow spin for loading ring ──────────────────────────────── */
+  @keyframes css-spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .anim-spin-slow {
+    animation: css-spin-slow 1.4s linear infinite;
+    will-change: transform;
+  }
+}
+
+/* ── TH-07: Print stylesheet — the site prints as a booklet ──────────── */
+@media print {
+  /* Hide all interactive chrome */
+  nav, header, footer,
+  .fixed, .brass-button,
+  [aria-hidden="true"] {
+    display: none !important;
+  }
+
+  /* Use serif fonts, cream background, no shadows */
+  body {
+    background: white !important;
+    color: #2d1f15 !important;
+    font-family: var(--font-playfair), Georgia, serif !important;
+  }
+
+  /* Each page section starts on a new page */
+  section, article {
+    page-break-before: always;
+    break-before: page;
+  }
+
+  /* First section doesn't need a page break */
+  section:first-of-type {
+    page-break-before: avoid;
+    break-before: avoid;
+  }
+
+  /* Cards become simple bordered boxes */
+  .leather-card, .bark-card {
+    background: white !important;
+    border: 1px solid #d4c4a4 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+
+  /* Images print in full color */
+  img {
+    max-width: 100% !important;
+    page-break-inside: avoid;
+  }
+
+  /* Remove animations */
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  /* Links show their URL in parentheses */
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 10px;
+    color: #6b4423;
+  }
+
+  /* Page margins */
+  @page {
+    margin: 1in;
+  }
+}
+
+  /* Equalizer bars for music player */
+  @keyframes css-eq-bar {
+    0%, 100% { height: 30%; }
+    50% { height: 100%; }
+  }
+  .animate-eq-bar { animation: css-eq-bar 0.8s ease-in-out infinite; }

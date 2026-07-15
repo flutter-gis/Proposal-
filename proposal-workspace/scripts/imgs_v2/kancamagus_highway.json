@@ -1,0 +1,43 @@
+{
+  "success": true,
+  "query": "Kancamagus Highway White Mountains New Hampshire scenic fall",
+  "count": 5,
+  "ranked": false,
+  "results": [
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/de0084d6b73b.jpg",
+      "caption": "",
+      "source": "Lor & Jor Explore",
+      "original_width": "1600px",
+      "original_height": "1067px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/04a23e1cca4e.jpg",
+      "caption": "",
+      "source": "She Wanders Abroad",
+      "original_width": "1200px",
+      "original_height": "800px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/f6001daeaa19.jpg",
+      "caption": "",
+      "source": "The Manic Wanderer",
+      "original_width": "1200px",
+      "original_height": "900px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/f0eea03cda41.jpg",
+      "caption": "",
+      "source": "Yahoo Creators",
+      "original_width": "960px",
+      "original_height": "1440px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/fb4595b37c77.jpg",
+      "caption": "",
+      "source": "Alamy",
+      "original_width": "1300px",
+      "original_height": "1064px"
+    }
+  ]
+}

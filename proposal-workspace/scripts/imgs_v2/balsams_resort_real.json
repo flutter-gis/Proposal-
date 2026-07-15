@@ -1,0 +1,43 @@
+{
+  "success": true,
+  "query": "Balsams Grand Resort Dixville Notch New Hampshire hotel",
+  "count": 5,
+  "ranked": false,
+  "results": [
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/833081ed06f6.jpg",
+      "caption": "",
+      "source": "Alamy",
+      "original_width": "1300px",
+      "original_height": "956px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/b25361836cf5.jpeg",
+      "caption": "",
+      "source": "Reddit",
+      "original_width": "4509px",
+      "original_height": "2255px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/a3bb2a5b3946.jpg",
+      "caption": "",
+      "source": "Historic Structures",
+      "original_width": "1024px",
+      "original_height": "805px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/b3e100ad17ac.jpg",
+      "caption": "",
+      "source": "WCVB",
+      "original_width": "1200px",
+      "original_height": "675px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/f9271bc9c18f.jpg",
+      "caption": "",
+      "source": "Reddit",
+      "original_width": "4769px",
+      "original_height": "3138px"
+    }
+  ]
+}

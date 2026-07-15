@@ -1,0 +1,43 @@
+{
+  "success": true,
+  "query": "Bear Brook State Park cabin Allenstown New Hampshire",
+  "count": 5,
+  "ranked": false,
+  "results": [
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/ca341b1ae540.jpg",
+      "caption": "",
+      "source": "New Hampshire State Parks - Reserve America",
+      "original_width": "1600px",
+      "original_height": "1066px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/a57727b7f7ac.jpg",
+      "caption": "",
+      "source": "The Park Explorer - WordPress.com",
+      "original_width": "4000px",
+      "original_height": "3000px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/655f4ec659f0.jpg",
+      "caption": "",
+      "source": "The Park Explorer - WordPress.com",
+      "original_width": "3648px",
+      "original_height": "2056px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/f60e76a71384.jpg",
+      "caption": "",
+      "source": "Hipcamp",
+      "original_width": "3024px",
+      "original_height": "3390px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/e168941f03d9.jpg",
+      "caption": "",
+      "source": "Komoot",
+      "original_width": "1280px",
+      "original_height": "960px"
+    }
+  ]
+}

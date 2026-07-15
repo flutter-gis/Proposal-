@@ -1,0 +1,29 @@
+{
+  "success": true,
+  "query": "Camp cooking cast iron skillet outdoor picnic table",
+  "count": 3,
+  "ranked": false,
+  "results": [
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/c1f27c6d0579.jpg",
+      "caption": "",
+      "source": "Country Living Magazine",
+      "original_width": "1120px",
+      "original_height": "1120px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/cc2c88538b9b.jpg",
+      "caption": "",
+      "source": "Amazon.com",
+      "original_width": "894px",
+      "original_height": "890px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/1a562e9e87a7.jpg",
+      "caption": "",
+      "source": "Alibaba.com",
+      "original_width": "1175px",
+      "original_height": "1204px"
+    }
+  ]
+}

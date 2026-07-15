@@ -1,0 +1,29 @@
+{
+  "success": true,
+  "query": "Table Rock cliffs Dixville Notch New Hampshire granite face",
+  "count": 3,
+  "ranked": false,
+  "results": [
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/7cd128e1ba63.jpg",
+      "caption": "",
+      "source": "Alamy",
+      "original_width": "1300px",
+      "original_height": "957px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/2221f61654d8.jpg",
+      "caption": "",
+      "source": "Alamy",
+      "original_width": "1300px",
+      "original_height": "1103px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/2cf1a7c73897.jpg",
+      "caption": "",
+      "source": "Alamy",
+      "original_width": "1300px",
+      "original_height": "956px"
+    }
+  ]
+}

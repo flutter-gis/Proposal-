@@ -1,0 +1,69 @@
+{
+  "name": "The Wilderness Romance Adventure",
+  "short_name": "Wilderness Romance",
+  "description": "Interactive 6-day New Hampshire wilderness road trip & proposal guide. Installable as a mobile app for offline use during your adventure.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#022c22",
+  "theme_color": "#022c22",
+  "categories": ["travel", "lifestyle", "navigation"],
+  "lang": "en",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "View Itinerary",
+      "short_name": "Itinerary",
+      "description": "See the 6-day day-by-day timeline",
+      "url": "/#itinerary",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Open Map",
+      "short_name": "Map",
+      "description": "Interactive trip map",
+      "url": "/#map",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "My Notes & Ideas",
+      "short_name": "Notes",
+      "description": "Personal trip notes and ideas",
+      "url": "/#notes",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Easy Scenic Stops",
+      "short_name": "Easy Stops",
+      "description": "Low-effort scenic highlights",
+      "url": "/#low-effort",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

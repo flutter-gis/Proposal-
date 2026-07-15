@@ -1,0 +1,29 @@
+{
+  "success": true,
+  "query": "Romantic campfire evening forest wilderness night",
+  "count": 3,
+  "ranked": false,
+  "results": [
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/ca38e03b49e0.jpg",
+      "caption": "",
+      "source": "YouTube",
+      "original_width": "1280px",
+      "original_height": "720px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/c6d660aedd47.jpg",
+      "caption": "",
+      "source": "Alamy",
+      "original_width": "1300px",
+      "original_height": "1129px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/7f35add3ec9c.jpg",
+      "caption": "",
+      "source": "National Geographic",
+      "original_width": "3072px",
+      "original_height": "2049px"
+    }
+  ]
+}

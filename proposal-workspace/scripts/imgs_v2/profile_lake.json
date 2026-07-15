@@ -1,0 +1,43 @@
+{
+  "success": true,
+  "query": "Profile Lake Franconia Notch New Hampshire Cannon Mountain",
+  "count": 5,
+  "ranked": false,
+  "results": [
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/da6293396de4.jpg",
+      "caption": "",
+      "source": "Alamy",
+      "original_width": "1300px",
+      "original_height": "956px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/3ed8911116d8.jpeg",
+      "caption": "",
+      "source": "iMean AI",
+      "original_width": "8192px",
+      "original_height": "5464px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/9c5d32d6fa67.jpg",
+      "caption": "",
+      "source": "Travel Addict",
+      "original_width": "4912px",
+      "original_height": "3264px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/6fc43b20eb75.jpg",
+      "caption": "",
+      "source": "Cannon Mountain",
+      "original_width": "3840px",
+      "original_height": "2880px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/1e353c2cb9d7.jpg",
+      "caption": "",
+      "source": "White Mountains",
+      "original_width": "1200px",
+      "original_height": "904px"
+    }
+  ]
+}

@@ -1,0 +1,158 @@
+{
+  "icons": [
+    {
+      "name": "sunrise",
+      "label": "Sunrise",
+      "hasSizes": [
+        "192",
+        "512",
+        "maskable-512",
+        "apple-180"
+      ]
+    },
+    {
+      "name": "morning",
+      "label": "Morning",
+      "hasSizes": [
+        "192",
+        "512",
+        "maskable-512",
+        "apple-180"
+      ]
+    },
+    {
+      "name": "afternoon",
+      "label": "Afternoon",
+      "hasSizes": [
+        "192",
+        "512",
+        "maskable-512",
+        "apple-180"
+      ]
+    },
+    {
+      "name": "golden",
+      "label": "Golden",
+      "hasSizes": [
+        "192",
+        "512",
+        "maskable-512",
+        "apple-180"
+      ]
+    },
+    {
+      "name": "sunset",
+      "label": "Sunset",
+      "hasSizes": [
+        "192",
+        "512",
+        "maskable-512",
+        "apple-180"
+      ]
+    },
+    {
+      "name": "dusk",
+      "label": "Dusk",
+      "hasSizes": [
+        "192",
+        "512",
+        "maskable-512",
+        "apple-180"
+      ]
+    },
+    {
+      "name": "midnight",
+      "label": "Midnight",
+      "hasSizes": [
+        "192",
+        "512",
+        "maskable-512",
+        "apple-180"
+      ]
+    },
+    {
+      "name": "stargazing",
+      "label": "Stargazing",
+      "hasSizes": [
+        "192",
+        "512",
+        "maskable-512",
+        "apple-180"
+      ]
+    },
+    {
+      "name": "heart",
+      "label": "Heart",
+      "hasSizes": [
+        "192",
+        "512",
+        "maskable-512",
+        "apple-180"
+      ]
+    },
+    {
+      "name": "ring",
+      "label": "Ring",
+      "hasSizes": [
+        "192",
+        "512",
+        "maskable-512",
+        "apple-180"
+      ]
+    },
+    {
+      "name": "proposal",
+      "label": "Proposal",
+      "hasSizes": [
+        "192",
+        "512",
+        "maskable-512",
+        "apple-180"
+      ]
+    },
+    {
+      "name": "anniversary",
+      "label": "Anniversary",
+      "hasSizes": [
+        "192",
+        "512",
+        "maskable-512",
+        "apple-180"
+      ]
+    }
+  ],
+  "timeSlots": [
+    {
+      "hour": 5,
+      "icon": "sunrise"
+    },
+    {
+      "hour": 8,
+      "icon": "morning"
+    },
+    {
+      "hour": 12,
+      "icon": "afternoon"
+    },
+    {
+      "hour": 17,
+      "icon": "golden"
+    },
+    {
+      "hour": 19,
+      "icon": "sunset"
+    },
+    {
+      "hour": 20,
+      "icon": "dusk"
+    },
+    {
+      "hour": 21,
+      "icon": "midnight"
+    },
+    {
+      "hour": 1,
+      "icon": "stargazing"
+    }
+  ]
+}

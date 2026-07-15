@@ -1,0 +1,43 @@
+{
+  "success": true,
+  "query": "Benson Park Hudson New Hampshire abandoned wild animal farm",
+  "count": 5,
+  "ranked": false,
+  "results": [
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/6c60fd3fc0a9.jpg",
+      "caption": "",
+      "source": "Advisor.Travel",
+      "original_width": "1314px",
+      "original_height": "680px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/75ef3f090d7b.jpeg",
+      "caption": "",
+      "source": "Mind the Moss",
+      "original_width": "4032px",
+      "original_height": "3024px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/e8a5f3c65341.jpg",
+      "caption": "",
+      "source": "Tripadvisor",
+      "original_width": "1200px",
+      "original_height": "1200px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/dcf1404608ac.jpg",
+      "caption": "",
+      "source": "GORILLAS DON'T BLOG",
+      "original_width": "1224px",
+      "original_height": "827px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/a9c90b482292.jpeg",
+      "caption": "",
+      "source": "Reddit",
+      "original_width": "1080px",
+      "original_height": "810px"
+    }
+  ]
+}

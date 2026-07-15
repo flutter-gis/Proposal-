@@ -1,0 +1,29 @@
+{
+  "success": true,
+  "query": "Pawtuckaway State Park New Hampshire lake boulder beach",
+  "count": 3,
+  "ranked": false,
+  "results": [
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/60a1031c190a.jpg",
+      "caption": "",
+      "source": "New Hampshire State Parks - Reserve America",
+      "original_width": "5760px",
+      "original_height": "3840px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/408ba63d7921.jpg",
+      "caption": "",
+      "source": "Glamping Hub",
+      "original_width": "1200px",
+      "original_height": "800px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/5ccfe132c7a3.jpeg",
+      "caption": "",
+      "source": "Airbnb",
+      "original_width": "1200px",
+      "original_height": "720px"
+    }
+  ]
+}

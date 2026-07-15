@@ -1,0 +1,43 @@
+{
+  "success": true,
+  "query": "Huntington Falls Colebrook New Hampshire waterfall",
+  "count": 5,
+  "ranked": false,
+  "results": [
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/4377c1b68e2e.jpg",
+      "caption": "",
+      "source": "CTHikergal Travels",
+      "original_width": "4000px",
+      "original_height": "3000px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/5c62ed4e1b32.jpg",
+      "caption": "",
+      "source": "Reddit",
+      "original_width": "3024px",
+      "original_height": "4032px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/2eb440a4b586.jpeg",
+      "caption": "",
+      "source": "NH Family Hikes",
+      "original_width": "1280px",
+      "original_height": "854px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/216b5b4b2893.jpg",
+      "caption": "",
+      "source": "She Wanders Abroad",
+      "original_width": "1200px",
+      "original_height": "1800px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/c1a767344290.jpg",
+      "caption": "",
+      "source": "She Wanders Abroad",
+      "original_width": "1200px",
+      "original_height": "1800px"
+    }
+  ]
+}

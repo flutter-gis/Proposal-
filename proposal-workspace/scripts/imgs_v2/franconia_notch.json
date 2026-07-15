@@ -1,0 +1,43 @@
+{
+  "success": true,
+  "query": "Franconia Notch State Park New Hampshire mountains scenic drive",
+  "count": 5,
+  "ranked": false,
+  "results": [
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/287375733e51.jpg",
+      "caption": "",
+      "source": "two worlds treasures",
+      "original_width": "768px",
+      "original_height": "1024px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/e73e705fce54.jpg",
+      "caption": "",
+      "source": "two worlds treasures",
+      "original_width": "768px",
+      "original_height": "1024px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/a9ad2e1a5c56.jpg",
+      "caption": "",
+      "source": "Shine with JL",
+      "original_width": "1540px",
+      "original_height": "1030px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/22532d38ec3e.jpg",
+      "caption": "",
+      "source": "The Dyrt",
+      "original_width": "2060px",
+      "original_height": "1117px"
+    },
+    {
+      "original_url": "https://sfile.chatglm.cn/images-ppt/6ccded5ea340.jpg",
+      "caption": "",
+      "source": "Komoot",
+      "original_width": "1536px",
+      "original_height": "2048px"
+    }
+  ]
+}
