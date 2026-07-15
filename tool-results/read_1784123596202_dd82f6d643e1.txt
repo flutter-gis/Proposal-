@@ -1,0 +1,970 @@
+     1→/**
+     2→ * sound-engine.ts
+     3→ *
+     4→ * A complete Web Audio synthesis engine with 20 instruments.
+     5→ * Every sound is procedurally generated — no audio files.
+     6→ *
+     7→ * Instruments span 5 categories:
+     8→ *   STRINGS:   violin, cello, harp, guitar
+     9→ *   WINDS:     flute, clarinet, oboe, trumpet
+    10→ *   KEYS:      piano, celesta, organ, harpsichord
+    11→ *   PERCUSSION: glockenspiel, marimba, timpani, cymbal
+    12→ *   SYNTH:     pad, lead, bass
+    13→ *
+    14→ * Each instrument has:
+    15→ *   - A unique synthesis method (FM, AM, additive, subtractive, physical modeling)
+    16→ *   - Realistic envelope (ADSR)
+    17→ *   - Timbral detail (harmonics, noise, formants)
+    18→ *   - Dynamic response to velocity
+    19→ */
+    20→
+    21→// ═══════════════════════════════════════════════════════════════════════════
+    22→//  NOTE FREQUENCIES
+    23→// ═══════════════════════════════════════════════════════════════════════════
+    24→const A4 = 440;
+    25→const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+    26→
+    27→function noteToFreq(note: string): number {
+    28→  // Parse note like "C4", "F#5", "Bb3" (flat→sharp)
+    29→  note = note.replace("Bb", "A#").replace("Eb", "D#").replace("Ab", "G#").replace("Db", "C#").replace("Gb", "F#");
+    30→  const match = note.match(/^([A-G]#?)(\d)$/);
+    31→  if (!match) return A4;
+    32→  const [, name, octaveStr] = match;
+    33→  const octave = parseInt(octaveStr);
+    34→  const semitones = NOTE_NAMES.indexOf(name) + (octave - 4) * 12 - 9; // A4 = 0
+    35→  return A4 * Math.pow(2, semitones / 12);
+    36→}
+    37→
+    38→// ═══════════════════════════════════════════════════════════════════════════
+    39→//  INSTRUMENT TYPE
+    40→// ═══════════════════════════════════════════════════════════════════════════
+    41→export type InstrumentName =
+    42→  | "piano" | "celesta" | "organ" | "harpsichord"
+    43→  | "violin" | "cello" | "harp" | "guitar"
+    44→  | "flute" | "clarinet" | "oboe" | "trumpet"
+    45→  | "glockenspiel" | "marimba" | "timpani" | "cymbal"
+    46→  | "pad" | "lead" | "bass" | "choir";
+    47→
+    48→interface NoteParams {
+    49→  freq: number;
+    50→  time: number;
+    51→  dur: number;
+    52→  vel: number; // 0-1
+    53→}
+    54→
+    55→type InstrumentFn = (ctx: AudioContext, params: NoteParams, outputs: AudioNode[]) => void;
+    56→
+    57→// ═══════════════════════════════════════════════════════════════════════════
+    58→//  HELPER FUNCTIONS
+    59→// ═══════════════════════════════════════════════════════════════════════════
+    60→function makeNoiseBuffer(ctx: AudioContext, dur: number): AudioBuffer {
+    61→  const len = Math.floor(ctx.sampleRate * dur);
+    62→  const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    63→  const data = buf.getChannelData(0);
+    64→  for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+    65→  return buf;
+    66→}
+    67→
+    68→function adsr(ctx: AudioContext, param: AudioParam, time: number, dur: number, vel: number,
+    69→             a: number, d: number, s: number, r: number) {
+    70→  const peak = vel;
+    71→  const sustain = vel * s;
+    72→  param.setValueAtTime(0, time);
+    73→  param.linearRampToValueAtTime(peak, time + a);
+    74→  param.linearRampToValueAtTime(sustain, time + a + d);
+    75→  param.setValueAtTime(sustain, time + Math.max(a + d, dur - r));
+    76→  param.exponentialRampToValueAtTime(0.001, time + dur);
+    77→}
+    78→
+    79→function connectToOutputs(node: AudioNode, outputs: AudioNode[]) {
+    80→  outputs.forEach(out => node.connect(out));
+    81→}
+    82→
+    83→// ═══════════════════════════════════════════════════════════════════════════
+    84→//  20 INSTRUMENTS
+    85→// ═══════════════════════════════════════════════════════════════════════════
+    86→
+    87→// 1. PIANO — FM synth with felt hammer
+    88→const piano: InstrumentFn = (ctx, { freq, time, dur, vel }, outputs) => {
+    89→  const carrier = ctx.createOscillator(); carrier.type = "triangle"; carrier.frequency.value = freq;
+    90→  const mod = ctx.createOscillator(); mod.type = "sine"; mod.frequency.value = freq * 2;
+    91→  const modGain = ctx.createGain();
+    92→  modGain.gain.setValueAtTime(freq * 3 * vel, time);
+    93→  modGain.gain.exponentialRampToValueAtTime(freq * 0.3, time + 0.15);
+    94→  mod.connect(modGain); modGain.connect(carrier.frequency);
+    95→  const env = ctx.createGain();
+    96→  adsr(ctx, env.gain, time, dur, vel * 0.5, 0.005, 0.1, 0.3, 0.3);
+    97→  carrier.connect(env);
+    98→  // Sub osc for warmth
+    99→  const sub = ctx.createOscillator(); sub.type = "sine"; sub.frequency.value = freq * 0.5;
+   100→  const subGain = ctx.createGain();
+   101→  subGain.gain.setValueAtTime(0, time);
+   102→  subGain.gain.linearRampToValueAtTime(vel * 0.12, time + 0.02);
+   103→  subGain.gain.exponentialRampToValueAtTime(0.001, time + dur * 0.7);
+   104→  sub.connect(subGain); subGain.connect(env);
+   105→  connectToOutputs(env, outputs);
+   106→  carrier.start(time); mod.start(time); sub.start(time);
+   107→  carrier.stop(time + dur + 0.1); mod.stop(time + dur + 0.1); sub.stop(time + dur + 0.1);
+   108→};
+   109→
+   110→// 2. CELESTA — bright bells, shorter decay
+   111→const celesta: InstrumentFn = (ctx, { freq, time, dur, vel }, outputs) => {
+   112→  const partials = [{ r: 1, g: 1 }, { r: 2, g: 0.5 }, { r: 3, g: 0.25 }, { r: 4.1, g: 0.15 }];
+   113→  const env = ctx.createGain();
+   114→  env.gain.setValueAtTime(0, time);
+   115→  env.gain.linearRampToValueAtTime(vel * 0.35, time + 0.002);
+   116→  env.gain.exponentialRampToValueAtTime(0.001, time + dur * 1.2);
+   117→  partials.forEach(p => {
+   118→    const osc = ctx.createOscillator(); osc.type = "sine"; osc.frequency.value = freq * p.r;
+   119→    const g = ctx.createGain(); g.gain.value = p.g;
+   120→    osc.connect(g); g.connect(env);
+   121→    osc.start(time); osc.stop(time + dur * 1.2 + 0.1);
+   122→  });
+   123→  connectToOutputs(env, outputs);
+   124→};
+   125→
+   126→// 3. ORAN — sustained tonal, multiple harmonics
+   127→const organ: InstrumentFn = (ctx, { freq, time, dur, vel }, outputs) => {
+   128→  const harmonics = [1, 2, 3, 4, 6];
+   129→  const gains = [0.5, 0.3, 0.2, 0.15, 0.1];
+   130→  const env = ctx.createGain();
+   131→  adsr(ctx, env.gain, time, dur, vel * 0.25, 0.05, 0.1, 0.9, 0.15);
+   132→  harmonics.forEach((h, i) => {
+   133→    const osc = ctx.createOscillator(); osc.type = "sine"; osc.frequency.value = freq * h;
+   134→    const g = ctx.createGain(); g.gain.value = gains[i];
+   135→    osc.connect(g); g.connect(env);
+   136→    osc.start(time); osc.stop(time + dur + 0.2);
+   137→  });
+   138→  connectToOutputs(env, outputs);
+   139→};
+   140→
+   141→// 4. HARPSICHORD — plucked, bright, quick decay
+   142→const harpsichord: InstrumentFn = (ctx, { freq, time, dur, vel }, outputs) => {
+   143→  const osc1 = ctx.createOscillator(); osc1.type = "sawtooth"; osc1.frequency.value = freq;
+   144→  const osc2 = ctx.createOscillator(); osc2.type = "square"; osc2.frequency.value = freq * 2;
+   145→  const filter = ctx.createBiquadFilter(); filter.type = "lowpass"; filter.frequency.value = freq * 6; filter.Q.value = 1;
+   146→  const env = ctx.createGain();
+   147→  env.gain.setValueAtTime(0, time);
+   148→  env.gain.linearRampToValueAtTime(vel * 0.3, time + 0.001);
+   149→  env.gain.exponentialRampToValueAtTime(0.001, time + dur * 0.6);
+   150→  osc1.connect(filter); osc2.connect(filter); filter.connect(env);
+   151→  connectToOutputs(env, outputs);
+   152→  osc1.start(time); osc2.start(time);
+   153→  osc1.stop(time + dur + 0.1); osc2.stop(time + dur + 0.1);
+   154→};
+   155→
+   156→// 5. VIOLIN — detuned sawtooth with vibrato
+   157→const violin: InstrumentFn = (ctx, { freq, time, dur, vel }, outputs) => {
+   158→  const env = ctx.createGain();
+   159→  adsr(ctx, env.gain, time, dur, vel * 0.2, 0.15, 0.1, 0.85, 0.2);
+   160→  const vibrato = ctx.createOscillator(); vibrato.type = "sine"; vibrato.frequency.value = 5;
+   161→  const vibratoGain = ctx.createGain(); vibratoGain.gain.value = 3;
+   162→  vibrato.connect(vibratoGain);
+   163→  [-5, 0, 5].forEach(detune => {
+   164→    const osc = ctx.createOscillator(); osc.type = "sawtooth"; osc.frequency.value = freq;
+   165→    osc.detune.value = detune;
+   166→    vibratoGain.connect(osc.frequency);
+   167→    const filter = ctx.createBiquadFilter(); filter.type = "lowpass"; filter.frequency.value = freq * 5; filter.Q.value = 0.7;
+   168→    osc.connect(filter); filter.connect(env);
+   169→    osc.start(time); osc.stop(time + dur + 0.3);
+   170→  });
+   171→  connectToOutputs(env, outputs);
+   172→  vibrato.start(time); vibrato.stop(time + dur + 0.3);
+   173→};
+   174→
+   175→// 6. CELLO — warm, lower register, slow attack
+   176→const cello: InstrumentFn = (ctx, { freq, time, dur, vel }, outputs) => {
+   177→  const env = ctx.createGain();
+   178→  adsr(ctx, env.gain, time, dur, vel * 0.25, 0.25, 0.15, 0.8, 0.25);
+   179→  [-3, 0, 3].forEach(detune => {
+   180→    const osc = ctx.createOscillator(); osc.type = "sawtooth"; osc.frequency.value = freq;
+   181→    osc.detune.value = detune;
+   182→    const filter = ctx.createBiquadFilter(); filter.type = "lowpass"; filter.frequency.value = freq * 3; filter.Q.value = 0.5;
+   183→    osc.connect(filter); filter.connect(env);
+   184→    osc.start(time); osc.stop(time + dur + 0.3);
+   185→  });
+   186→  // Sub sine
+   187→  const sub = ctx.createOscillator(); sub.type = "sine"; sub.frequency.value = freq * 0.5;
+   188→  const subG = ctx.createGain(); subG.gain.value = 0.3;
+   189→  sub.connect(subG); subG.connect(env);
+   190→  sub.start(time); sub.stop(time + dur + 0.3);
+   191→  connectToOutputs(env, outputs);
+   192→};
+   193→
+   194→// 7. HARP — plucked string, cascading
+   195→const harp: InstrumentFn = (ctx, { freq, time, dur, vel }, outputs) => {
+   196→  const osc = ctx.createOscillator(); osc.type = "triangle"; osc.frequency.value = freq;
+   197→  const filter = ctx.createBiquadFilter(); filter.type = "lowpass"; filter.frequency.value = freq * 8;
+   198→  const env = ctx.createGain();
+   199→  env.gain.setValueAtTime(0, time);
+   200→  env.gain.linearRampToValueAtTime(vel * 0.4, time + 0.003);
+   201→  env.gain.exponentialRampToValueAtTime(0.001, time + dur * 1.5);
+   202→  osc.connect(filter); filter.connect(env);
+   203→  // Harmonic
+   204→  const harm = ctx.createOscillator(); harm.type = "sine"; harm.frequency.value = freq * 2;
+   205→  const hGain = ctx.createGain(); hGain.gain.value = 0.2;
+   206→  harm.connect(hGain); hGain.connect(env);
+   207→  connectToOutputs(env, outputs);
+   208→  osc.start(time); harm.start(time);
+   209→  osc.stop(time + dur * 1.5 + 0.1); harm.stop(time + dur * 1.5 + 0.1);
+   210→};
+   211→
+   212→// 8. GUITAR — plucked, steel string
+   213→const guitar: InstrumentFn = (ctx, { freq, time, dur, vel }, outputs) => {
+   214→  const osc = ctx.createOscillator(); osc.type = "sawtooth"; osc.frequency.value = freq;
+   215→  const filter = ctx.createBiquadFilter(); filter.type = "lowpass";
+   216→  filter.frequency.setValueAtTime(freq * 8, time);
+   217→  filter.frequency.exponentialRampToValueAtTime(freq * 2, time + dur * 0.5);
+   218→  filter.Q.value = 2;
+   219→  const env = ctx.createGain();
+   220→  env.gain.setValueAtTime(0, time);
+   221→  env.gain.linearRampToValueAtTime(vel * 0.35, time + 0.002);
+   222→  env.gain.exponentialRampToValueAtTime(0.001, time + dur);
+   223→  osc.connect(filter); filter.connect(env);
+   224→  connectToOutputs(env, outputs);
+   225→  osc.start(time); osc.stop(time + dur + 0.1);
+   226→};
+   227→
+   228→// 9. FLUTE — sine + breath noise
+   229→const flute: InstrumentFn = (ctx, { freq, time, dur, vel }, outputs) => {
+   230→  const env = ctx.createGain();
+   231→  adsr(ctx, env.gain, time, dur, vel * 0.25, 0.08, 0.05, 0.9, 0.1);
+   232→  const osc = ctx.createOscillator(); osc.type = "sine"; osc.frequency.value = freq;
+   233→  const g = ctx.createGain(); g.gain.value = 0.8;
+   234→  osc.connect(g); g.connect(env);
+   235→  // Breath noise
+   236→  const noise = ctx.createBufferSource(); noise.buffer = makeNoiseBuffer(ctx, dur + 0.5); noise.loop = true;
+   237→  const nFilter = ctx.createBiquadFilter(); nFilter.type = "bandpass"; nFilter.frequency.value = freq * 2; nFilter.Q.value = 0.5;
+   238→  const nGain = ctx.createGain(); nGain.gain.value = 0.05;
+   239→  noise.connect(nFilter); nFilter.connect(nGain); nGain.connect(env);
+   240→  connectToOutputs(env, outputs);
+   241→  osc.start(time); noise.start(time);
+   242→  osc.stop(time + dur + 0.2); noise.stop(time + dur + 0.2);
+   243→};
+   244→
+   245→// 10. CLARINET — odd harmonics, woody
+   246→const clarinet: InstrumentFn = (ctx, { freq, time, dur, vel }, outputs) => {
+   247→  const env = ctx.createGain();
+   248→  adsr(ctx, env.gain, time, dur, vel * 0.22, 0.06, 0.08, 0.85, 0.15);
+   249→  // Odd harmonics (clarinet characteristic)
+   250→  [1, 3, 5, 7].forEach((h, i) => {
+   251→    const osc = ctx.createOscillator(); osc.type = "sine"; osc.frequency.value = freq * h;
+   252→    const g = ctx.createGain(); g.gain.value = 1 / (i + 1) * 0.8;
+   253→    osc.connect(g); g.connect(env);
+   254→    osc.start(time); osc.stop(time + dur + 0.2);
+   255→  });
+   256→  connectToOutputs(env, outputs);
+   257→};
+   258→
+   259→// 11. OBOE — double reed, bright, nasal
+   260→const oboe: InstrumentFn = (ctx, { freq, time, dur, vel }, outputs) => {
+   261→  const env = ctx.createGain();
+   262→  adsr(ctx, env.gain, time, dur, vel * 0.2, 0.04, 0.06, 0.8, 0.1);
+   263→  const osc1 = ctx.createOscillator(); osc1.type = "sawtooth"; osc1.frequency.value = freq;
+   264→  const osc2 = ctx.createOscillator(); osc2.type = "sawtooth"; osc2.frequency.value = freq * 1.005;
+   265→  const filter = ctx.createBiquadFilter(); filter.type = "bandpass"; filter.frequency.value = freq * 3; filter.Q.value = 3;
+   266→  osc1.connect(filter); osc2.connect(filter); filter.connect(env);
+   267→  connectToOutputs(env, outputs);
+   268→  osc1.start(time); osc2.start(time);
+   269→  osc1.stop(time + dur + 0.2); osc2.stop(time + dur + 0.2);
+   270→};
+   271→
+   272→// 12. TRUMPET — brass, bright, with growl
+   273→const trumpet: InstrumentFn = (ctx, { freq, time, dur, vel }, outputs) => {
+   274→  const env = ctx.createGain();
+   275→  adsr(ctx, env.gain, time, dur, vel * 0.22, 0.03, 0.05, 0.85, 0.12);
+   276→  const osc = ctx.createOscillator(); osc.type = "sawtooth"; osc.frequency.value = freq;
+   277→  // Growl: frequency modulation
+   278→  const growl = ctx.createOscillator(); growl.type = "square"; growl.frequency.value = 30;
+   279→  const growlGain = ctx.createGain(); growlGain.gain.value = 2;
+   280→  growl.connect(growlGain); growlGain.connect(osc.frequency);
+   281→  const filter = ctx.createBiquadFilter(); filter.type = "lowpass"; filter.frequency.value = freq * 5; filter.Q.value = 1;
+   282→  osc.connect(filter); filter.connect(env);
+   283→  connectToOutputs(env, outputs);
+   284→  osc.start(time); growl.start(time);
+   285→  osc.stop(time + dur + 0.2); growl.stop(time + dur + 0.2);
+   286→};
+   287→
+   288→// 13. GLOCKENSPIEL — bright bell, high pitch
+   289→const glockenspiel: InstrumentFn = (ctx, { freq, time, dur, vel }, outputs) => {
+   290→  const partials = [{ r: 1, g: 1 }, { r: 2.7, g: 0.4 }, { r: 5.4, g: 0.2 }, { r: 8.7, g: 0.1 }];
+   291→  const env = ctx.createGain();
+   292→  env.gain.setValueAtTime(0, time);
+   293→  env.gain.linearRampToValueAtTime(vel * 0.3, time + 0.001);
+   294→  env.gain.exponentialRampToValueAtTime(0.001, time + dur * 1.8);
+   295→  partials.forEach(p => {
+   296→    const osc = ctx.createOscillator(); osc.type = "sine"; osc.frequency.value = freq * p.r;
+   297→    const g = ctx.createGain(); g.gain.value = p.g;
+   298→    osc.connect(g); g.connect(env);
+   299→    osc.start(time); osc.stop(time + dur * 1.8 + 0.1);
+   300→  });
+   301→  connectToOutputs(env, outputs);
+   302→};
+   303→
+   304→// 14. MARIMBA — wooden bar, warm
+   305→const marimba: InstrumentFn = (ctx, { freq, time, dur, vel }, outputs) => {
+   306→  const partials = [{ r: 1, g: 1 }, { r: 3.9, g: 0.3 }, { r: 6.7, g: 0.15 }];
+   307→  const env = ctx.createGain();
+   308→  env.gain.setValueAtTime(0, time);
+   309→  env.gain.linearRampToValueAtTime(vel * 0.35, time + 0.003);
+   310→  env.gain.exponentialRampToValueAtTime(0.001, time + dur * 1.3);
+   311→  partials.forEach(p => {
+   312→    const osc = ctx.createOscillator(); osc.type = "sine"; osc.frequency.value = freq * p.r;
+   313→    const g = ctx.createGain(); g.gain.value = p.g;
+   314→    osc.connect(g); g.connect(env);
+   315→    osc.start(time); osc.stop(time + dur * 1.3 + 0.1);
+   316→  });
+   317→  connectToOutputs(env, outputs);
+   318→};
+   319→
+   320→// 15. TIMPANI — drum, pitched
+   321→const timpani: InstrumentFn = (ctx, { freq, time, dur, vel }, outputs) => {
+   322→  const osc = ctx.createOscillator(); osc.type = "sine"; osc.frequency.value = freq;
+   323→  osc.frequency.exponentialRampToValueAtTime(freq * 0.95, time + 0.1);
+   324→  const env = ctx.createGain();
+   325→  env.gain.setValueAtTime(0, time);
+   326→  env.gain.linearRampToValueAtTime(vel * 0.6, time + 0.002);
+   327→  env.gain.exponentialRampToValueAtTime(0.001, time + dur * 0.8);
+   328→  osc.connect(env);
+   329→  // Attack noise
+   330→  const noise = ctx.createBufferSource(); noise.buffer = makeNoiseBuffer(ctx, 0.2);
+   331→  const nFilter = ctx.createBiquadFilter(); nFilter.type = "lowpass"; nFilter.frequency.value = 200;
+   332→  const nGain = ctx.createGain();
+   333→  nGain.gain.setValueAtTime(vel * 0.3, time);
+   334→  nGain.gain.exponentialRampToValueAtTime(0.001, time + 0.1);
+   335→  noise.connect(nFilter); nFilter.connect(nGain); nGain.connect(env);
+   336→  connectToOutputs(env, outputs);
+   337→  osc.start(time); noise.start(time);
+   338→  osc.stop(time + dur + 0.1); noise.stop(time + 0.2);
+   339→};
+   340→
+   341→// 16. CYMBAL — noise burst, metallic
+   342→const cymbal: InstrumentFn = (ctx, { freq, time, dur, vel }, outputs) => {
+   343→  const noise = ctx.createBufferSource(); noise.buffer = makeNoiseBuffer(ctx, dur + 0.5); noise.loop = true;
+   344→  const hpf = ctx.createBiquadFilter(); hpf.type = "highpass"; hpf.frequency.value = 5000;
+   345→  const env = ctx.createGain();
+   346→  env.gain.setValueAtTime(vel * 0.25, time);
+   347→  env.gain.exponentialRampToValueAtTime(0.001, time + dur * 0.7);
+   348→  noise.connect(hpf); hpf.connect(env);
+   349→  // Ringing partials
+   350→  [ freq * 1.5, freq * 2.3, freq * 3.1 ].forEach(f => {
+   351→    const osc = ctx.createOscillator(); osc.type = "square"; osc.frequency.value = f;
+   352→    const g = ctx.createGain(); g.gain.value = 0.02;
+   353→    osc.connect(g); g.connect(env);
+   354→    osc.start(time); osc.stop(time + dur + 0.1);
+   355→  });
+   356→  connectToOutputs(env, outputs);
+   357→  noise.start(time); noise.stop(time + dur + 0.2);
+   358→};
+   359→
+   360→// 17. PAD — lush, evolving
+   361→const pad: InstrumentFn = (ctx, { freq, time, dur, vel }, outputs) => {
+   362→  const env = ctx.createGain();
+   363→  env.gain.setValueAtTime(0, time);
+   364→  env.gain.linearRampToValueAtTime(vel * 0.12, time + 1.0);
+   365→  env.gain.linearRampToValueAtTime(vel * 0.1, time + dur * 0.7);
+   366→  env.gain.exponentialRampToValueAtTime(0.001, time + dur);
+   367→  [0, 7, 12].forEach((semi, i) => {
+   368→    const osc = ctx.createOscillator(); osc.type = "sawtooth";
+   369→    osc.frequency.value = freq * Math.pow(2, semi / 12);
+   370→    const filter = ctx.createBiquadFilter(); filter.type = "lowpass";
+   371→    filter.frequency.setValueAtTime(freq * 2, time);
+   372→    filter.frequency.linearRampToValueAtTime(freq * 4, time + dur * 0.5);
+   373→    filter.Q.value = 1;
+   374→    const g = ctx.createGain(); g.gain.value = 0.3 / (i + 1);
+   375→    osc.connect(filter); filter.connect(g); g.connect(env);
+   376→    osc.start(time); osc.stop(time + dur + 0.5);
+   377→  });
+   378→  connectToOutputs(env, outputs);
+   379→};
+   380→
+   381→// 18. LEAD — bright synth lead
+   382→const lead: InstrumentFn = (ctx, { freq, time, dur, vel }, outputs) => {
+   383→  const env = ctx.createGain();
+   384→  adsr(ctx, env.gain, time, dur, vel * 0.2, 0.01, 0.05, 0.7, 0.1);
+   385→  const osc1 = ctx.createOscillator(); osc1.type = "square"; osc1.frequency.value = freq;
+   386→  const osc2 = ctx.createOscillator(); osc2.type = "sawtooth"; osc2.frequency.value = freq * 1.01;
+   387→  const filter = ctx.createBiquadFilter(); filter.type = "lowpass"; filter.frequency.value = freq * 6; filter.Q.value = 2;
+   388→  osc1.connect(filter); osc2.connect(filter); filter.connect(env);
+   389→  connectToOutputs(env, outputs);
+   390→  osc1.start(time); osc2.start(time);
+   391→  osc1.stop(time + dur + 0.2); osc2.stop(time + dur + 0.2);
+   392→};
+   393→
+   394→// 19. BASS — deep, sub
+   395→const bass: InstrumentFn = (ctx, { freq, time, dur, vel }, outputs) => {
+   396→  const env = ctx.createGain();
+   397→  adsr(ctx, env.gain, time, dur, vel * 0.4, 0.01, 0.05, 0.6, 0.15);
+   398→  const osc = ctx.createOscillator(); osc.type = "sine"; osc.frequency.value = freq;
+   399→  const sub = ctx.createOscillator(); sub.type = "triangle"; sub.frequency.value = freq * 0.5;
+   400→  const subG = ctx.createGain(); subG.gain.value = 0.5;
+   401→  osc.connect(env); sub.connect(subG); subG.connect(env);
+   402→  connectToOutputs(env, outputs);
+   403→  osc.start(time); sub.start(time);
+   404→  osc.stop(time + dur + 0.2); sub.stop(time + dur + 0.2);
+   405→};
+   406→
+   407→// 20. CHOIR — vocal "ah", formant filtering
+   408→const choir: InstrumentFn = (ctx, { freq, time, dur, vel }, outputs) => {
+   409→  const env = ctx.createGain();
+   410→  adsr(ctx, env.gain, time, dur, vel * 0.15, 0.3, 0.2, 0.8, 0.3);
+   411→  const osc = ctx.createOscillator(); osc.type = "sawtooth"; osc.frequency.value = freq;
+   412→  // Formant filters (vowel "ah": 800Hz, 1200Hz, 2800Hz)
+   413→  const formant1 = ctx.createBiquadFilter(); formant1.type = "bandpass"; formant1.frequency.value = 800; formant1.Q.value = 8;
+   414→  const formant2 = ctx.createBiquadFilter(); formant2.type = "bandpass"; formant2.frequency.value = 1200; formant2.Q.value = 10;
+   415→  const formant3 = ctx.createBiquadFilter(); formant3.type = "bandpass"; formant3.frequency.value = 2800; formant3.Q.value = 12;
+   416→  const g1 = ctx.createGain(); g1.gain.value = 0.5;
+   417→  const g2 = ctx.createGain(); g2.gain.value = 0.3;
+   418→  const g3 = ctx.createGain(); g3.gain.value = 0.15;
+   419→  osc.connect(formant1); formant1.connect(g1); g1.connect(env);
+   420→  osc.connect(formant2); formant2.connect(g2); g2.connect(env);
+   421→  osc.connect(formant3); formant3.connect(g3); g3.connect(env);
+   422→  connectToOutputs(env, outputs);
+   423→  osc.start(time); osc.stop(time + dur + 0.3);
+   424→};
+   425→
+   426→// ═══════════════════════════════════════════════════════════════════════════
+   427→//  INSTRUMENT REGISTRY
+   428→// ═══════════════════════════════════════════════════════════════════════════
+   429→export const INSTRUMENTS: Record<InstrumentName, InstrumentFn> = {
+   430→  piano, celesta, organ, harpsichord,
+   431→  violin, cello, harp, guitar,
+   432→  flute, clarinet, oboe, trumpet,
+   433→  glockenspiel, marimba, timpani, cymbal,
+   434→  pad, lead, bass, choir,
+   435→};
+   436→
+   437→export const INSTRUMENT_INFO: Record<InstrumentName, { category: string; label: string }> = {
+   438→  piano: { category: "Keys", label: "Piano" },
+   439→  celesta: { category: "Keys", label: "Celesta" },
+   440→  organ: { category: "Keys", label: "Organ" },
+   441→  harpsichord: { category: "Keys", label: "Harpsichord" },
+   442→  violin: { category: "Strings", label: "Violin" },
+   443→  cello: { category: "Strings", label: "Cello" },
+   444→  harp: { category: "Strings", label: "Harp" },
+   445→  guitar: { category: "Strings", label: "Guitar" },
+   446→  flute: { category: "Winds", label: "Flute" },
+   447→  clarinet: { category: "Winds", label: "Clarinet" },
+   448→  oboe: { category: "Winds", label: "Oboe" },
+   449→  trumpet: { category: "Winds", label: "Trumpet" },
+   450→  glockenspiel: { category: "Percussion", label: "Glockenspiel" },
+   451→  marimba: { category: "Percussion", label: "Marimba" },
+   452→  timpani: { category: "Percussion", label: "Timpani" },
+   453→  cymbal: { category: "Percussion", label: "Cymbal" },
+   454→  pad: { category: "Synth", label: "Pad" },
+   455→  lead: { category: "Synth", label: "Lead" },
+   456→  bass: { category: "Synth", label: "Bass" },
+   457→  choir: { category: "Synth", label: "Choir" },
+   458→};
+   459→
+   460→// ═══════════════════════════════════════════════════════════════════════════
+   461→//  COMPOSITION TYPES
+   462→// ═══════════════════════════════════════════════════════════════════════════
+   463→export interface CompositionNote {
+   464→  note: string;
+   465→  start: number; // seconds
+   466→  dur: number;   // seconds
+   467→  vel: number;   // 0-1
+   468→  inst: InstrumentName;
+   469→}
+   470→
+   471→/**
+   472→ * Six nature ambience generators that layer on top of the musical
+   473→ * composition. Each generator synthesizes a continuous texture using
+   474→ * filtered noise + occasional discrete events (chirps, crackles, etc.).
+   475→ *
+   476→ *   crickets — high-pitched 4 kHz chirps at staggered intervals
+   477→ *   birds    — warbling tones with frequency sweeps
+   478→ *   campfire — bandpass-filtered noise bursts (crackling pops)
+   479→ *   wind     — brown noise bed with slow amplitude modulation
+   480→ *   water    — pink noise bed with bandpass filter
+   481→ *   guitar   — occasional acoustic guitar strums (uses the pluck synth)
+   482→ */
+   483→export type AmbienceType =
+   484→  | "crickets"
+   485→  | "birds"
+   486→  | "campfire"
+   487→  | "wind"
+   488→  | "water"
+   489→  | "guitar";
+   490→
+   491→export interface Composition {
+   492→  id: string;
+   493→  title: string;
+   494→  description: string;
+   495→  bpm: number;
+   496→  notes: CompositionNote[];
+   497→  duration: number; // total seconds (one loop)
+   498→  /**
+   499→   * Optional nature ambience layers. Each is synthesized continuously
+   500→   * for the duration of the loop, fading in/out at the boundaries so
+   501→   * loop transitions are seamless.
+   502→   */
+   503→  ambience?: AmbienceType[];
+   504→}
+   505→
+   506→// ═══════════════════════════════════════════════════════════════════════════
+   507→//  NATURE AMBIENCE GENERATORS
+   508→// ═══════════════════════════════════════════════════════════════════════════
+   509→/**
+   510→ * Generates continuous nature ambience textures using the Web Audio API.
+   511→ * Each generator is a self-contained audio graph that connects to a
+   512→ * provided destination node (typically the same compressor the music
+   513→ * routes through, but at a lower gain so ambience sits under the music).
+   514→ *
+   515→ * The ambience is scheduled for a fixed duration (one composition loop)
+   516→ * and automatically disconnects when stopped. This avoids the cost of
+   517→ * keeping noise sources running between loops.
+   518→ */
+   519→export class NatureAmbience {
+   520→  private ctx: AudioContext;
+   521→  private dest: AudioNode;
+   522→  private nodes: AudioNode[] = [];
+   523→  private stopFns: Array<() => void> = [];
+   524→  private gain: GainNode;
+   525→
+   526→  constructor(ctx: AudioContext, dest: AudioNode, volume = 0.15) {
+   527→    this.ctx = ctx;
+   528→    this.dest = dest;
+   529→    this.gain = ctx.createGain();
+   530→    this.gain.gain.value = 0; // start silent, fade in
+   531→    this.gain.connect(dest);
+   532→  }
+   533→
+   534→  /** Fade in over `seconds` to full volume. */
+   535→  fadeIn(seconds: number, targetVolume = 1) {
+   536→    const now = this.ctx.currentTime;
+   537→    this.gain.gain.cancelScheduledValues(now);
+   538→    this.gain.gain.setValueAtTime(this.gain.gain.value, now);
+   539→    this.gain.gain.linearRampToValueAtTime(targetVolume, now + seconds);
+   540→  }
+   541→
+   542→  /** Fade out over `seconds` to silence, then disconnect all nodes. */
+   543→  fadeOutAndStop(seconds: number) {
+   544→    const now = this.ctx.currentTime;
+   545→    this.gain.gain.cancelScheduledValues(now);
+   546→    this.gain.gain.setValueAtTime(this.gain.gain.value, now);
+   547→    this.gain.gain.linearRampToValueAtTime(0, now + seconds);
+   548→    // Disconnect after fade completes
+   549→    setTimeout(() => this.dispose(), seconds * 1000 + 50);
+   550→  }
+   551→
+   552→  private dispose() {
+   553→    this.stopFns.forEach(fn => { try { fn(); } catch {} });
+   554→    this.stopFns = [];
+   555→    this.nodes.forEach(n => { try { n.disconnect(); } catch {} });
+   556→    this.nodes = [];
+   557→    try { this.gain.disconnect(); } catch {}
+   558→  }
+   559→
+   560→  /**
+   561→   * Create a noise buffer source (white noise by default; pass `brown=true`
+   562→   * for brown noise which is better for wind/water beds).
+   563→   */
+   564→  private createNoiseSource(brown = false): AudioBufferSourceNode {
+   565→    const seconds = 4;
+   566→    const buffer = this.ctx.createBuffer(1, this.ctx.sampleRate * seconds, this.ctx.sampleRate);
+   567→    const data = buffer.getChannelData(0);
+   568→    if (brown) {
+   569→      // Brown noise: integrated white noise (low-frequency emphasis)
+   570→      let last = 0;
+   571→      for (let i = 0; i < data.length; i++) {
+   572→        const white = Math.random() * 2 - 1;
+   573→        last = (last + 0.02 * white) / 1.02;
+   574→        data[i] = last * 3.5;
+   575→      }
+   576→    } else {
+   577→      for (let i = 0; i < data.length; i++) {
+   578→        data[i] = Math.random() * 2 - 1;
+   579→      }
+   580→    }
+   581→    const src = this.ctx.createBufferSource();
+   582→    src.buffer = buffer;
+   583→    src.loop = true;
+   584→    src.start();
+   585→    this.nodes.push(src);
+   586→    return src;
+   587→  }
+   588→
+   589→  /** Crickets: high-pitched 4 kHz chirps at staggered intervals. */
+   590→  startCrickets() {
+   591→    // Background bed: very quiet high-frequency noise
+   592→    const bed = this.createNoiseSource();
+   593→    const bedFilter = this.ctx.createBiquadFilter();
+   594→    bedFilter.type = "bandpass";
+   595→    bedFilter.frequency.value = 4000;
+   596→    bedFilter.Q.value = 5;
+   597→    const bedGain = this.ctx.createGain();
+   598→    bedGain.gain.value = 0.05;
+   599→    bed.connect(bedFilter).connect(bedGain).connect(this.gain);
+   600→
+   601→    // Chirps: schedule periodic short sine bursts at 4 kHz
+   602→    const chirpInterval = 0.8; // seconds between chirps
+   603→    const chirpDuration = 0.05;
+   604→    const scheduleChirp = () => {
+   605→      if (!this.ctx) return;
+   606→      const t = this.ctx.currentTime + 0.05;
+   607→      const osc = this.ctx.createOscillator();
+   608→      osc.type = "sine";
+   609→      osc.frequency.value = 4000 + Math.random() * 200;
+   610→      const g = this.ctx.createGain();
+   611→      g.gain.setValueAtTime(0, t);
+   612→      g.gain.linearRampToValueAtTime(0.3, t + 0.005);
+   613→      g.gain.exponentialRampToValueAtTime(0.001, t + chirpDuration);
+   614→      osc.connect(g).connect(this.gain);
+   615→      osc.start(t);
+   616→      osc.stop(t + chirpDuration + 0.05);
+   617→      this.nodes.push(osc, g);
+   618→    };
+   619→    // Schedule chirps at staggered intervals (multiple crickets)
+   620→    const intervals: number[] = [];
+   621→    const cricketCount = 3;
+   622→    for (let i = 0; i < cricketCount; i++) {
+   623→      const offset = (i * chirpInterval) / cricketCount;
+   624→      const id = setInterval(scheduleChirp, chirpInterval * 1000);
+   625→      // Stagger the first chirp so they don't all fire at once
+   626→      setTimeout(scheduleChirp, offset * 1000);
+   627→      intervals.push(id as unknown as number);
+   628→    }
+   629→    this.stopFns.push(() => intervals.forEach(id => clearInterval(id)));
+   630→  }
+   631→
+   632→  /** Birds: warbling tones with frequency sweeps. */
+   633→  startBirds() {
+   634→    const scheduleBird = () => {
+   635→      if (!this.ctx) return;
+   636→      const t = this.ctx.currentTime + 0.1;
+   637→      const osc = this.ctx.createOscillator();
+   638→      osc.type = "sine";
+   639→      const baseFreq = 1500 + Math.random() * 1500;
+   640→      osc.frequency.setValueAtTime(baseFreq, t);
+   641→      // Warble: 3-5 quick frequency sweeps
+   642→      const warbleCount = 3 + Math.floor(Math.random() * 3);
+   643→      for (let i = 0; i < warbleCount; i++) {
+   644→        const wt = t + (i * 0.08);
+   645→        osc.frequency.setValueAtTime(baseFreq, wt);
+   646→        osc.frequency.linearRampToValueAtTime(baseFreq + 400, wt + 0.04);
+   647→        osc.frequency.linearRampToValueAtTime(baseFreq - 200, wt + 0.08);
+   648→      }
+   649→      const g = this.ctx.createGain();
+   650→      const dur = warbleCount * 0.08 + 0.1;
+   651→      g.gain.setValueAtTime(0, t);
+   652→      g.gain.linearRampToValueAtTime(0.15, t + 0.02);
+   653→      g.gain.setValueAtTime(0.15, t + dur - 0.05);
+   654→      g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+   655→      osc.connect(g).connect(this.gain);
+   656→      osc.start(t);
+   657→      osc.stop(t + dur + 0.05);
+   658→      this.nodes.push(osc, g);
+   659→    };
+   660→    scheduleBird();
+   661→    const id = setInterval(scheduleBird, 2500 + Math.random() * 2000);
+   662→    this.stopFns.push(() => clearInterval(id));
+   663→  }
+   664→
+   665→  /** Campfire: bandpass-filtered noise bursts (crackling pops). */
+   666→  startCampfire() {
+   667→    // Background bed: low rumble
+   668→    const bed = this.createNoiseSource(true);
+   669→    const bedFilter = this.ctx.createBiquadFilter();
+   670→    bedFilter.type = "lowpass";
+   671→    bedFilter.frequency.value = 200;
+   672→    const bedGain = this.ctx.createGain();
+   673→    bedGain.gain.value = 0.08;
+   674→    bed.connect(bedFilter).connect(bedGain).connect(this.gain);
+   675→
+   676→    // Crackles: short bandpass-filtered noise bursts
+   677→    const scheduleCrackle = () => {
+   678→      if (!this.ctx) return;
+   679→      const t = this.ctx.currentTime + 0.02;
+   680→      const dur = 0.03 + Math.random() * 0.04;
+   681→      // Create a short noise buffer
+   682→      const buf = this.ctx.createBuffer(1, this.ctx.sampleRate * dur, this.ctx.sampleRate);
+   683→      const data = buf.getChannelData(0);
+   684→      for (let i = 0; i < data.length; i++) {
+   685→        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / data.length * 8);
+   686→      }
+   687→      const src = this.ctx.createBufferSource();
+   688→      src.buffer = buf;
+   689→      const filter = this.ctx.createBiquadFilter();
+   690→      filter.type = "bandpass";
+   691→      filter.frequency.value = 800 + Math.random() * 1200;
+   692→      filter.Q.value = 3;
+   693→      const g = this.ctx.createGain();
+   694→      g.gain.value = 0.2 + Math.random() * 0.3;
+   695→      src.connect(filter).connect(g).connect(this.gain);
+   696→      src.start(t);
+   697→      this.nodes.push(src, filter, g);
+   698→    };
+   699→    // Random crackles at varying intervals
+   700→    const id = setInterval(scheduleCrackle, 150 + Math.random() * 300);
+   701→    this.stopFns.push(() => clearInterval(id));
+   702→  }
+   703→
+   704→  /** Wind: brown noise bed with slow amplitude modulation. */
+   705→  startWind() {
+   706→    const bed = this.createNoiseSource(true);
+   707→    const filter = this.ctx.createBiquadFilter();
+   708→    filter.type = "lowpass";
+   709→    filter.frequency.value = 500;
+   710→    // Slow LFO for amplitude modulation (gusts)
+   711→    const lfo = this.ctx.createOscillator();
+   712→    lfo.frequency.value = 0.15; // very slow
+   713→    const lfoGain = this.ctx.createGain();
+   714→    lfoGain.gain.value = 0.4;
+   715→    const baseGain = this.ctx.createGain();
+   716→    baseGain.gain.value = 0.5;
+   717→    lfo.connect(lfoGain).connect(baseGain.gain);
+   718→    lfo.start();
+   719→    bed.connect(filter).connect(baseGain).connect(this.gain);
+   720→    this.nodes.push(bed, filter, baseGain, lfo, lfoGain);
+   721→  }
+   722→
+   723→  /** Water: pink noise bed with bandpass filter. */
+   724→  startWater() {
+   725→    const bed = this.createNoiseSource();
+   726→    const filter = this.ctx.createBiquadFilter();
+   727→    filter.type = "bandpass";
+   728→    filter.frequency.value = 800;
+   729→    filter.Q.value = 1;
+   730→    const g = this.ctx.createGain();
+   731→    g.gain.value = 0.25;
+   732→    // Slow LFO for wave-like swell
+   733→    const lfo = this.ctx.createOscillator();
+   734→    lfo.frequency.value = 0.3;
+   735→    const lfoGain = this.ctx.createGain();
+   736→    lfoGain.gain.value = 0.15;
+   737→    lfo.connect(lfoGain).connect(g.gain);
+   738→    lfo.start();
+   739→    bed.connect(filter).connect(g).connect(this.gain);
+   740→    this.nodes.push(bed, filter, g, lfo, lfoGain);
+   741→  }
+   742→
+   743→  /** Guitar: occasional acoustic guitar strums using the pluck synth. */
+   744→  startGuitar() {
+   745→    const scheduleStrum = () => {
+   746→      if (!this.ctx) return;
+   747→      // Use the existing guitar instrument from INSTRUMENTS
+   748→      const t = this.ctx.currentTime + 0.05;
+   749→      const strumNotes = ["E3", "A3", "D4", "G4", "B4", "E5"];
+   750→      strumNotes.forEach((note, i) => {
+   751→        const fn = INSTRUMENTS["guitar"];
+   752→        if (!fn) return;
+   753→        const f = noteToFreq(note);
+   754→        fn(this.ctx, { freq: f, time: t + i * 0.04, dur: 1.5, vel: 0.3 }, [this.gain]);
+   755→      });
+   756→    };
+   757→    scheduleStrum();
+   758→    const id = setInterval(scheduleStrum, 4000 + Math.random() * 2000);
+   759→    this.stopFns.push(() => clearInterval(id));
+   760→  }
+   761→
+   762→  /** Start a specific ambience type. */
+   763→  start(type: AmbienceType) {
+   764→    switch (type) {
+   765→      case "crickets": this.startCrickets(); break;
+   766→      case "birds": this.startBirds(); break;
+   767→      case "campfire": this.startCampfire(); break;
+   768→      case "wind": this.startWind(); break;
+   769→      case "water": this.startWater(); break;
+   770→      case "guitar": this.startGuitar(); break;
+   771→    }
+   772→  }
+   773→}
+   774→
+   775→// ═══════════════════════════════════════════════════════════════════════════
+   776→//  THE SOUND ENGINE
+   777→// ═══════════════════════════════════════════════════════════════════════════
+   778→export class SoundEngine {
+   779→  private ctx: AudioContext | null = null;
+   780→  private masterGain: GainNode | null = null;
+   781→  private compressor: DynamicsCompressorNode | null = null;
+   782→  private reverb: ConvolverNode | null = null;
+   783→  private reverbGain: GainNode | null = null;
+   784→  private dryGain: GainNode | null = null;
+   785→  private isPlaying = false;
+   786→  private loopTimeout: ReturnType<typeof setTimeout> | null = null;
+   787→  private volume = 0.5;
+   788→  private currentComposition: Composition | null = null;
+   789→  // Active ambience instances — one per AmbienceType in the current composition.
+   790→  // Replaced on switchTo() and disposed on stop().
+   791→  private ambienceInstances: NatureAmbience[] = [];
+   792→
+   793→  private ensureContext() {
+   794→    if (this.ctx) return;
+   795→    this.ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+   796→    this.masterGain = this.ctx.createGain();
+   797→    this.masterGain.gain.value = this.volume;
+   798→    this.compressor = this.ctx.createDynamicsCompressor();
+   799→    this.compressor.threshold.value = -18;
+   800→    this.compressor.knee.value = 12;
+   801→    this.compressor.ratio.value = 4;
+   802→    this.compressor.attack.value = 0.003;
+   803→    this.compressor.release.value = 0.25;
+   804→    this.reverb = this.ctx.createConvolver();
+   805→    this.reverb.buffer = this.createImpulseResponse(3, 2.5);
+   806→    this.reverbGain = this.ctx.createGain();
+   807→    this.reverbGain.gain.value = 0.3;
+   808→    this.dryGain = this.ctx.createGain();
+   809→    this.dryGain.gain.value = 0.7;
+   810→    this.dryGain.connect(this.compressor);
+   811→    this.reverb.connect(this.reverbGain);
+   812→    this.reverbGain.connect(this.compressor);
+   813→    this.compressor.connect(this.masterGain);
+   814→    this.masterGain.connect(this.ctx.destination);
+   815→  }
+   816→
+   817→  private createImpulseResponse(duration: number, decay: number): AudioBuffer {
+   818→    const ctx = this.ctx!;
+   819→    const rate = ctx.sampleRate;
+   820→    const length = Math.floor(rate * duration);
+   821→    const impulse = ctx.createBuffer(2, length, rate);
+   822→    for (let ch = 0; ch < 2; ch++) {
+   823→      const data = impulse.getChannelData(ch);
+   824→      for (let i = 0; i < length; i++) {
+   825→        data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
+   826→      }
+   827→    }
+   828→    return impulse;
+   829→  }
+   830→
+   831→  private playNote(note: CompositionNote, startTime: number) {
+   832→    if (!this.ctx || !this.dryGain || !this.reverb) return;
+   833→    const fn = INSTRUMENTS[note.inst];
+   834→    if (!fn) return;
+   835→    const f = noteToFreq(note.note);
+   836→    const t = startTime + note.start;
+   837→    const outputs = [this.dryGain, this.reverb];
+   838→    fn(this.ctx, { freq: f, time: t, dur: note.dur, vel: note.vel }, outputs);
+   839→  }
+   840→
+   841→  private scheduleLoop() {
+   842→    if (!this.ctx || !this.isPlaying || !this.currentComposition) return;
+   843→    const startTime = this.ctx.currentTime + 0.1;
+   844→    this.currentComposition.notes.forEach(n => this.playNote(n, startTime));
+   845→
+   846→    // Start/restart ambience layers if the composition defines them.
+   847→    // Ambience persists across loops (it's continuous texture, not notes),
+   848→    // so we only start it on the first loop or when the composition changes.
+   849→    if (this.ambienceInstances.length === 0 && this.currentComposition.ambience) {
+   850→      for (const ambType of this.currentComposition.ambience) {
+   851→        const amb = new NatureAmbience(this.ctx, this.compressor!, 0.15);
+   852→        amb.start(ambType);
+   853→        amb.fadeIn(2.0, 0.15); // 2-second fade-in
+   854→        this.ambienceInstances.push(amb);
+   855→      }
+   856→    }
+   857→
+   858→    this.loopTimeout = setTimeout(() => {
+   859→      if (this.isPlaying) this.scheduleLoop();
+   860→    }, this.currentComposition.duration * 1000);
+   861→  }
+   862→
+   863→  async play(composition: Composition) {
+   864→    this.ensureContext();
+   865→    if (!this.ctx) return;
+   866→    if (this.ctx.state === "suspended") await this.ctx.resume();
+   867→    if (this.isPlaying) {
+   868→      // Already playing — crossfade to the new composition instead of
+   869→      // a hard stop+restart, which caused a 0.3s silent gap.
+   870→      this.switchTo(composition);
+   871→      return;
+   872→    }
+   873→    this.currentComposition = composition;
+   874→    this.isPlaying = true;
+   875→    this.scheduleLoop();
+   876→  }
+   877→
+   878→  /**
+   879→   * Crossfade to a new composition without stopping audio.
+   880→   *
+   881→   * Strategy: cancel any pending loop timeout, then ramp the master gain
+   882→   * down to ~0 over 0.4s while simultaneously scheduling the new
+   883→   * composition's first loop to start at currentTime + 0.1s. Once the
+   884→   * fade-out completes, restore the master gain to the user's volume
+   885→   * with a matching 0.4s ramp-up. The net effect is a seamless cross-
+   886→   * fade rather than an audible cut.
+   887→   *
+   888→   * This is the method the plan calls for — MusicPlayer.playTrack calls
+   889→   * `engine.play()` which delegates here when already playing.
+   890→   */
+   891→  switchTo(composition: Composition) {
+   892→    if (!this.ctx || !this.masterGain) return;
+   893→    // Stop the next scheduled loop tick — we don't want the old composition
+   894→    // to fire another scheduleLoop() mid-crossfade.
+   895→    if (this.loopTimeout) {
+   896→      clearTimeout(this.loopTimeout);
+   897→      this.loopTimeout = null;
+   898→    }
+   899→    // If switching to the same composition, no-op (prevents micro-stutters
+   900→    // when the user re-clicks the currently-playing track).
+   901→    if (this.currentComposition === composition && this.isPlaying) return;
+   902→
+   903→    // Fade out existing ambience layers — they'll be replaced when the
+   904→    // new composition's scheduleLoop fires.
+   905→    this.stopAmbience();
+   906→
+   907→    const now = this.ctx.currentTime;
+   908→    const fadeOut = 0.4;
+   909→    const fadeIn = 0.4;
+   910→    const targetVol = this.volume;
+   911→
+   912→    // Fade out the old composition's tail
+   913→    this.masterGain.gain.cancelScheduledValues(now);
+   914→    this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
+   915→    this.masterGain.gain.exponentialRampToValueAtTime(0.001, now + fadeOut);
+   916→
+   917→    // Schedule the new composition to start as the old one fades out
+   918→    this.currentComposition = composition;
+   919→    this.isPlaying = true;
+   920→    // Wait for fade-out to complete, then ramp back up and schedule the loop
+   921→    setTimeout(() => {
+   922→      if (!this.ctx || !this.masterGain || !this.isPlaying) return;
+   923→      const restart = this.ctx.currentTime;
+   924→      this.masterGain.gain.cancelScheduledValues(restart);
+   925→      this.masterGain.gain.setValueAtTime(0.001, restart);
+   926→      this.masterGain.gain.exponentialRampToValueAtTime(Math.max(0.01, targetVol), restart + fadeIn);
+   927→      this.scheduleLoop();
+   928→    }, fadeOut * 1000);
+   929→  }
+   930→
+   931→  /** Fade out and dispose all active ambience layers. */
+   932→  private stopAmbience() {
+   933→    for (const amb of this.ambienceInstances) {
+   934→      amb.fadeOutAndStop(0.5);
+   935→    }
+   936→    this.ambienceInstances = [];
+   937→  }
+   938→
+   939→  stop() {
+   940→    this.isPlaying = false;
+   941→    if (this.loopTimeout) { clearTimeout(this.loopTimeout); this.loopTimeout = null; }
+   942→    this.stopAmbience();
+   943→    if (this.ctx && this.masterGain) {
+   944→      const now = this.ctx.currentTime;
+   945→      this.masterGain.gain.cancelScheduledValues(now);
+   946→      this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
+   947→      this.masterGain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+   948→      setTimeout(() => { if (this.masterGain) this.masterGain.gain.value = this.volume; }, 400);
+   949→    }
+   950→    if (this.ctx?.state === "running") this.ctx.suspend();
+   951→  }
+   952→
+   953→  setVolume(v: number) {
+   954→    this.volume = v;
+   955→    if (this.masterGain && this.ctx) {
+   956→      this.masterGain.gain.setTargetAtTime(v, this.ctx.currentTime, 0.1);
+   957→    }
+   958→  }
+   959→
+   960→  get playing() { return this.isPlaying; }
+   961→  get current() { return this.currentComposition; }
+   962→}
+   963→
+   964→// Singleton
+   965→let engineInstance: SoundEngine | null = null;
+   966→export function getSoundEngine(): SoundEngine {
+   967→  if (!engineInstance) engineInstance = new SoundEngine();
+   968→  return engineInstance;
+   969→}
+   970→
