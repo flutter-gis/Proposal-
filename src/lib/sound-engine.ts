@@ -789,6 +789,11 @@ export class SoundEngine {
   // Active ambience instances — one per AmbienceType in the current composition.
   // Replaced on switchTo() and disposed on stop().
   private ambienceInstances: NatureAmbience[] = [];
+  // Playlist management for continuous playback
+  private playlist: Composition[] = [];
+  private playlistIndex = 0;
+  private playMode: "loop" | "shuffle" | "repeat-one" = "loop";
+  private onTrackChange?: (composition: Composition, index: number) => void;
 
   private ensureContext() {
     if (this.ctx) return;
@@ -844,20 +849,52 @@ export class SoundEngine {
     this.currentComposition.notes.forEach(n => this.playNote(n, startTime));
 
     // Start/restart ambience layers if the composition defines them.
-    // Ambience persists across loops (it's continuous texture, not notes),
-    // so we only start it on the first loop or when the composition changes.
     if (this.ambienceInstances.length === 0 && this.currentComposition.ambience) {
       for (const ambType of this.currentComposition.ambience) {
         const amb = new NatureAmbience(this.ctx, this.compressor!, 0.15);
         amb.start(ambType);
-        amb.fadeIn(2.0, 0.15); // 2-second fade-in
+        amb.fadeIn(2.0, 0.15);
         this.ambienceInstances.push(amb);
       }
     }
 
+    // Schedule the next loop to start 50ms BEFORE the current one ends.
+    // This overlap creates seamless gapless playback — the next loop's notes
+    // start scheduling while the current loop's reverb tail is still ringing.
+    const durationMs = this.currentComposition.duration * 1000;
+    const overlapMs = 50; // 50ms overlap for gapless transition
     this.loopTimeout = setTimeout(() => {
-      if (this.isPlaying) this.scheduleLoop();
-    }, this.currentComposition.duration * 1000);
+      if (!this.isPlaying) return;
+
+      if (this.playMode === "repeat-one") {
+        // Repeat the same track
+        this.scheduleLoop();
+      } else if (this.playlist.length > 0) {
+        // Advance to next track in playlist
+        if (this.playMode === "shuffle") {
+          // Random next track (not the same one)
+          let nextIdx;
+          do {
+            nextIdx = Math.floor(Math.random() * this.playlist.length);
+          } while (nextIdx === this.playlistIndex && this.playlist.length > 1);
+          this.playlistIndex = nextIdx;
+        } else {
+          // Loop mode — sequential
+          this.playlistIndex = (this.playlistIndex + 1) % this.playlist.length;
+        }
+
+        const nextTrack = this.playlist[this.playlistIndex];
+        if (nextTrack && nextTrack !== this.currentComposition) {
+          this.switchTo(nextTrack);
+          this.onTrackChange?.(nextTrack, this.playlistIndex);
+        } else {
+          this.scheduleLoop();
+        }
+      } else {
+        // No playlist — just loop the current composition
+        this.scheduleLoop();
+      }
+    }, Math.max(durationMs - overlapMs, 100));
   }
 
   async play(composition: Composition) {
@@ -959,6 +996,66 @@ export class SoundEngine {
 
   get playing() { return this.isPlaying; }
   get current() { return this.currentComposition; }
+
+  // ── Playlist management ─────────────────────────────────────────────────
+
+  /** Set the playlist for continuous playback. */
+  setPlaylist(compositions: Composition[], startIndex = 0) {
+    this.playlist = compositions;
+    this.playlistIndex = startIndex;
+  }
+
+  /** Set the play mode: loop (sequential), shuffle (random), or repeat-one. */
+  setPlayMode(mode: "loop" | "shuffle" | "repeat-one") {
+    this.playMode = mode;
+  }
+
+  get playModeValue() { return this.playMode; }
+
+  /** Register a callback for when the track changes (for UI updates). */
+  onTrackChanged(cb: (composition: Composition, index: number) => void) {
+    this.onTrackChange = cb;
+  }
+
+  /** Skip to the next track in the playlist. */
+  nextTrack(): Composition | null {
+    if (this.playlist.length === 0) return null;
+    if (this.playMode === "shuffle") {
+      let nextIdx;
+      do {
+        nextIdx = Math.floor(Math.random() * this.playlist.length);
+      } while (nextIdx === this.playlistIndex && this.playlist.length > 1);
+      this.playlistIndex = nextIdx;
+    } else {
+      this.playlistIndex = (this.playlistIndex + 1) % this.playlist.length;
+    }
+    const next = this.playlist[this.playlistIndex];
+    if (this.isPlaying) {
+      this.switchTo(next);
+    } else {
+      this.currentComposition = next;
+    }
+    this.onTrackChange?.(next, this.playlistIndex);
+    return next;
+  }
+
+  /** Skip to the previous track in the playlist. */
+  prevTrack(): Composition | null {
+    if (this.playlist.length === 0) return null;
+    this.playlistIndex = (this.playlistIndex - 1 + this.playlist.length) % this.playlist.length;
+    const prev = this.playlist[this.playlistIndex];
+    if (this.isPlaying) {
+      this.switchTo(prev);
+    } else {
+      this.currentComposition = prev;
+    }
+    this.onTrackChange?.(prev, this.playlistIndex);
+    return prev;
+  }
+
+  /** Get the current playlist index. */
+  get currentIndex() { return this.playlistIndex; }
+  get playlistLength() { return this.playlist.length; }
 }
 
 // Singleton

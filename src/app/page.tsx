@@ -95,7 +95,6 @@ function AppContent() {
       content: (
         <MobileFriendlyMap
           onSelectPlace={handleSelectPlace}
-          selectedPlace={selectedPlace}
         />
       ),
     },
