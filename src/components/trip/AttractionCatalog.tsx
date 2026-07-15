@@ -1,0 +1,344 @@
+"use client";
+
+/**
+ * AttractionCatalog.tsx
+ *
+ * A comprehensive catalog browser with filtering by:
+ *   - Type (waterfall, dining, grocery, etc.)
+ *   - Difficulty (drive-up, easy, moderate, strenuous)
+ *   - Position (in-between stops vs near a stop)
+ *   - Theme tags (free, family-friendly, photography, etc.)
+ *   - Leg (which drive leg)
+ *
+ * Each card has an "Add to map" checkbox — off by default.
+ * The map stays clean unless the user explicitly adds stops.
+ *
+ * Cards include footnote links to sources.
+ */
+
+import { useState, useMemo } from "react";
+import { FlyIn } from "./FlyIn";
+import {
+  CATALOG, TYPE_META, DIFFICULTY_META, SOURCES,
+  type CatalogEntry, type AttractionType, type Difficulty,
+} from "@/lib/attraction-catalog";
+import { cn } from "@/lib/utils";
+import { Search, MapPin, Clock, DollarSign, Navigation, ChevronDown, Gem, ExternalLink, Filter } from "lucide-react";
+
+export default function AttractionCatalog({ legId }: { legId?: string }) {
+  const [selectedTypes, setSelectedTypes] = useState<Set<AttractionType>>(new Set());
+  const [selectedDifficulty, setSelectedDifficulty] = useState<Set<Difficulty>>(new Set());
+  const [selectedPosition, setSelectedPosition] = useState<Set<string>>(new Set());
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [mapSelections, setMapSelections] = useState<Set<string>>(new Set());
+
+  const filtered = useMemo(() => {
+    let result = CATALOG;
+    if (legId) result = result.filter(e => e.legId === legId);
+    if (selectedTypes.size > 0) result = result.filter(e => selectedTypes.has(e.type));
+    if (selectedDifficulty.size > 0) result = result.filter(e => selectedDifficulty.has(e.difficulty));
+    if (selectedPosition.size > 0) result = result.filter(e => selectedPosition.has(e.position));
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(e =>
+        e.name.toLowerCase().includes(q) ||
+        e.tagline.toLowerCase().includes(q) ||
+        e.description.toLowerCase().includes(q) ||
+        e.themes.some(t => t.includes(q))
+      );
+    }
+    return result.sort((a, b) => a.detourMinutes - b.detourMinutes);
+  }, [legId, selectedTypes, selectedDifficulty, selectedPosition, searchQuery]);
+
+  const toggleType = (type: AttractionType) => {
+    setSelectedTypes(prev => {
+      const next = new Set(prev);
+      next.has(type) ? next.delete(type) : next.add(type);
+      return next;
+    });
+  };
+
+  const toggleDifficulty = (diff: Difficulty) => {
+    setSelectedDifficulty(prev => {
+      const next = new Set(prev);
+      next.has(diff) ? next.delete(diff) : next.add(diff);
+      return next;
+    });
+  };
+
+  const togglePosition = (pos: string) => {
+    setSelectedPosition(prev => {
+      const next = new Set(prev);
+      next.has(pos) ? next.delete(pos) : next.add(pos);
+      return next;
+    });
+  };
+
+  const toggleMapSelection = (id: string) => {
+    setMapSelections(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  return (
+    <FlyIn className="mb-6">
+      <div className="leather-card parchment-texture rounded-3xl p-5 md:p-7">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="font-lobster text-2xl text-rust-bark mb-1">
+              📋 Attraction Catalog
+            </h3>
+            <p className="text-xs text-rust-bark/60">
+              {filtered.length} of {legId ? CATALOG.filter(e => e.legId === legId).length : CATALOG.length} stops
+              {mapSelections.size > 0 && ` · ${mapSelections.size} added to map`}
+            </p>
+          </div>
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="inline-flex items-center gap-1 text-xs font-semibold text-rust-brass hover:text-rust-ember min-h-[44px] px-3"
+          >
+            <Filter className="w-4 h-4" />
+            {showFilters ? "Hide" : "Filters"}
+          </button>
+        </div>
+
+        {/* Search bar */}
+        <div className="relative mb-4">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-rust-bark/40" />
+          <input
+            type="text"
+            placeholder="Search attractions, food, grocery..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 rounded-full bg-rust-cream/60 border border-rust-brass/30 text-sm text-rust-bark placeholder:text-rust-bark/40 focus:outline-none focus:border-rust-brass focus:ring-1 focus:ring-rust-brass"
+          />
+        </div>
+
+        {/* Filters */}
+        {showFilters && (
+          <div className="mb-4 space-y-3 p-4 bg-rust-cream/40 rounded-2xl border border-rust-brass/20 anim-fade-in-up">
+            {/* Type filters */}
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-widest text-rust-bark/50 mb-2">Type</div>
+              <div className="flex flex-wrap gap-1.5">
+                {Object.entries(TYPE_META).map(([type, meta]) => (
+                  <button
+                    key={type}
+                    onClick={() => toggleType(type as AttractionType)}
+                    className={cn(
+                      "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-all min-h-[32px]",
+                      selectedTypes.has(type as AttractionType)
+                        ? "text-white border-transparent"
+                        : "bg-transparent text-rust-bark/60 border-rust-brass/30 hover:border-rust-brass/50"
+                    )}
+                    style={selectedTypes.has(type as AttractionType) ? { backgroundColor: meta.color } : {}}
+                  >
+                    {meta.emoji} {meta.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Difficulty filters */}
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-widest text-rust-bark/50 mb-2">Difficulty</div>
+              <div className="flex flex-wrap gap-1.5">
+                {Object.entries(DIFFICULTY_META).map(([diff, meta]) => (
+                  <button
+                    key={diff}
+                    onClick={() => toggleDifficulty(diff as Difficulty)}
+                    className={cn(
+                      "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-all min-h-[32px]",
+                      selectedDifficulty.has(diff as Difficulty)
+                        ? "text-white border-transparent"
+                        : "bg-transparent text-rust-bark/60 border-rust-brass/30 hover:border-rust-brass/50"
+                    )}
+                    style={selectedDifficulty.has(diff as Difficulty) ? { backgroundColor: meta.color } : {}}
+                  >
+                    {meta.icon} {meta.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Position filters */}
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-widest text-rust-bark/50 mb-2">Position</div>
+              <div className="flex gap-1.5">
+                <button
+                  onClick={() => togglePosition("in-between")}
+                  className={cn(
+                    "px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-all min-h-[32px]",
+                    selectedPosition.has("in-between")
+                      ? "bg-rust-forest text-white border-transparent"
+                      : "bg-transparent text-rust-bark/60 border-rust-brass/30 hover:border-rust-brass/50"
+                  )}
+                >
+                  🛣️ In-between stops
+                </button>
+                <button
+                  onClick={() => togglePosition("near-stop")}
+                  className={cn(
+                    "px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-all min-h-[32px]",
+                    selectedPosition.has("near-stop")
+                      ? "bg-rust-forest text-white border-transparent"
+                      : "bg-transparent text-rust-bark/60 border-rust-brass/30 hover:border-rust-brass/50"
+                  )}
+                >
+                  📍 Near a stop
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Cards grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {filtered.map((entry, idx) => (
+            <CatalogCard
+              key={entry.id}
+              entry={entry}
+              rank={idx + 1}
+              expanded={expandedId === entry.id}
+              onToggle={() => setExpandedId(expandedId === entry.id ? null : entry.id)}
+              onMapToggle={() => toggleMapSelection(entry.id)}
+              isOnMap={mapSelections.has(entry.id)}
+            />
+          ))}
+        </div>
+
+        {filtered.length === 0 && (
+          <div className="text-center py-8 text-rust-bark/40 text-sm">
+            No attractions match your filters.
+          </div>
+        )}
+      </div>
+    </FlyIn>
+  );
+}
+
+function CatalogCard({
+  entry, rank, expanded, onToggle, onMapToggle, isOnMap,
+}: {
+  entry: CatalogEntry; rank: number; expanded: boolean;
+  onToggle: () => void; onMapToggle: () => void; isOnMap: boolean;
+}) {
+  const meta = TYPE_META[entry.type];
+  const diffMeta = DIFFICULTY_META[entry.difficulty];
+  const directionsLink = `https://www.google.com/maps/dir/?api=1&destination=${entry.coords.lat},${entry.coords.lng}`;
+
+  return (
+    <div className={cn(
+      "relative rounded-2xl border-2 transition-all overflow-hidden",
+      expanded ? "border-rust-brass bg-rust-cream/80" : "border-rust-brass/20 bg-rust-cream/50 hover:border-rust-brass/40"
+    )}>
+      {/* Rank + hidden gem + map toggle */}
+      <div className="absolute top-2 left-2 z-10 flex items-center gap-1">
+        <div className="w-6 h-6 rounded-full bg-rust-brass text-rust-cream flex items-center justify-center text-[10px] font-bold shadow-md">
+          {rank}
+        </div>
+        {entry.hiddenGem && (
+          <div className="w-6 h-6 rounded-full bg-rust-forest text-rust-cream flex items-center justify-center shadow-md" title="Hidden Gem">
+            <Gem className="w-2.5 h-2.5" />
+          </div>
+        )}
+      </div>
+
+      {/* Map toggle */}
+      <div className="absolute top-2 right-2 z-10">
+        <label className="flex items-center gap-1 cursor-pointer bg-white/80 backdrop-blur-sm rounded-full px-2 py-1 shadow-sm">
+          <input
+            type="checkbox"
+            checked={isOnMap}
+            onChange={onMapToggle}
+            className="w-3 h-3 accent-rust-forest"
+          />
+          <span className="text-[9px] font-semibold text-rust-bark">Map</span>
+        </label>
+      </div>
+
+      <button onClick={onToggle} className="w-full text-left p-4 pt-3" aria-label={`Toggle ${entry.name}`}>
+        {/* Badges */}
+        <div className="flex items-start justify-between mb-2 ml-14 mr-12">
+          <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white" style={{ backgroundColor: meta.color }}>
+            {meta.emoji} {meta.label}
+          </span>
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold" style={{ color: diffMeta.color }}>
+            {diffMeta.icon} {diffMeta.label}
+          </span>
+        </div>
+
+        {/* Name + tagline */}
+        <h4 className="font-serif text-sm font-bold text-rust-bark mb-1">{entry.name}</h4>
+        <p className="text-xs text-rust-bark/70 italic mb-2">{entry.tagline}</p>
+
+        {/* Quick stats */}
+        <div className="flex flex-wrap items-center gap-2 text-[10px] text-rust-bark/60 mb-1">
+          <span className="inline-flex items-center gap-0.5"><DollarSign className="w-2.5 h-2.5" />{entry.cost}</span>
+          <span className="inline-flex items-center gap-0.5"><Clock className="w-2.5 h-2.5" />{entry.visitDuration}</span>
+          <span className="inline-flex items-center gap-0.5"><MapPin className="w-2.5 h-2.5" />+{entry.detourMinutes}m</span>
+          <span className="text-rust-bark/40 capitalize">{entry.position === "in-between" ? "🛣️ Between" : "📍 Near stop"}</span>
+        </div>
+
+        {/* Theme tags */}
+        <div className="flex flex-wrap gap-1 mt-1">
+          {entry.themes.slice(0, 4).map(tag => (
+            <span key={tag} className="text-[8px] px-1.5 py-0.5 rounded-full bg-rust-brass/10 text-rust-brass/60 font-semibold">
+              {tag}
+            </span>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-1 mt-2 text-xs font-semibold text-rust-brass">
+          <ChevronDown className={cn("w-3 h-3 transition-transform", expanded && "rotate-180")} />
+          {expanded ? "Less" : "More"}
+        </div>
+      </button>
+
+      {/* Expanded content */}
+      {expanded && (
+        <div className="px-4 pb-4 space-y-3 anim-fade-in-up">
+          <p className="text-xs text-rust-bark/80 leading-relaxed font-tinos">{entry.description}</p>
+
+          <div>
+            <h5 className="text-[10px] font-bold uppercase tracking-widest text-rust-forest mb-1.5">Highlights</h5>
+            <ul className="space-y-0.5">
+              {entry.highlights.map((h, i) => (
+                <li key={i} className="text-[11px] text-rust-bark/70 flex items-start gap-1.5">
+                  <span className="text-rust-forest mt-0.5">✓</span>{h}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {entry.address && <div className="text-[11px] text-rust-bark/60"><MapPin className="w-2.5 h-2.5 inline mr-1" />{entry.address}</div>}
+          {entry.phone && <div className="text-[11px] text-rust-bark/60">📞 {entry.phone}</div>}
+
+          <div className="flex gap-2">
+            <a href={directionsLink} target="_blank" rel="noopener noreferrer" className="flex-1 inline-flex items-center justify-center gap-1 rounded-full bg-rust-forest text-rust-cream px-3 py-2 text-[11px] font-bold hover:bg-rust-forest/90 min-h-[44px]">
+              <Navigation className="w-3 h-3" /> Directions
+            </a>
+            {entry.website && (
+              <a href={entry.website} target="_blank" rel="noopener noreferrer" className="flex-1 inline-flex items-center justify-center gap-1 rounded-full bg-rust-wax/20 border border-rust-wax/40 text-rust-bark px-3 py-2 text-[11px] font-bold hover:bg-rust-wax/30 min-h-[44px]">
+                <ExternalLink className="w-3 h-3" /> Website
+              </a>
+            )}
+          </div>
+
+          {/* Footnote */}
+          <div className="text-[9px] text-rust-bark/40 border-t border-rust-brass/10 pt-2">
+            <sup>[{entry.footnoteId}]</sup>{" "}
+            <a href={entry.sourceUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">
+              {entry.source}
+            </a>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

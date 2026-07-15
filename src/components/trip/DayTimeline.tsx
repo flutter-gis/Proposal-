@@ -19,6 +19,7 @@ import DayHeader from "./DayHeader";
 import GlassStopCard, { WaxSealBadge } from "./GlassStopCard";
 import QuoteCallout from "./QuoteCallout";
 import RoadsideAttractionsCard from "./RoadsideAttractionsCard";
+import AttractionCatalog from "./AttractionCatalog";
 import { FlyIn } from "./FlyIn";
 
 const DAY_QUOTE_THEME: QuoteTheme[] = [
@@ -106,7 +107,8 @@ function DaySlideImpl({ day, index, total, onSelectPlace }: DaySlideProps) {
 
       {/* Road-side attractions for this leg */}
       {leg && (
-        <div className="mt-4">
+        <div className="mt-4 space-y-4">
+          <AttractionCatalog legId={leg.id} />
           <RoadsideAttractionsCard legId={leg.id} maxDetour={20} />
         </div>
       )}

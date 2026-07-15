@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import RoadsideAttractionsCard from "./RoadsideAttractionsCard";
+import AttractionCatalog from "./AttractionCatalog";
 import {
   Map as MapIcon,
   Eye,
@@ -132,7 +133,7 @@ export default function MobileFriendlyMap({
             <TripMap
               selectedId={selectedId}
               onSelectPlace={handleSelect}
-              showRoadside={true}
+              showRoadside={false}
               className={cn(
                 "shadow-2xl border border-slate-200 h-full",
                 isFullscreen && "border-0 rounded-none"
@@ -367,9 +368,16 @@ export default function MobileFriendlyMap({
         </div>
       )}
 
-      {/* Road-side attractions section (all legs) */}
+      {/* Attraction catalog (all legs) with filters */}
       {!isFullscreen && (
         <div className="mt-8">
+          <AttractionCatalog />
+        </div>
+      )}
+
+      {/* Legacy roadside attractions (per-leg quick cards) */}
+      {!isFullscreen && (
+        <div className="mt-4">
           <RoadsideAttractionsCard maxDetour={20} />
         </div>
       )}

@@ -131,7 +131,7 @@ const BASE_LAYERS = [
 export default function TripMap({
   selectedId,
   onSelectPlace,
-  showRoadside = true,
+  showRoadside = false,
   className,
 }: {
   selectedId: string | null;
