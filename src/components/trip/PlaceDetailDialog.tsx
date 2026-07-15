@@ -390,13 +390,16 @@ export default function PlaceDetailDialog({
               </a>
             </Button>
           </div>
-          <div className="grid grid-cols-1 gap-2 sm:gap-3">
-            <Button asChild variant="ghost" size="sm" className="text-xs">
-              <a href={appleMapsViewLink}>
-                <MapPin className="w-3.5 h-3.5 mr-1.5" /> View in Apple Maps
-              </a>
-            </Button>
-          </div>
+
+          {/* One-tap navigate — floating action button for mobile use */}
+          <a
+            href={directionsLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 w-full rounded-full bg-rust-forest text-rust-cream px-4 py-3 text-sm font-bold hover:bg-rust-forest/90 transition-colors tap-feedback min-h-[44px] mt-2"
+          >
+            <Navigation className="w-4 h-4" /> Navigate Here
+          </a>
         </div>
       </DialogContent>
     </Dialog>

@@ -7,15 +7,14 @@
  * shows days/miles/parks stats, and DayTimeline shows the day-by-day plan.
  *
  * Instead, this section provides UNIQUE value:
- *   - "What This Trip Is" — a 3-sentence mood setter (not shown elsewhere)
- *   - "The Arc" — a visual narrative of the journey's emotional shape
- *     (not a map — the Map page handles that)
- *   - "What to Expect" — practical expectations (cell service, weather,
- *     pace) that no other section covers
- *   - "📸 Best Photo Opportunities" — curated shot list with locations
+ *   - "What this trip is" (mood setter)
+ *   - "The Arc" — interactive emotional narrative (click to navigate to day)
+ *   - "What to Expect" — practical info
+ *   - "Best Photo Ops" — photography planning
  */
 
 import { memo } from "react";
+import { useTrip } from "@/lib/trip-context";
 import { FlyIn, FlyInStagger, FlyInItem } from "./FlyIn";
 import { Camera, Signal, CloudSun, Footprints, Sunrise, Mountain, Waves } from "lucide-react";
 
@@ -68,6 +67,7 @@ const PHOTO_OPS = [
 ];
 
 function TripOverviewImpl() {
+  const { setPage } = useTrip();
   return (
     <section className="relative px-3 py-8 sm:px-4 sm:py-12 md:px-6 md:py-16">
       <div className="mx-auto max-w-5xl">
@@ -100,26 +100,31 @@ function TripOverviewImpl() {
             </h3>
             <div className="flex items-end justify-between gap-1 sm:gap-2">
               {[
-                { label: "Detox", height: "30%", color: "#2d4a3a" },
-                { label: "Wildlife", height: "45%", color: "#0d9488" },
-                { label: "Prep", height: "55%", color: "#5a6f4a" },
-                { label: "The Question", height: "100%", color: "#b8541f" },
-                { label: "Stars", height: "70%", color: "#6d28d9" },
-                { label: "Home", height: "25%", color: "#b8860b" },
+                { label: "Detox", height: "30%", color: "#2d4a3a", day: 0 },
+                { label: "Wildlife", height: "45%", color: "#0d9488", day: 1 },
+                { label: "Prep", height: "55%", color: "#5a6f4a", day: 2 },
+                { label: "The Question", height: "100%", color: "#b8541f", day: 3 },
+                { label: "Stars", height: "70%", color: "#6d28d9", day: 4 },
+                { label: "Home", height: "25%", color: "#b8860b", day: 5 },
               ].map((phase, i) => (
-                <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                <button
+                  key={i}
+                  onClick={() => { setPage(1); /* navigate to Trip page */ }}
+                  className="flex-1 flex flex-col items-center gap-2 group cursor-pointer tap-feedback"
+                  aria-label={`Day ${i + 1}: ${phase.label}`}
+                >
                   <div
-                    className="w-full rounded-t-lg transition-all duration-500 anim-hover-lift"
+                    className="w-full rounded-t-lg transition-all duration-500 group-hover:opacity-80 group-hover:scale-105"
                     style={{
                       height: phase.height,
                       background: `linear-gradient(180deg, ${phase.color}, ${phase.color}dd)`,
                       minHeight: "40px",
                     }}
                   />
-                  <div className="text-[9px] sm:text-[11px] font-semibold text-rust-bark/70 text-center leading-tight">
+                  <div className="text-[9px] sm:text-[11px] font-semibold text-rust-bark/70 text-center leading-tight group-hover:text-rust-bark transition-colors">
                     {phase.label}
                   </div>
-                </div>
+                </button>
               ))}
             </div>
             <p className="mt-4 text-xs text-rust-bark/60 text-center italic">

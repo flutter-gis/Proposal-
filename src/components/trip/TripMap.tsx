@@ -98,13 +98,70 @@ function createRoadsideIcon(category: string) {
 function FitBoundsOnce() {
   const map = useMap();
   useEffect(() => {
-    // Fit to all route coordinates
     const allCoords = roadPolylines.legs.flatMap(l => l.coordinates);
     if (allCoords.length > 0) {
       const bounds = L.latLngBounds(allCoords.map(c => L.latLng(c[0], c[1])));
       map.fitBounds(bounds, { padding: [40, 40] });
     }
   }, [map]);
+  return null;
+}
+
+// Play Trip animation — flies to each stop in sequence
+function PlayTripController({ mapRef }: { mapRef: React.MutableRefObject<L.Map | null> }) {
+  useEffect(() => {
+    const btn = document.getElementById("play-trip-btn");
+    if (!btn) return;
+
+    let playing = false;
+    let timeouts: ReturnType<typeof setTimeout>[] = [];
+
+    const play = () => {
+      if (playing) {
+        // Stop
+        playing = false;
+        btn.textContent = "▶ Play Trip";
+        btn.classList.remove("bg-red-600");
+        btn.classList.add("bg-amber-600");
+        timeouts.forEach(t => clearTimeout(t));
+        timeouts = [];
+        return;
+      }
+
+      playing = true;
+      btn.textContent = "⏹ Stop";
+      btn.classList.remove("bg-amber-600");
+      btn.classList.add("bg-red-600");
+
+      PLACES.forEach((place, i) => {
+        const t = setTimeout(() => {
+          if (!playing) return;
+          mapRef.current?.flyTo([place.coords.lat, place.coords.lng], 10, { duration: 2 });
+        }, i * 3500);
+        timeouts.push(t);
+      });
+
+      // Reset after all stops
+      const resetT = setTimeout(() => {
+        if (!playing) return;
+        playing = false;
+        btn.textContent = "▶ Play Trip";
+        btn.classList.remove("bg-red-600");
+        btn.classList.add("bg-amber-600");
+        const allCoords = roadPolylines.legs.flatMap(l => l.coordinates);
+        const bounds = L.latLngBounds(allCoords.map(c => L.latLng(c[0], c[1])));
+        mapRef.current?.fitBounds(bounds, { padding: [40, 40] });
+      }, PLACES.length * 3500 + 2000);
+      timeouts.push(resetT);
+    };
+
+    btn.addEventListener("click", play);
+    return () => {
+      btn.removeEventListener("click", play);
+      timeouts.forEach(t => clearTimeout(t));
+    };
+  }, [mapRef]);
+
   return null;
 }
 
@@ -299,10 +356,11 @@ export default function TripMap({
 
         <FlyToController selectedId={selectedId} places={PLACES} />
         <FitBoundsOnce />
+        <PlayTripController mapRef={mapRef} />
       </MapContainer>
 
-      {/* ── Layer switcher ── */}
-      <div className="absolute top-3 left-3 z-[1000] bg-white/95 backdrop-blur-sm rounded-lg shadow-md p-1 flex gap-0.5">
+      {/* ── Layer switcher + Play Trip ── */}
+      <div className="absolute top-3 left-3 z-[1000] bg-white/95 backdrop-blur-sm rounded-lg shadow-md p-1 flex gap-0.5 items-center">
         {BASE_LAYERS.map((layer) => (
           <button
             key={layer.id}
@@ -315,6 +373,13 @@ export default function TripMap({
             {layer.label}
           </button>
         ))}
+        <button
+          id="play-trip-btn"
+          className="px-2.5 py-1 text-[11px] font-semibold rounded bg-amber-600 text-white hover:bg-amber-700 transition-colors ml-1 min-h-[32px]"
+          title="Play trip animation"
+        >
+          ▶ Play Trip
+        </button>
       </div>
 
       {/* ── Route legend ── */}

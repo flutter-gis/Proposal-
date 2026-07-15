@@ -3,19 +3,15 @@
 /**
  * AppShell.tsx
  *
- * Fixed top app bar (rust-bark, compacts on scroll) with brand + subtitle +
- * CountdownPill (desktop only; mobile shows it in the hamburger dropdown).
- * Mobile hamburger reveals a dropdown with all 6 tabs.
+ * Fixed top app bar with theme icon, "J & Dee" brand, countdown pill,
+ * and a settings gear icon (replaces the Settings tab in the nav bar).
  *
- * Fixed bottom tab bar with 6 tabs (Home / Trip / Map / Proposal / Us / Settings)
- * and a sliding brass indicator that animates between tabs.
- *
- * Reads `currentPage` and `setPage` from useTrip(). Scrolls to top of the
- * incoming slide.
+ * Fixed bottom tab bar with 5 tabs (Home / Trip / Map / Proposal / Us).
+ * Settings is now a gear icon in the top-right corner — opens a popover.
  */
 
 import { useEffect, useState, type ReactNode } from "react";
-import { Menu, X, Home, CalendarDays, Map, Diamond, Heart, Settings } from "lucide-react";
+import { Menu, X, Home, CalendarDays, Map, Diamond, Heart, Settings as SettingsIcon } from "lucide-react";
 import { useTrip, type PageId } from "@/lib/trip-context";
 import { usePreferences } from "@/lib/preferences-context";
 import { CountdownPill } from "./CountdownToProposal";
@@ -28,13 +24,13 @@ interface TabDef {
   icon: ReactNode;
 }
 
+// Only 5 tabs — Settings moved to gear icon
 const TABS: TabDef[] = [
   { id: "home", label: "Home", icon: <Home className="w-4 h-4" /> },
   { id: "trip", label: "Trip", icon: <CalendarDays className="w-4 h-4" /> },
   { id: "map", label: "Map", icon: <Map className="w-4 h-4" /> },
   { id: "proposal", label: "Proposal", icon: <Diamond className="w-4 h-4" /> },
   { id: "us", label: "Us", icon: <Heart className="w-4 h-4" /> },
-  { id: "settings", label: "Settings", icon: <Settings className="w-4 h-4" /> },
 ];
 
 export default function AppShell() {
@@ -42,8 +38,8 @@ export default function AppShell() {
   const { effectiveIcon } = usePreferences();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
-  // Compact the app bar after a tiny bit of vertical scroll.
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
     onScroll();
@@ -54,10 +50,15 @@ export default function AppShell() {
   const go = (idx: number) => {
     setPage(idx);
     setMenuOpen(false);
-    // Scroll the active slide (and the document) to top.
     requestAnimationFrame(() => {
       window.scrollTo({ top: 0, behavior: "auto" });
     });
+  };
+
+  const goSettings = () => {
+    setPage(5); // settings page index
+    setMenuOpen(false);
+    setSettingsOpen(false);
   };
 
   return (
@@ -94,16 +95,48 @@ export default function AppShell() {
             <CountdownPill />
           </div>
 
-          {/* Right: mobile hamburger */}
-          <button
-            onClick={() => setMenuOpen((o) => !o)}
-            className="md:hidden inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 hover:bg-white/15 tap-feedback"
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={menuOpen}
-          >
-            {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+          {/* Right: Settings gear + mobile hamburger */}
+          <div className="flex items-center gap-1">
+            {/* Settings gear icon */}
+            <button
+              onClick={() => setSettingsOpen(!settingsOpen)}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 hover:bg-white/15 tap-feedback min-h-[44px] min-w-[44px]"
+              aria-label="Open settings"
+              aria-expanded={settingsOpen}
+            >
+              <SettingsIcon className="h-4 w-4 text-rust-brass" />
+            </button>
+
+            {/* Mobile hamburger */}
+            <button
+              onClick={() => setMenuOpen((o) => !o)}
+              className="md:hidden inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 hover:bg-white/15 tap-feedback min-h-[44px] min-w-[44px]"
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+            >
+              {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
+
+        {/* Settings popover */}
+        {settingsOpen && (
+          <div className="absolute top-full right-2 sm:right-4 md:right-6 w-64 bark-card rounded-2xl border border-rust-brass/20 shadow-2xl p-4 anim-fade-in-up z-[110]">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs uppercase tracking-widest font-bold text-rust-brass">Settings</span>
+              <button onClick={() => setSettingsOpen(false)} className="text-rust-cream/50 hover:text-rust-cream p-1 min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Close settings">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <button
+              onClick={goSettings}
+              className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-white/5 text-sm text-rust-cream/80 transition-colors tap-feedback min-h-[44px]"
+            >
+              <span className="opacity-80 mr-2"><SettingsIcon className="w-4 h-4 inline" /></span>
+              All Settings
+            </button>
+          </div>
+        )}
 
         {/* Mobile dropdown */}
         {menuOpen && (
