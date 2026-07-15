@@ -124,12 +124,18 @@ export default function AuroraRoot() {
   const [reducedMotion, setReducedMotion] = useState(false);
   useEffect(() => {
     if (typeof window === "undefined") return;
-    setReducedMotion(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReducedMotion(mq.matches);
+    // Listen for changes — if the user toggles reduced-motion while the
+    // app is open, we need to tear down or set up the canvas animation.
+    const onChange = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
   }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (reducedMotion) return; // CSS handles it
+    if (reducedMotion) return; // CSS handles it — no canvas animation
 
     const canvas = canvasRef.current;
     if (!canvas) return;

@@ -2,11 +2,16 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
-  /* config options here */
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: true, // TODO: re-enable after fixing remaining TS issues
   },
-  reactStrictMode: false,
+  reactStrictMode: true,
+  // Strip console.* calls from production builds (keep console.error for real errors)
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production"
+      ? { exclude: ["error"] }
+      : false,
+  },
 };
 
 export default nextConfig;

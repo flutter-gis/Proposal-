@@ -17,6 +17,7 @@
 
 import { useEffect } from "react";
 import { RotateCcw, Home, AlertTriangle } from "lucide-react";
+import { log } from "@/lib/logger";
 
 export default function Error({
   error,
@@ -26,11 +27,8 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log to console for dev visibility (production would send to a service)
-    console.error("[ErrorBoundary] Uncaught error:", error);
-    if (error.digest) {
-      console.error("[ErrorBoundary] Digest:", error.digest);
-    }
+    // Log via the structured logger (persists to localStorage + ring buffer)
+    log.error("Uncaught error in React tree", { message: error.message, digest: error.digest });
   }, [error]);
 
   return (

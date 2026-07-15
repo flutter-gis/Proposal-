@@ -11,34 +11,29 @@
  * frame. The progress element itself is position:fixed so it stays
  * anchored to the viewport even during crossfade page transitions.
  *
- * The SlideDeck renders an inner `<div className="h-full overflow-y-auto">`
- * as its scroll container. We locate it by selecting the first descendant
- * of the page wrapper with `overflow-y-auto`. This is intentionally loose
- * — if the SlideDeck layout changes, this selector still finds the right
- * element as long as it uses Tailwind's `overflow-y-auto` utility.
+ * IMPORTANT: Re-attaches to the scroll container whenever `currentPage`
+ * changes. The SlideDeck uses `key={activePage.id}` which unmounts and
+ * remounts the scroll container on every tab change — without this
+ * re-attachment, the progress bar would point to a detached element.
  */
 
 import { useEffect, useRef } from "react";
+import { useTrip } from "@/lib/trip-context";
 
 export default function ScrollProgressTrail() {
   const trailRef = useRef<HTMLDivElement | null>(null);
   const rafRef = useRef<number | null>(null);
+  const roRef = useRef<ResizeObserver | null>(null);
+  const retryRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { currentPage } = useTrip();
 
   useEffect(() => {
     const el = trailRef.current;
     if (!el) return;
 
-    // Find the SlideDeck's scroll container. It's the first descendant
-    // element with `overflow-y-auto` (Tailwind utility) inside the page.
-    // We use a small polling loop because the SlideDeck may not have
-    // rendered its active page on mount.
     let scrollContainer: HTMLElement | null = null;
+
     const findContainer = (): HTMLElement | null => {
-      // The SlideDeck renders its active page inside an inner div with
-      // Tailwind's `overflow-y-auto` utility. We scope the search to
-      // #main-content (the wrapper around <SlideDeck>) so we don't
-      // accidentally pick up other scrollable regions (e.g. dropdowns).
-      // Fall back to a global query if #main-content isn't present yet.
       const scope =
         document.querySelector<HTMLElement>("#main-content") ?? document;
       return scope.querySelector<HTMLElement>("[class*='overflow-y-auto']");
@@ -50,7 +45,6 @@ export default function ScrollProgressTrail() {
       const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
       const max = scrollHeight - clientHeight;
       const progress = max > 0 ? scrollTop / max : 0;
-      // Clamp to [0, 1] for safety
       const clamped = Math.max(0, Math.min(1, progress));
       el.style.transform = `scaleX(${clamped})`;
     };
@@ -60,36 +54,43 @@ export default function ScrollProgressTrail() {
       rafRef.current = requestAnimationFrame(update);
     };
 
+    const cleanup = () => {
+      if (scrollContainer) {
+        scrollContainer.removeEventListener("scroll", onScroll);
+        scrollContainer = null;
+      }
+      if (roRef.current) {
+        roRef.current.disconnect();
+        roRef.current = null;
+      }
+      if (retryRef.current) {
+        clearTimeout(retryRef.current);
+        retryRef.current = null;
+      }
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+    };
+
     const attach = () => {
       scrollContainer = findContainer();
       if (!scrollContainer) {
-        // SlideDeck hasn't rendered yet — retry shortly
-        setTimeout(attach, 200);
+        // SlideDeck hasn't rendered yet — retry shortly (with cleanup tracking)
+        retryRef.current = setTimeout(attach, 200);
         return;
       }
       scrollContainer.addEventListener("scroll", onScroll, { passive: true });
-      // Also observe resize — content height changes (e.g. images loading)
-      // should refresh the progress bar.
       const ro = new ResizeObserver(() => onScroll());
       ro.observe(scrollContainer);
+      roRef.current = ro;
       update(); // initial paint
-      // Store for cleanup
-      (attach as any)._ro = ro;
     };
 
     attach();
 
-    return () => {
-      if (scrollContainer) {
-        scrollContainer.removeEventListener("scroll", onScroll);
-      }
-      const ro = (attach as any)._ro as ResizeObserver | undefined;
-      ro?.disconnect();
-      if (rafRef.current !== null) {
-        cancelAnimationFrame(rafRef.current);
-      }
-    };
-  }, []);
+    return cleanup;
+  }, [currentPage]); // Re-run on page change — fixes the stale-listener bug
 
   return (
     <div

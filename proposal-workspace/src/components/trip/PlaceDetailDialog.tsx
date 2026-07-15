@@ -86,7 +86,6 @@ export default function PlaceDetailDialog({
       place.id.charCodeAt(0) % FALLBACK_GRADIENTS.length
     ];
 
-  const mapsLink = `https://www.google.com/maps/search/?api=1&query=${place.coords.lat},${place.coords.lng}`;
   const directionsLink = `https://www.google.com/maps/dir/?api=1&destination=${place.coords.lat},${place.coords.lng}`;
   const appleMapsLink = `https://maps.apple.com/?daddr=${place.coords.lat},${place.coords.lng}&dirflg=d`;
   const appleMapsViewLink = `https://maps.apple.com/?ll=${place.coords.lat},${place.coords.lng}&q=${encodeURIComponent(place.name)}`;

@@ -17,6 +17,7 @@
 import { memo, useState, useEffect } from "react";
 import { TRIP_STATS } from "@/lib/trip-data";
 import { haptics } from "@/lib/haptics";
+import { useToast } from "@/hooks/use-toast";
 import { FlyIn, FlyInStagger, FlyInItem } from "./FlyIn";
 import QuoteCallout from "./QuoteCallout";
 import { Sparkles, Heart, Share2, CalendarPlus } from "lucide-react";
@@ -116,6 +117,7 @@ function downloadCalendarEvent() {
 
 function ProposalPageImpl() {
   const [paused, setPaused] = useState(false);
+  const { toast } = useToast();
   return (
     <section className="relative px-3 py-8 sm:px-4 sm:py-12 md:px-6 md:py-16">
       {/* #4 FIX: Visually-hidden H1 for SEO + screen readers */}
@@ -300,7 +302,10 @@ function ProposalPageImpl() {
                 } else if (typeof navigator !== "undefined" && navigator.clipboard) {
                   try {
                     await navigator.clipboard.writeText(url);
-                    alert("Link copied — share it with family.");
+                    toast({
+                      title: "Link copied",
+                      description: "Share it with family.",
+                    });
                   } catch {}
                 }
               }}

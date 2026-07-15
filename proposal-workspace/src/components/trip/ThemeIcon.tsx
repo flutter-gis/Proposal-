@@ -26,6 +26,7 @@
  * Tailwind's h-X / w-X utilities (or `size` prop for inline style).
  */
 
+import { useId } from "react";
 import type { IconTheme } from "@/lib/preferences";
 
 interface ThemeIconProps {
@@ -150,8 +151,12 @@ function getStars(seed: number, count: number): Array<{ x: number; y: number; r:
 
 export default function ThemeIcon({ name, className, size }: ThemeIconProps) {
   const p = PALETTES[name];
-  const gradientId = `theme-icon-grad-${name}`;
-  const glowId = `theme-icon-glow-${name}`;
+  // useId() ensures unique gradient IDs across multiple ThemeIcon instances
+  // (prevents invalid duplicate IDs when the same theme appears in both the
+  // app bar and the settings grid).
+  const uid = useId().replace(/:/g, "");
+  const gradientId = `theme-icon-grad-${name}-${uid}`;
+  const glowId = `theme-icon-glow-${name}-${uid}`;
   const style = size ? { width: size, height: size } : undefined;
 
   // Render theme-specific foreground elements
@@ -335,7 +340,7 @@ export default function ThemeIcon({ name, className, size }: ThemeIconProps) {
           50%      { opacity: 1; }
         }
         @media (prefers-reduced-motion: reduce) {
-          [data-theme-icon] circle { animation: none !important; }
+          svg circle { animation: none !important; }
         }
       `}</style>
     </svg>

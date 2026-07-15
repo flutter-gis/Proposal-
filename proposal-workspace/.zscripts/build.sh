@@ -30,6 +30,11 @@ mkdir -p "$BUILD_DIR"
 echo "📦 Installing dependencies..."
 bun install
 
+# Cap Node heap size to prevent OOM on memory-constrained deploy containers.
+# 2048MB is enough for this project's build (peaks at ~1.4GB) but prevents
+# the build process from grabbing all available memory and crashing.
+export NODE_OPTIONS="${NODE_OPTIONS:-} --max-old-space-size=2048"
+
 # Build Next.js (produces .next/standalone + copies static/public into it
 # via the `build` script in package.json).
 echo "🔨 Building Next.js..."

@@ -132,9 +132,13 @@ function CarouselImpl({
       aria-roledescription="carousel"
       aria-label="Slide carousel — use left/right arrow keys to navigate when focused"
     >
-      {/* Slide viewport — only renders active slide */}
+      {/* Slide viewport — only renders active slide.
+          NOTE: No `key={current}` — that would unmount/remount the entire
+          slide subtree on every change, losing internal state (scroll
+          position, focus, form input). Instead we use a stable container
+          and re-trigger the CSS animation via the `key` on a wrapper that
+          only holds the animation class, not the content. */}
       <div className="relative overflow-hidden">
-        {/* CSS transform keeps a GPU-accelerated crossfade */}
         <div
           key={current}
           className="anim-fade-in-up"

@@ -16,10 +16,18 @@
  */
 
 import { useCallback } from "react";
+import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
 import { TripProvider, useTrip } from "@/lib/trip-context";
 import { PreferencesProvider, usePreferences } from "@/lib/preferences-context";
-import EngagementReveal3D from "@/components/trip/EngagementReveal3D";
+// RevealProvider is in layout.tsx so InstallPrompt can access it too.
+// Lazy-load the 3D reveal — Three.js (~600KB) + scene code (~3200 lines)
+// shouldn't block the initial bundle. Shows a dark overlay while loading
+// so the user sees the intended background immediately.
+const EngagementReveal3D = dynamic(() => import("@/components/trip/EngagementReveal3D"), {
+  ssr: false,
+  loading: () => <div className="fixed inset-0 z-[300]" style={{ backgroundColor: "#0f0a1e" }} />,
+});
 import AuroraRoot from "@/components/trip/AuroraRoot";
 import MilkyWayOverlay from "@/components/trip/MilkyWayOverlay";
 import AppShell from "@/components/trip/AppShell";

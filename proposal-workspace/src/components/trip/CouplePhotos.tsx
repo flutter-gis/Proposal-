@@ -23,7 +23,10 @@ import { LazyImage } from "@/lib/use-lazy-image";
 import { FlyIn } from "./FlyIn";
 
 const PHOTOS = Array.from({ length: 11 }, (_, i) => ({
-  src: `/couple/photo-${i + 1}.jpg`,
+  // WebP versions are ~15% smaller on average (up to 43% for some photos).
+  // Browsers that don't support WebP (old Safari) will fall back via <picture>.
+  webp: `/couple/photo-${i + 1}.webp`,
+  jpg: `/couple/photo-${i + 1}.jpg`,
   alt: `A moment together — photo ${i + 1}`,
 }));
 
@@ -81,7 +84,8 @@ export default function CouplePhotos() {
                 aria-label={`Open photo ${i + 1} full screen`}
               >
                 <LazyImage
-                  src={photo.src}
+                  src={photo.jpg}
+                  webp={photo.webp}
                   alt={photo.alt}
                   className="w-full h-auto object-cover"
                 />
@@ -124,13 +128,19 @@ export default function CouplePhotos() {
             <ChevronLeft className="w-5 h-5" />
           </button>
 
-          {/* Image */}
-          <img
-            src={PHOTOS[lightboxIdx].src}
-            alt={PHOTOS[lightboxIdx].alt}
-            className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          />
+          {/* Image — eager load (it's intentional) + async decoding for non-blocking.
+              Uses <picture> with WebP source + JPEG fallback for ~15% size savings. */}
+          <picture>
+            <source srcSet={PHOTOS[lightboxIdx].webp} type="image/webp" />
+            <img
+              src={PHOTOS[lightboxIdx].jpg}
+              alt={PHOTOS[lightboxIdx].alt}
+              className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg shadow-2xl"
+              loading="eager"
+              decoding="async"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </picture>
 
           {/* Next button */}
           <button

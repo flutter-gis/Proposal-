@@ -65,7 +65,7 @@ export default function NotFound() {
               Go home
             </Link>
             <Link
-              href="/"
+              href="/proposal"
               className="inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold uppercase tracking-wider bg-rust-wax/20 border border-rust-wax/40 text-rust-bark hover:bg-rust-wax/30 tap-feedback transition-colors"
             >
               <Diamond className="w-4 h-4" />

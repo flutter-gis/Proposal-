@@ -82,17 +82,40 @@ function useLazyImage<T extends HTMLElement = HTMLImageElement>() {
  * Usage:
  *   <LazyImage src={url} alt="..." className="..." />
  *
+ * Or with WebP fallback:
+ *   <LazyImage webp={webpUrl} src={jpgUrl} alt="..." />
+ *   Renders a <picture> with <source type="image/webp"> + <img> fallback.
+ *
  * The image starts with no src (or a tiny placeholder) and loads when it
  * enters the scroll container's visible area.
  */
 export function LazyImage({
   src,
+  webp,
   alt,
   className,
   decoding = "async",
   ...props
-}: React.ImgHTMLAttributes<HTMLImageElement>) {
+}: React.ImgHTMLAttributes<HTMLImageElement> & { webp?: string }) {
   const { ref, shouldLoad } = useLazyImage<HTMLImageElement>();
+
+  // If webp is provided, render a <picture> with source + img fallback.
+  // Otherwise render a plain <img> for backward compatibility.
+  if (webp) {
+    return (
+      <picture>
+        {shouldLoad && <source srcSet={webp} type="image/webp" />}
+        <img
+          ref={ref}
+          src={shouldLoad ? src : undefined}
+          alt={alt}
+          className={className}
+          decoding={decoding}
+          {...props}
+        />
+      </picture>
+    );
+  }
 
   return (
     <img

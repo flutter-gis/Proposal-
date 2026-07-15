@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Download, X, Share, PlusSquare, Apple, Smartphone } from "lucide-react";
+import { useReveal } from "@/lib/reveal-context";
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
@@ -34,6 +35,7 @@ function isStandalone(): boolean {
 }
 
 export default function InstallPrompt() {
+  const { revealed } = useReveal();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [visible, setVisible] = useState(false);
   const [platform, setPlatform] = useState<"ios" | "android" | "desktop" | "other">("other");
@@ -52,13 +54,15 @@ export default function InstallPrompt() {
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-      setVisible(true);
+      // Only show after the reveal is done — never interrupt the proposal
+      if (revealed) setVisible(true);
     };
     window.addEventListener("beforeinstallprompt", handler);
 
-    // For iOS (no beforeinstallprompt event), show instructions after a delay
-    if (detectPlatform() === "ios") {
-      const t = setTimeout(() => setVisible(true), 8000);
+    // For iOS (no beforeinstallprompt event), show instructions 5 seconds
+    // after the reveal completes (not on a hardcoded timer).
+    if (detectPlatform() === "ios" && revealed) {
+      const t = setTimeout(() => setVisible(true), 5000);
       return () => {
         window.removeEventListener("beforeinstallprompt", handler);
         clearTimeout(t);
@@ -66,7 +70,7 @@ export default function InstallPrompt() {
     }
 
     return () => window.removeEventListener("beforeinstallprompt", handler);
-  }, []);
+  }, [revealed]);
 
   const dismiss = () => {
     setVisible(false);

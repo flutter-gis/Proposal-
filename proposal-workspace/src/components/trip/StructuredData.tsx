@@ -34,7 +34,7 @@ export default function StructuredData() {
       latitude: p.coords.lat,
       longitude: p.coords.lng,
     },
-    url: `https://wilderness-romance.app/#${p.id}`,
+    url: `https://w1jq650c98f0-d.space-z.ai/trip`,
   }));
 
   // Build the itinerary as an ItemList of TouristAttractions
@@ -77,7 +77,7 @@ export default function StructuredData() {
       price: "0",
       priceCurrency: "USD",
     },
-    installUrl: "https://wilderness-romance.app/",
+    installUrl: "https://w1jq650c98f0-d.space-z.ai/",
     permissions: "Offline-capable PWA. No account required.",
   };
 
@@ -90,37 +90,37 @@ export default function StructuredData() {
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: "https://wilderness-romance.app/",
+        item: "https://w1jq650c98f0-d.space-z.ai/",
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "Trip",
-        item: "https://wilderness-romance.app/#trip",
+        item: "https://w1jq650c98f0-d.space-z.ai/trip",
       },
       {
         "@type": "ListItem",
         position: 3,
         name: "Map",
-        item: "https://wilderness-romance.app/#map",
+        item: "https://w1jq650c98f0-d.space-z.ai/map",
       },
       {
         "@type": "ListItem",
         position: 4,
         name: "Proposal",
-        item: "https://wilderness-romance.app/#proposal",
+        item: "https://w1jq650c98f0-d.space-z.ai/proposal",
       },
       {
         "@type": "ListItem",
         position: 5,
         name: "Us",
-        item: "https://wilderness-romance.app/#us",
+        item: "https://w1jq650c98f0-d.space-z.ai/us",
       },
       {
         "@type": "ListItem",
         position: 6,
         name: "Settings",
-        item: "https://wilderness-romance.app/#settings",
+        item: "https://w1jq650c98f0-d.space-z.ai/settings",
       },
     ],
   };

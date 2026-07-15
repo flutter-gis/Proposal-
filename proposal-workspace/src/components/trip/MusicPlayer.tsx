@@ -12,28 +12,23 @@ import { Music, Volume2, VolumeX, SkipForward, SkipBack, ChevronUp, ChevronDown 
 import { getSoundEngine } from "@/lib/sound-engine";
 import { COMPOSITIONS } from "@/lib/compositions";
 import { usePreferences } from "@/lib/preferences-context";
+import { useReveal } from "@/lib/reveal-context";
 import { cn } from "@/lib/utils";
 
 export default function MusicPlayer() {
   const { palette } = usePreferences();
+  const { revealed } = useReveal();
   const [playing, setPlaying] = useState(false);
   const [volume, setVolume] = useState(0.5);
   const [muted, setMuted] = useState(false);
   const [trackIdx, setTrackIdx] = useState(0);
   const [showTrackList, setShowTrackList] = useState(false);
-  const [revealed, setRevealed] = useState(false);
 
   const engineRef = useRef(getSoundEngine());
   const currentTrack = COMPOSITIONS[trackIdx];
 
-  useEffect(() => {
-    const check = () => {
-      const overlay = document.querySelector('.fixed.inset-0.z-\\[300\\]');
-      if (!overlay) setRevealed(true);
-      else setTimeout(check, 500);
-    };
-    setTimeout(check, 1500);
-  }, []);
+  // `revealed` comes from RevealContext — no more DOM polling.
+  // The music player shows only after the engagement reveal completes.
 
   const playTrack = useCallback(async (idx: number) => {
     await engineRef.current.play(COMPOSITIONS[idx]);
@@ -166,13 +161,13 @@ export default function MusicPlayer() {
       >
         {/* Prev — only when playing */}
         {playing && (
-          <button onClick={skipPrev} aria-label="Previous track" className="p-1.5 rounded-full hover:bg-white/10 transition-colors tap-feedback">
+          <button onClick={skipPrev} aria-label="Previous track" className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full hover:bg-white/10 transition-colors tap-feedback">
             <SkipBack className="w-3.5 h-3.5" />
           </button>
         )}
 
         {/* Play/pause */}
-        <button onClick={togglePlay} aria-label={playing ? "Pause" : "Play"} className="p-1.5 rounded-full hover:bg-white/10 transition-colors tap-feedback">
+        <button onClick={togglePlay} aria-label={playing ? "Pause" : "Play"} className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full hover:bg-white/10 transition-colors tap-feedback">
           {playing ? (
             <span className="flex items-end gap-0.5 h-4">
               {[40, 80, 60, 90].map((h, i) => (
@@ -190,7 +185,7 @@ export default function MusicPlayer() {
 
         {/* Next — only when playing */}
         {playing && (
-          <button onClick={skipNext} aria-label="Next track" className="p-1.5 rounded-full hover:bg-white/10 transition-colors tap-feedback">
+          <button onClick={skipNext} aria-label="Next track" className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full hover:bg-white/10 transition-colors tap-feedback">
             <SkipForward className="w-3.5 h-3.5" />
           </button>
         )}

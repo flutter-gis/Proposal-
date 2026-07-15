@@ -23,15 +23,30 @@ import { Sparkles, Stars, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
 import { cn } from "@/lib/utils";
 import { usePreferences } from "@/lib/preferences-context";
+import { useReveal } from "@/lib/reveal-context";
 import { getIconForHour, type IconTheme } from "@/lib/preferences";
 import ThemedReveal from "./ThemedReveal";
 import { getSceneForIcon } from "./WildernessScenes";
 
 type Phase = "intro" | "box" | "opening" | "reveal" | "done";
 
+// ── Texture disposal helper ──────────────────────────────────────────────
+// Auto-disposes THREE textures when the component unmounts or the texture
+// changes. Prevents GPU memory leaks when switching icon themes (each theme
+// creates new DynamicSky + Ground textures).
+function useDisposableTexture<T extends THREE.Texture>(factory: () => T, deps: unknown[]): T {
+  const tex = useMemo(factory, deps);
+  useEffect(() => {
+    return () => {
+      tex.dispose();
+    };
+  }, [tex]);
+  return tex;
+}
+
 // ── Procedural Velvet Texture ────────────────────────────────────────────
 function useVelvetTexture(color: string) {
-  return useMemo(() => {
+  return useDisposableTexture(() => {
     const size = 256;
     const canvas = document.createElement("canvas");
     canvas.width = size;
@@ -66,7 +81,7 @@ function useVelvetTexture(color: string) {
 
 // ── Procedural Gold Texture ──────────────────────────────────────────────
 function useGoldTexture() {
-  return useMemo(() => {
+  return useDisposableTexture(() => {
     const size = 128;
     const canvas = document.createElement("canvas");
     canvas.width = size;
@@ -104,7 +119,7 @@ function useGoldTexture() {
 
 // ── Procedural Diamond Texture ───────────────────────────────────────────
 function useDiamondTexture() {
-  return useMemo(() => {
+  return useDisposableTexture(() => {
     const size = 64;
     const canvas = document.createElement("canvas");
     canvas.width = size;
@@ -129,7 +144,7 @@ function useDiamondTexture() {
 
 // ── Procedural Bark Texture ──────────────────────────────────────────────
 function useBarkTexture() {
-  return useMemo(() => {
+  return useDisposableTexture(() => {
     const size = 128;
     const canvas = document.createElement("canvas");
     canvas.width = size;
@@ -169,7 +184,7 @@ function useBarkTexture() {
 
 // ── Procedural Ground Texture ────────────────────────────────────────────
 function useGroundTexture() {
-  return useMemo(() => {
+  return useDisposableTexture(() => {
     const size = 512;
     const canvas = document.createElement("canvas");
     canvas.width = size;
@@ -644,11 +659,7 @@ function Scene({ phase, onBoxClick }: { phase: Phase; onBoxClick: () => void }) 
 
 // ── Main Component ───────────────────────────────────────────────────────
 export default function EngagementReveal3D() {
-  const [phase, setPhase] = useState<Phase>("intro");
-  // Start visible=true so there's NO flicker — the overlay covers the site
-  // from the very first paint. If reduced-motion is preferred, we hide it
-  // in the effect below.
-  const [visible, setVisible] = useState(true);
+  const { phase, visible, setPhase, setVisible } = useReveal();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -683,6 +694,9 @@ export default function EngagementReveal3D() {
 
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Engagement reveal — tap the ring box to open"
       className={cn(
         "fixed inset-0 z-[300] transition-opacity duration-700",
         phase === "done" ? "opacity-0" : "opacity-100"
@@ -690,6 +704,14 @@ export default function EngagementReveal3D() {
       // Solid dark background from first paint — no transparency, no flicker
       style={{ backgroundColor: "#0f0a1e" }}
     >
+      {/* Screen-reader narration of phase changes */}
+      <p className="sr-only" aria-live="polite">
+        {phase === "intro" && "Loading the moment."}
+        {phase === "box" && "There's some exciting news. Tap the ring box to open."}
+        {phase === "opening" && "The ring box is opening."}
+        {phase === "reveal" && "J and Dee are getting engaged! Press Enter the adventure to continue."}
+        {phase === "done" && "Engagement reveal complete."}
+      </p>
       {/* 3D Canvas — full screen */}
       <Canvas
         shadows
@@ -748,10 +770,12 @@ export default function EngagementReveal3D() {
         </div>
       )}
 
-      {/* Enter link */}
+      {/* Enter button — keyboard-accessible */}
       {phase === "reveal" && (
-        <div
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 text-center pointer-events-auto cursor-pointer"
+        <button
+          type="button"
+          aria-label="Enter the adventure"
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 text-center pointer-events-auto cursor-pointer bg-transparent border-0 p-2 min-h-[44px] min-w-[44px] focus:outline-none focus:ring-2 focus:ring-amber-300 rounded-lg"
           onClick={(e) => {
             e.stopPropagation();
             setPhase("done");
@@ -761,7 +785,7 @@ export default function EngagementReveal3D() {
           <p className="text-xs text-amber-100/60 uppercase tracking-widest anim-fade-in-up" style={{ animationDelay: "2.5s", textShadow: "0 2px 8px rgba(0,0,0,0.6)" }}>
             Enter the adventure →
           </p>
-        </div>
+        </button>
       )}
     </div>
   );
