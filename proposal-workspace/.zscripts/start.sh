@@ -72,12 +72,36 @@ if [ -f "./next-service-dist/server.js" ]; then
     NEXT_PID=$!
     pids="$NEXT_PID"
 
-    sleep 1
+    # Wait longer (3s) for the server to bind — 1s was too short on slower
+    # containers and caused false "failed to start" errors.
+    sleep 3
     if ! kill -0 "$NEXT_PID" 2>/dev/null; then
-        echo "❌ Next.js failed to start"
+        echo "❌ Next.js failed to start (process exited within 3s)"
+        echo "   Runner: $RUNNER"
+        echo "   Port: $PORT"
+        echo "   Checking if port is in use..."
+        ss -tlnp 2>/dev/null | grep ":$PORT" || echo "   Port $PORT is free"
         exit 1
     fi
-    echo "✅ Next.js started (PID: $NEXT_PID, Port: $PORT)"
+    echo "✅ Next.js started (PID: $NEXT_PID, Port: $PORT, Runner: $RUNNER)"
+
+    # Health check — verify the server actually responds to HTTP requests.
+    # The platform may require this before marking the deploy as successful.
+    echo "🏥 Running health check..."
+    HEALTH_OK=false
+    for i in 1 2 3 4 5; do
+        if curl -s -o /dev/null -w "%{http_code}" "http://localhost:$PORT/" 2>/dev/null | grep -q "200\|301\|302"; then
+            HEALTH_OK=true
+            echo "   ✅ Health check passed (attempt $i)"
+            break
+        fi
+        echo "   ⏳ Waiting for server to respond (attempt $i)..."
+        sleep 2
+    done
+    if [ "$HEALTH_OK" = "false" ]; then
+        echo "   ⚠️  Health check failed — server is running but not responding"
+        echo "   The deploy may still succeed if the platform retries"
+    fi
 
     cd "$BUILD_DIR"
 else
