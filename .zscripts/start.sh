@@ -52,10 +52,29 @@ ls -lah
 # ---------------------------------------------------------------------------
 # Next.js standalone server
 # ---------------------------------------------------------------------------
+# Try multiple locations for the standalone server:
+#   1. ./next-service-dist/server.js  (created by build.sh, used in deploy)
+#   2. ./.next/standalone/server.js   (exists after a local build)
+#   3. Fall back to dev mode if neither exists
+# ---------------------------------------------------------------------------
+STANDALONE_SERVER=""
 if [ -f "./next-service-dist/server.js" ]; then
-    echo "🚀 Starting Next.js (standalone)..."
+    STANDALONE_SERVER="./next-service-dist/server.js"
     cd next-service-dist/ || exit 1
+elif [ -f "./.next/standalone/server.js" ]; then
+    STANDALONE_SERVER="./.next/standalone/server.js"
+    echo "ℹ️  Using local .next/standalone/ (not a deploy tarball)"
+    # Copy static + public into standalone if not already there
+    if [ -d "../.next/static" ] && [ ! -d "./.next/static" ]; then
+        mkdir -p .next && cp -r ../.next/static .next/
+    fi
+    if [ -d "../public" ] && [ ! -d "./public" ]; then
+        cp -r ../public .
+    fi
+fi
 
+if [ -n "$STANDALONE_SERVER" ]; then
+    echo "🚀 Starting Next.js (standalone)..."
     export NODE_ENV=production
     export PORT="${PORT:-3000}"
     export HOSTNAME="${HOSTNAME:-0.0.0.0}"
@@ -105,8 +124,29 @@ if [ -f "./next-service-dist/server.js" ]; then
 
     cd "$BUILD_DIR"
 else
-    echo "❌ Missing ./next-service-dist/server.js — build artifact not found"
-    exit 1
+    # No standalone server found — fall back to dev mode.
+    # This happens when start.sh is run directly without a prior build.
+    echo "⚠️  No standalone server found, falling back to dev mode..."
+    export PORT="${PORT:-3000}"
+    export HOSTNAME="${HOSTNAME:-0.0.0.0}"
+
+    if command -v bun >/dev/null 2>&1; then
+        RUNNER=bun
+    else
+        RUNNER=npx
+    fi
+
+    echo "🚀 Starting Next.js in dev mode..."
+    $RUNNER run dev &
+    NEXT_PID=$!
+    pids="$NEXT_PID"
+
+    sleep 5
+    if ! kill -0 "$NEXT_PID" 2>/dev/null; then
+        echo "❌ Next.js dev server failed to start"
+        exit 1
+    fi
+    echo "✅ Next.js dev server started (PID: $NEXT_PID, Port: $PORT)"
 fi
 
 # ---------------------------------------------------------------------------
