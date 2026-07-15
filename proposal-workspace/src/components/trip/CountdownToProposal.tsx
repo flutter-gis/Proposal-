@@ -145,7 +145,7 @@ export default function CountdownToProposal({ className }: { className?: string 
                     background: "linear-gradient(120deg, transparent, rgba(184,134,11,0.18), transparent)",
                   }}
                 />
-                <div className="relative z-10 font-serif text-3xl sm:text-4xl md:text-6xl font-bold tabular-nums text-rust-brass">
+                <div className="relative z-10 font-dejavu-mono text-3xl sm:text-4xl md:text-6xl font-bold tabular-nums text-rust-brass">
                   {String(value).padStart(2, "0")}
                 </div>
                 <div className="relative z-10 mt-1 text-[10px] md:text-xs uppercase tracking-widest text-rust-cream/70">

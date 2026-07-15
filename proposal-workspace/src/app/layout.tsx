@@ -1,5 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
+import {
+  Geist, Geist_Mono, Playfair_Display,
+  Pacifico, Dancing_Script, Caveat, Satisfy, Lobster, Bangers, Carlito, Tinos,
+  JetBrains_Mono,
+} from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import AppBootstrap from "@/components/pwa/AppBootstrap";
@@ -7,6 +11,7 @@ import ServiceWorkerRegister from "@/components/pwa/ServiceWorkerRegister";
 import InstallPrompt from "@/components/pwa/InstallPrompt";
 import StructuredData from "@/components/trip/StructuredData";
 
+// ── Base UI fonts (pre-existing) ────────────────────────────────────────
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -23,6 +28,98 @@ const playfair = Playfair_Display({
   weight: ["400", "500", "600", "700", "800", "900"],
   display: "swap",
 });
+
+// ── Narrative fonts — each serves a specific storytelling purpose ───────
+// Loaded via next/font/google so they're self-hosted (no Google CDN request),
+// preloaded, and tree-shaken to only the weights actually used.
+
+// Pacifico — beachy cursive for "J & Dee" in the 3D reveal
+const pacifico = Pacifico({
+  variable: "--font-pacifico",
+  subsets: ["latin"],
+  weight: "400",
+  display: "swap",
+});
+
+// Dancing Script — elegant handwriting for "are getting engaged!" subtitle
+const dancingScript = Dancing_Script({
+  variable: "--font-dancing",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+// Caveat — casual journal hand for personal notes and quotes
+const caveat = Caveat({
+  variable: "--font-caveat",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+// Satisfy — calligraphy for proposal headlines
+const satisfy = Satisfy({
+  variable: "--font-satisfy",
+  subsets: ["latin"],
+  weight: "400",
+  display: "swap",
+});
+
+// Lobster — bold vintage for section headlines
+const lobster = Lobster({
+  variable: "--font-lobster",
+  subsets: ["latin"],
+  weight: "400",
+  display: "swap",
+});
+
+// Bangers — comic bold for celebration moments
+const bangers = Bangers({
+  variable: "--font-bangers",
+  subsets: ["latin"],
+  weight: "400",
+  display: "swap",
+});
+
+// Carlito — friendly rounded sans for body text (Calibri-metric-compatible)
+const carlito = Carlito({
+  variable: "--font-carlito",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  display: "swap",
+});
+
+// Tinos — editorial serif for long-form descriptions (Times-metric-compatible)
+const tinos = Tinos({
+  variable: "--font-tinos",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
+
+// JetBrains Mono — monospace for countdown numbers (DejaVu Mono equivalent)
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-dejavu-mono",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  display: "swap",
+});
+
+const allFontVariables = [
+  geistSans.variable,
+  geistMono.variable,
+  playfair.variable,
+  pacifico.variable,
+  dancingScript.variable,
+  caveat.variable,
+  satisfy.variable,
+  lobster.variable,
+  bangers.variable,
+  carlito.variable,
+  tinos.variable,
+  jetbrainsMono.variable,
+].join(" ");
 
 export const metadata: Metadata = {
   // #1 CRITICAL FIX: metadataBase must be set so og:image / twitter:image
@@ -129,7 +226,7 @@ export default function RootLayout({
         <StructuredData />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} antialiased bg-background text-foreground`}
+        className={`${allFontVariables} antialiased bg-background text-foreground`}
       >
         {/* G-01: Skip-to-content link — keyboard users bypass the app bar */}
         <a

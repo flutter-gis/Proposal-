@@ -138,7 +138,7 @@ function ProposalPageImpl() {
             <div className="inline-flex items-center gap-2 rounded-full bg-rust-brass/20 px-3 py-1 text-[11px] uppercase tracking-widest text-rust-brass">
               <Sparkles className="w-3 h-3" /> 💍 The Proposal
             </div>
-            <h2 className="mt-3 font-serif text-3xl sm:text-4xl md:text-6xl font-bold">
+            <h2 className="mt-3 font-satisfy text-4xl sm:text-5xl md:text-7xl">
               🏔️ One knee at the cliff's edge 💍
             </h2>
             <p className="mx-auto mt-3 max-w-2xl text-sm md:text-base text-rust-cream/80">
@@ -149,9 +149,9 @@ function ProposalPageImpl() {
             <div className="mt-5 flex flex-wrap justify-center gap-2">
               <button
                 onClick={fireCelebration}
-                className="brass-button anim-glow-sweep inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold uppercase tracking-wider tap-feedback"
+                className="brass-button anim-glow-sweep inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bangers tracking-wider text-lg tap-feedback"
               >
-                <Heart className="w-4 h-4" /> 🎉 Celebrate the moment
+                <Heart className="w-4 h-4" /> 🎉 CELEBRATE THE MOMENT
               </button>
             </div>
           </div>
@@ -172,10 +172,10 @@ function ProposalPageImpl() {
 
         {/* P-03: Why this spot — first-person love letter */}
         <FlyIn className="leather-card parchment-texture rounded-3xl p-6 md:p-8 mb-8">
-          <h3 className="font-serif text-2xl font-bold text-rust-bark mb-3">
+          <h3 className="font-lobster text-3xl text-rust-bark mb-3">
             💌 Why this spot?
           </h3>
-          <p className="text-sm md:text-base leading-relaxed text-rust-bark/80 italic">
+          <p className="font-tinos text-base md:text-lg leading-relaxed text-rust-bark/80 italic">
             We chose Lake Gloriette because the mountain does the talking. Table
             Rock rises 1,000 feet straight out of the water — not a slope, a wall.
             At golden hour in early August, the setting sun will hit that granite
@@ -194,7 +194,7 @@ function ProposalPageImpl() {
 
         {/* 3-step staging timeline */}
         <FlyIn className="mb-8">
-          <h3 className="mb-4 text-center font-serif text-2xl font-bold text-rust-bark">
+          <h3 className="mb-4 text-center font-lobster text-3xl text-rust-bark">
             🎬 The Staging Timeline
           </h3>
           <ol className="relative space-y-4 pl-6 md:pl-8">
@@ -269,7 +269,7 @@ function ProposalPageImpl() {
         <FlyIn className="bark-card anim-breathe rounded-3xl p-6 md:p-8 text-center"
                style={{ "--glow-color": "rgba(184,134,11,0.3)" } as React.CSSProperties}>
           <div className="text-[10px] uppercase tracking-widest text-rust-brass">Ring Engraving</div>
-          <div className="mt-2 font-serif text-xl sm:text-2xl md:text-3xl italic text-rust-cream">
+          <div className="mt-2 font-caveat text-2xl sm:text-3xl md:text-4xl text-rust-cream">
             {TRIP_STATS.ringEngraving}
           </div>
           <div className="mt-4 flex flex-wrap justify-center gap-3">
@@ -353,13 +353,13 @@ function ThePause({ onComplete }: { onComplete: () => void }) {
       onClick={done ? onComplete : undefined}
     >
       {done ? (
-        <p className="font-serif text-2xl sm:text-3xl md:text-4xl italic text-rust-brass anim-fade-in-up">
+        <p className="font-satisfy text-3xl sm:text-4xl md:text-5xl text-rust-brass anim-fade-in-up">
           That was the moment.
         </p>
       ) : (
         <div className="text-center">
           <div
-            className="font-serif text-7xl sm:text-8xl md:text-9xl font-bold text-rust-ember anim-breathe tabular-nums"
+            className="font-dejavu-mono text-7xl sm:text-8xl md:text-9xl font-bold text-rust-ember anim-breathe tabular-nums"
             style={{ "--glow-color": "rgba(225,29,72,0.5)" } as React.CSSProperties}
             key={count}
           >

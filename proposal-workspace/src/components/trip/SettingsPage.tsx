@@ -14,6 +14,7 @@ import { memo } from "react";
 import { usePreferences } from "@/lib/preferences-context";
 import { ICON_LIST } from "@/lib/preferences";
 import { FlyIn } from "./FlyIn";
+import ThemeIcon from "./ThemeIcon";
 import { Settings as SettingsIcon, Sparkles, Clock, Check, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -45,9 +46,8 @@ function SettingsPageImpl() {
         <FlyIn className="leather-card parchment-texture rounded-3xl p-6 mb-6">
           <div className="flex items-center gap-4">
             <div className="flex-shrink-0">
-              <img
-                src={`/icons/themes/${effectiveIcon}-192.png`}
-                alt={`${effectiveIcon} icon`}
+              <ThemeIcon
+                name={effectiveIcon}
                 className="h-20 w-20 rounded-2xl shadow-lg"
               />
             </div>
@@ -146,11 +146,9 @@ function SettingsPageImpl() {
                   )}
                   aria-label={`Select ${icon.label} icon`}
                 >
-                  <img
-                    src={`/icons/themes/${icon.name}-192.png`}
-                    alt={`${icon.label} icon`}
+                  <ThemeIcon
+                    name={icon.name}
                     className="h-12 w-12 rounded-xl shadow-sm"
-                    loading="lazy"
                   />
                   <div className="text-[10px] font-semibold text-rust-bark text-center leading-tight">
                     {icon.label}

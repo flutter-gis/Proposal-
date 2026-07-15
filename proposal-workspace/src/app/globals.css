@@ -9,6 +9,17 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-serif: var(--font-playfair);
+  /* Narrative fonts — exposed as Tailwind theme tokens so they can be used
+     as `font-pacifico`, `font-dancing`, etc. throughout the component tree. */
+  --font-pacifico: var(--font-pacifico);
+  --font-dancing: var(--font-dancing);
+  --font-caveat: var(--font-caveat);
+  --font-satisfy: var(--font-satisfy);
+  --font-lobster: var(--font-lobster);
+  --font-bangers: var(--font-bangers);
+  --font-carlito: var(--font-carlito);
+  --font-tinos: var(--font-tinos);
+  --font-dejavu-mono: var(--font-dejavu-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);

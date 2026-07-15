@@ -77,7 +77,7 @@ export default function HeroSection() {
 
       <div className="relative z-10 mx-auto px-4 py-8 sm:px-6 sm:py-12 lg:py-20 max-w-6xl anim-fade-in-up">
         <div className="text-center">
-          <h1 className="font-serif text-4xl sm:text-6xl lg:text-8xl font-bold mb-4 sm:mb-6 tracking-tight leading-none">
+          <h1 className="font-lobster text-5xl sm:text-7xl lg:text-9xl mb-4 sm:mb-6 tracking-tight leading-none">
             The Wilderness
             <br />
             <span className="bg-gradient-to-r from-amber-300 via-rose-400 to-amber-300 bg-clip-text text-transparent">

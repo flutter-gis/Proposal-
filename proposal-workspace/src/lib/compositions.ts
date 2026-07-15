@@ -49,7 +49,7 @@ function goldenHour(): Composition {
   [[3,"E5",2],[7,"B4",2],[11,"C#5",2],[14,"E5",3],[18,"A4",2],[22,"E5",3],[27,"B5",2],[31,"E6",3]].forEach(([beat,note,dur]) => {
     notes.push(n(note as string, beat as number, dur as number, 0.4, "glockenspiel", b));
   });
-  return { id: "golden-hour", title: "Golden Hour", description: "Warm, hopeful, romantic", bpm: 68, notes, duration: 32 * b + 2 };
+  return { id: "golden-hour", title: "Golden Hour", description: "Warm, hopeful, romantic", bpm: 68, notes, duration: 32 * b + 2, ambience: ["birds"] };
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -101,7 +101,7 @@ function forestTrail(): Composition {
   ["G2","C2","G2","D2"].forEach((note, i) => {
     notes.push(n(note, i * 4, 4, 0.35, "bass", b));
   });
-  return { id: "forest-trail", title: "Forest Trail", description: "Adventurous, walking pace", bpm: 90, notes, duration: 16 * b + 2 };
+  return { id: "forest-trail", title: "Forest Trail", description: "Adventurous, walking pace", bpm: 90, notes, duration: 16 * b + 2, ambience: ["birds", "wind"] };
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -171,7 +171,7 @@ function starlitPath(): Composition {
   ["D5","F#5","E5","D5","C#5","D5","E5","F#5"].forEach((note, i) => {
     notes.push(n(note, i * 2, 2, 0.35, "lead", b));
   });
-  return { id: "starlit-path", title: "Starlit Path", description: "Dreamy, ethereal", bpm: 70, notes, duration: 16 * b + 2 };
+  return { id: "starlit-path", title: "Starlit Path", description: "Dreamy, ethereal", bpm: 70, notes, duration: 16 * b + 2, ambience: ["crickets", "wind"] };
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -215,7 +215,7 @@ function sunsetVow(): Composition {
   ["F3","A3","C4","F3","A3","C4","G3","Bb3","D4","G3","Bb3","D4","F3","A3","C4","F3","A3","C4"].forEach((note, i) => {
     notes.push(n(note, Math.floor(i / 3) * 2, 2, 0.2, "organ", b));
   });
-  return { id: "sunset-vow", title: "Sunset Vow", description: "Warm, golden, ceremonial", bpm: 68, notes, duration: 16 * b + 2 };
+  return { id: "sunset-vow", title: "Sunset Vow", description: "Warm, golden, ceremonial", bpm: 68, notes, duration: 16 * b + 2, ambience: ["water", "birds"] };
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -249,7 +249,7 @@ function celebration(): Composition {
   ["C6","E6","G6","E6","C6","E6","G6","E6"].forEach((note, i) => {
     notes.push(n(note, i, 0.5, 0.3, "glockenspiel", b));
   });
-  return { id: "celebration", title: "Celebration", description: "Joyful, energetic", bpm: 120, notes, duration: 8 * b + 1 };
+  return { id: "celebration", title: "Celebration", description: "Joyful, energetic", bpm: 120, notes, duration: 8 * b + 1, ambience: ["guitar"] };
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -275,7 +275,7 @@ function serenity(): Composition {
   ["E5","","","A5","","","C#6","","","B5","","","A5",""].forEach((note, i) => {
     if (note) notes.push(n(note, i, 1, 0.25, "celesta", b));
   });
-  return { id: "serenity", title: "Serenity", description: "Peaceful, contemplative", bpm: 60, notes, duration: 16 * b + 3 };
+  return { id: "serenity", title: "Serenity", description: "Peaceful, contemplative", bpm: 60, notes, duration: 16 * b + 3, ambience: ["campfire", "crickets"] };
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

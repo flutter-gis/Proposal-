@@ -76,7 +76,7 @@ function TripOverviewImpl() {
           <div className="inline-flex items-center gap-2 rounded-full bg-rust-bark/80 px-3 py-1 text-[11px] uppercase tracking-widest text-rust-bg">
             <span aria-hidden>📜</span> The Trip at a Glance
           </div>
-          <h2 className="mt-3 font-serif text-2xl sm:text-3xl md:text-5xl font-bold text-rust-bark">
+          <h2 className="mt-3 font-lobster text-3xl sm:text-4xl md:text-6xl text-rust-bark">
             ✨ What this week will feel like
           </h2>
         </FlyIn>

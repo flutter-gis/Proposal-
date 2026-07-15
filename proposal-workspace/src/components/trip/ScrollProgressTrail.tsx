@@ -34,10 +34,14 @@ export default function ScrollProgressTrail() {
     // rendered its active page on mount.
     let scrollContainer: HTMLElement | null = null;
     const findContainer = (): HTMLElement | null => {
-      const candidate = document.querySelector<HTMLElement>(
-        "main [class*='overflow-y-auto']"
-      );
-      return candidate;
+      // The SlideDeck renders its active page inside an inner div with
+      // Tailwind's `overflow-y-auto` utility. We scope the search to
+      // #main-content (the wrapper around <SlideDeck>) so we don't
+      // accidentally pick up other scrollable regions (e.g. dropdowns).
+      // Fall back to a global query if #main-content isn't present yet.
+      const scope =
+        document.querySelector<HTMLElement>("#main-content") ?? document;
+      return scope.querySelector<HTMLElement>("[class*='overflow-y-auto']");
     };
 
     const update = () => {

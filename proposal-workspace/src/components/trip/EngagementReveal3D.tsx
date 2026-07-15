@@ -757,10 +757,10 @@ export default function EngagementReveal3D() {
       {(phase === "reveal" || phase === "done") && (
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
           <div className="text-center px-8" style={{ animation: "css-pop-in 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards" }}>
-            <p className="font-serif text-3xl sm:text-5xl md:text-6xl font-bold text-white mb-3" style={{ textShadow: "0 0 30px rgba(251,191,36,0.7), 0 0 60px rgba(236,72,153,0.4), 0 2px 8px rgba(0,0,0,0.5)" }}>
+            <p className="font-pacifico text-4xl sm:text-6xl md:text-7xl text-white mb-3" style={{ textShadow: "0 0 30px rgba(251,191,36,0.7), 0 0 60px rgba(236,72,153,0.4), 0 2px 8px rgba(0,0,0,0.5)" }}>
               J <span className="text-amber-300">&amp;</span> Dee
             </p>
-            <p className="font-serif text-xl sm:text-2xl md:text-3xl text-amber-200 italic" style={{ textShadow: "0 0 20px rgba(251,191,36,0.5), 0 2px 8px rgba(0,0,0,0.5)" }}>
+            <p className="font-dancing text-2xl sm:text-3xl md:text-4xl text-amber-200" style={{ textShadow: "0 0 20px rgba(251,191,36,0.5), 0 2px 8px rgba(0,0,0,0.5)" }}>
               are getting engaged!
             </p>
             <div className="mt-6 text-3xl anim-heartbeat">💍</div>

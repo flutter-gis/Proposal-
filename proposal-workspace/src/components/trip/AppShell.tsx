@@ -19,6 +19,7 @@ import { Menu, X, Home, CalendarDays, Map, Diamond, Heart, Settings } from "luci
 import { useTrip, type PageId } from "@/lib/trip-context";
 import { usePreferences } from "@/lib/preferences-context";
 import { CountdownPill } from "./CountdownToProposal";
+import ThemeIcon from "./ThemeIcon";
 import { cn } from "@/lib/utils";
 
 interface TabDef {
@@ -76,9 +77,8 @@ export default function AppShell() {
             className="flex items-center gap-2 text-left tap-feedback"
             aria-label="Go home"
           >
-            <img
-              src={`/icons/themes/${effectiveIcon}-192.png`}
-              alt="Theme icon"
+            <ThemeIcon
+              name={effectiveIcon}
               className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg flex-shrink-0 shadow-sm"
             />
             <div className="hidden sm:block leading-tight">

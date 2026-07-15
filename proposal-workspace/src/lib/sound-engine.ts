@@ -468,6 +468,26 @@ export interface CompositionNote {
   inst: InstrumentName;
 }
 
+/**
+ * Six nature ambience generators that layer on top of the musical
+ * composition. Each generator synthesizes a continuous texture using
+ * filtered noise + occasional discrete events (chirps, crackles, etc.).
+ *
+ *   crickets — high-pitched 4 kHz chirps at staggered intervals
+ *   birds    — warbling tones with frequency sweeps
+ *   campfire — bandpass-filtered noise bursts (crackling pops)
+ *   wind     — brown noise bed with slow amplitude modulation
+ *   water    — pink noise bed with bandpass filter
+ *   guitar   — occasional acoustic guitar strums (uses the pluck synth)
+ */
+export type AmbienceType =
+  | "crickets"
+  | "birds"
+  | "campfire"
+  | "wind"
+  | "water"
+  | "guitar";
+
 export interface Composition {
   id: string;
   title: string;
@@ -475,6 +495,281 @@ export interface Composition {
   bpm: number;
   notes: CompositionNote[];
   duration: number; // total seconds (one loop)
+  /**
+   * Optional nature ambience layers. Each is synthesized continuously
+   * for the duration of the loop, fading in/out at the boundaries so
+   * loop transitions are seamless.
+   */
+  ambience?: AmbienceType[];
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  NATURE AMBIENCE GENERATORS
+// ═══════════════════════════════════════════════════════════════════════════
+/**
+ * Generates continuous nature ambience textures using the Web Audio API.
+ * Each generator is a self-contained audio graph that connects to a
+ * provided destination node (typically the same compressor the music
+ * routes through, but at a lower gain so ambience sits under the music).
+ *
+ * The ambience is scheduled for a fixed duration (one composition loop)
+ * and automatically disconnects when stopped. This avoids the cost of
+ * keeping noise sources running between loops.
+ */
+export class NatureAmbience {
+  private ctx: AudioContext;
+  private dest: AudioNode;
+  private nodes: AudioNode[] = [];
+  private stopFns: Array<() => void> = [];
+  private gain: GainNode;
+
+  constructor(ctx: AudioContext, dest: AudioNode, volume = 0.15) {
+    this.ctx = ctx;
+    this.dest = dest;
+    this.gain = ctx.createGain();
+    this.gain.gain.value = 0; // start silent, fade in
+    this.gain.connect(dest);
+  }
+
+  /** Fade in over `seconds` to full volume. */
+  fadeIn(seconds: number, targetVolume = 1) {
+    const now = this.ctx.currentTime;
+    this.gain.gain.cancelScheduledValues(now);
+    this.gain.gain.setValueAtTime(this.gain.gain.value, now);
+    this.gain.gain.linearRampToValueAtTime(targetVolume, now + seconds);
+  }
+
+  /** Fade out over `seconds` to silence, then disconnect all nodes. */
+  fadeOutAndStop(seconds: number) {
+    const now = this.ctx.currentTime;
+    this.gain.gain.cancelScheduledValues(now);
+    this.gain.gain.setValueAtTime(this.gain.gain.value, now);
+    this.gain.gain.linearRampToValueAtTime(0, now + seconds);
+    // Disconnect after fade completes
+    setTimeout(() => this.dispose(), seconds * 1000 + 50);
+  }
+
+  private dispose() {
+    this.stopFns.forEach(fn => { try { fn(); } catch {} });
+    this.stopFns = [];
+    this.nodes.forEach(n => { try { n.disconnect(); } catch {} });
+    this.nodes = [];
+    try { this.gain.disconnect(); } catch {}
+  }
+
+  /**
+   * Create a noise buffer source (white noise by default; pass `brown=true`
+   * for brown noise which is better for wind/water beds).
+   */
+  private createNoiseSource(brown = false): AudioBufferSourceNode {
+    const seconds = 4;
+    const buffer = this.ctx.createBuffer(1, this.ctx.sampleRate * seconds, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    if (brown) {
+      // Brown noise: integrated white noise (low-frequency emphasis)
+      let last = 0;
+      for (let i = 0; i < data.length; i++) {
+        const white = Math.random() * 2 - 1;
+        last = (last + 0.02 * white) / 1.02;
+        data[i] = last * 3.5;
+      }
+    } else {
+      for (let i = 0; i < data.length; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+    }
+    const src = this.ctx.createBufferSource();
+    src.buffer = buffer;
+    src.loop = true;
+    src.start();
+    this.nodes.push(src);
+    return src;
+  }
+
+  /** Crickets: high-pitched 4 kHz chirps at staggered intervals. */
+  startCrickets() {
+    // Background bed: very quiet high-frequency noise
+    const bed = this.createNoiseSource();
+    const bedFilter = this.ctx.createBiquadFilter();
+    bedFilter.type = "bandpass";
+    bedFilter.frequency.value = 4000;
+    bedFilter.Q.value = 5;
+    const bedGain = this.ctx.createGain();
+    bedGain.gain.value = 0.05;
+    bed.connect(bedFilter).connect(bedGain).connect(this.gain);
+
+    // Chirps: schedule periodic short sine bursts at 4 kHz
+    const chirpInterval = 0.8; // seconds between chirps
+    const chirpDuration = 0.05;
+    const scheduleChirp = () => {
+      if (!this.ctx) return;
+      const t = this.ctx.currentTime + 0.05;
+      const osc = this.ctx.createOscillator();
+      osc.type = "sine";
+      osc.frequency.value = 4000 + Math.random() * 200;
+      const g = this.ctx.createGain();
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.3, t + 0.005);
+      g.gain.exponentialRampToValueAtTime(0.001, t + chirpDuration);
+      osc.connect(g).connect(this.gain);
+      osc.start(t);
+      osc.stop(t + chirpDuration + 0.05);
+      this.nodes.push(osc, g);
+    };
+    // Schedule chirps at staggered intervals (multiple crickets)
+    const intervals: number[] = [];
+    const cricketCount = 3;
+    for (let i = 0; i < cricketCount; i++) {
+      const offset = (i * chirpInterval) / cricketCount;
+      const id = setInterval(scheduleChirp, chirpInterval * 1000);
+      // Stagger the first chirp so they don't all fire at once
+      setTimeout(scheduleChirp, offset * 1000);
+      intervals.push(id as unknown as number);
+    }
+    this.stopFns.push(() => intervals.forEach(id => clearInterval(id)));
+  }
+
+  /** Birds: warbling tones with frequency sweeps. */
+  startBirds() {
+    const scheduleBird = () => {
+      if (!this.ctx) return;
+      const t = this.ctx.currentTime + 0.1;
+      const osc = this.ctx.createOscillator();
+      osc.type = "sine";
+      const baseFreq = 1500 + Math.random() * 1500;
+      osc.frequency.setValueAtTime(baseFreq, t);
+      // Warble: 3-5 quick frequency sweeps
+      const warbleCount = 3 + Math.floor(Math.random() * 3);
+      for (let i = 0; i < warbleCount; i++) {
+        const wt = t + (i * 0.08);
+        osc.frequency.setValueAtTime(baseFreq, wt);
+        osc.frequency.linearRampToValueAtTime(baseFreq + 400, wt + 0.04);
+        osc.frequency.linearRampToValueAtTime(baseFreq - 200, wt + 0.08);
+      }
+      const g = this.ctx.createGain();
+      const dur = warbleCount * 0.08 + 0.1;
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.15, t + 0.02);
+      g.gain.setValueAtTime(0.15, t + dur - 0.05);
+      g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      osc.connect(g).connect(this.gain);
+      osc.start(t);
+      osc.stop(t + dur + 0.05);
+      this.nodes.push(osc, g);
+    };
+    scheduleBird();
+    const id = setInterval(scheduleBird, 2500 + Math.random() * 2000);
+    this.stopFns.push(() => clearInterval(id));
+  }
+
+  /** Campfire: bandpass-filtered noise bursts (crackling pops). */
+  startCampfire() {
+    // Background bed: low rumble
+    const bed = this.createNoiseSource(true);
+    const bedFilter = this.ctx.createBiquadFilter();
+    bedFilter.type = "lowpass";
+    bedFilter.frequency.value = 200;
+    const bedGain = this.ctx.createGain();
+    bedGain.gain.value = 0.08;
+    bed.connect(bedFilter).connect(bedGain).connect(this.gain);
+
+    // Crackles: short bandpass-filtered noise bursts
+    const scheduleCrackle = () => {
+      if (!this.ctx) return;
+      const t = this.ctx.currentTime + 0.02;
+      const dur = 0.03 + Math.random() * 0.04;
+      // Create a short noise buffer
+      const buf = this.ctx.createBuffer(1, this.ctx.sampleRate * dur, this.ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < data.length; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / data.length * 8);
+      }
+      const src = this.ctx.createBufferSource();
+      src.buffer = buf;
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = "bandpass";
+      filter.frequency.value = 800 + Math.random() * 1200;
+      filter.Q.value = 3;
+      const g = this.ctx.createGain();
+      g.gain.value = 0.2 + Math.random() * 0.3;
+      src.connect(filter).connect(g).connect(this.gain);
+      src.start(t);
+      this.nodes.push(src, filter, g);
+    };
+    // Random crackles at varying intervals
+    const id = setInterval(scheduleCrackle, 150 + Math.random() * 300);
+    this.stopFns.push(() => clearInterval(id));
+  }
+
+  /** Wind: brown noise bed with slow amplitude modulation. */
+  startWind() {
+    const bed = this.createNoiseSource(true);
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.value = 500;
+    // Slow LFO for amplitude modulation (gusts)
+    const lfo = this.ctx.createOscillator();
+    lfo.frequency.value = 0.15; // very slow
+    const lfoGain = this.ctx.createGain();
+    lfoGain.gain.value = 0.4;
+    const baseGain = this.ctx.createGain();
+    baseGain.gain.value = 0.5;
+    lfo.connect(lfoGain).connect(baseGain.gain);
+    lfo.start();
+    bed.connect(filter).connect(baseGain).connect(this.gain);
+    this.nodes.push(bed, filter, baseGain, lfo, lfoGain);
+  }
+
+  /** Water: pink noise bed with bandpass filter. */
+  startWater() {
+    const bed = this.createNoiseSource();
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = "bandpass";
+    filter.frequency.value = 800;
+    filter.Q.value = 1;
+    const g = this.ctx.createGain();
+    g.gain.value = 0.25;
+    // Slow LFO for wave-like swell
+    const lfo = this.ctx.createOscillator();
+    lfo.frequency.value = 0.3;
+    const lfoGain = this.ctx.createGain();
+    lfoGain.gain.value = 0.15;
+    lfo.connect(lfoGain).connect(g.gain);
+    lfo.start();
+    bed.connect(filter).connect(g).connect(this.gain);
+    this.nodes.push(bed, filter, g, lfo, lfoGain);
+  }
+
+  /** Guitar: occasional acoustic guitar strums using the pluck synth. */
+  startGuitar() {
+    const scheduleStrum = () => {
+      if (!this.ctx) return;
+      // Use the existing guitar instrument from INSTRUMENTS
+      const t = this.ctx.currentTime + 0.05;
+      const strumNotes = ["E3", "A3", "D4", "G4", "B4", "E5"];
+      strumNotes.forEach((note, i) => {
+        const fn = INSTRUMENTS["guitar"];
+        if (!fn) return;
+        const f = noteToFreq(note);
+        fn(this.ctx, { freq: f, time: t + i * 0.04, dur: 1.5, vel: 0.3 }, [this.gain]);
+      });
+    };
+    scheduleStrum();
+    const id = setInterval(scheduleStrum, 4000 + Math.random() * 2000);
+    this.stopFns.push(() => clearInterval(id));
+  }
+
+  /** Start a specific ambience type. */
+  start(type: AmbienceType) {
+    switch (type) {
+      case "crickets": this.startCrickets(); break;
+      case "birds": this.startBirds(); break;
+      case "campfire": this.startCampfire(); break;
+      case "wind": this.startWind(); break;
+      case "water": this.startWater(); break;
+      case "guitar": this.startGuitar(); break;
+    }
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -491,6 +786,9 @@ export class SoundEngine {
   private loopTimeout: ReturnType<typeof setTimeout> | null = null;
   private volume = 0.5;
   private currentComposition: Composition | null = null;
+  // Active ambience instances — one per AmbienceType in the current composition.
+  // Replaced on switchTo() and disposed on stop().
+  private ambienceInstances: NatureAmbience[] = [];
 
   private ensureContext() {
     if (this.ctx) return;
@@ -544,6 +842,19 @@ export class SoundEngine {
     if (!this.ctx || !this.isPlaying || !this.currentComposition) return;
     const startTime = this.ctx.currentTime + 0.1;
     this.currentComposition.notes.forEach(n => this.playNote(n, startTime));
+
+    // Start/restart ambience layers if the composition defines them.
+    // Ambience persists across loops (it's continuous texture, not notes),
+    // so we only start it on the first loop or when the composition changes.
+    if (this.ambienceInstances.length === 0 && this.currentComposition.ambience) {
+      for (const ambType of this.currentComposition.ambience) {
+        const amb = new NatureAmbience(this.ctx, this.compressor!, 0.15);
+        amb.start(ambType);
+        amb.fadeIn(2.0, 0.15); // 2-second fade-in
+        this.ambienceInstances.push(amb);
+      }
+    }
+
     this.loopTimeout = setTimeout(() => {
       if (this.isPlaying) this.scheduleLoop();
     }, this.currentComposition.duration * 1000);
@@ -589,6 +900,10 @@ export class SoundEngine {
     // when the user re-clicks the currently-playing track).
     if (this.currentComposition === composition && this.isPlaying) return;
 
+    // Fade out existing ambience layers — they'll be replaced when the
+    // new composition's scheduleLoop fires.
+    this.stopAmbience();
+
     const now = this.ctx.currentTime;
     const fadeOut = 0.4;
     const fadeIn = 0.4;
@@ -613,9 +928,18 @@ export class SoundEngine {
     }, fadeOut * 1000);
   }
 
+  /** Fade out and dispose all active ambience layers. */
+  private stopAmbience() {
+    for (const amb of this.ambienceInstances) {
+      amb.fadeOutAndStop(0.5);
+    }
+    this.ambienceInstances = [];
+  }
+
   stop() {
     this.isPlaying = false;
     if (this.loopTimeout) { clearTimeout(this.loopTimeout); this.loopTimeout = null; }
+    this.stopAmbience();
     if (this.ctx && this.masterGain) {
       const now = this.ctx.currentTime;
       this.masterGain.gain.cancelScheduledValues(now);
