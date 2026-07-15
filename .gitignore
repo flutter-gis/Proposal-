@@ -1,2 +1,32 @@
 skills/
 node_modules/
+
+# Next.js
+.next/
+out/
+build/
+
+# Env
+.env*
+
+# Logs
+*.log
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Misc
+.DS_Store
+*.pem
+*.pid
+.zscripts/dev.pid
+
+# Upload/download
+upload/
+tool-results/
+
+# Script artifacts
+scripts/imgs_v3/
+scripts/*.png
+scripts/*.jpg
