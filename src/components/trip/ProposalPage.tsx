@@ -194,36 +194,49 @@ function ProposalPageImpl() {
           </p>
         </FlyIn>
 
-        {/* 3-step staging timeline */}
+        {/* 3-step staging timeline — SPOILER GATE: hidden before Aug 7 */}
         <FlyIn className="mb-8">
-          <h3 className="mb-4 text-center font-lobster text-3xl text-rust-bark">
-            🎬 The Staging Timeline
-          </h3>
-          <ol className="relative space-y-4 pl-6 md:pl-8">
-            <span aria-hidden className="absolute left-2 top-1 bottom-1 w-0.5 bg-gradient-to-b from-rust-brass via-rust-ember to-rust-wax" />
-            {STAGING.map((s, i) => (
-              <li key={s.time} className="relative">
-                <span
-                  aria-hidden
-                  className="absolute -left-4 md:-left-6 top-2 h-3.5 w-3.5 rounded-full bg-rust-brass ring-4 ring-rust-cream"
-                />
-                <div className="leather-card parchment-texture rounded-2xl p-4 md:p-5">
-                  <div className="flex items-start gap-3">
-                    <span className="text-2xl" aria-hidden>{s.icon}</span>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="font-serif text-lg font-bold text-rust-bark">{s.title}</div>
-                        <span className="rounded-full bg-rust-forest/15 px-2 py-0.5 text-[10px] uppercase tracking-widest text-rust-forest font-semibold">
-                          {s.time}
-                        </span>
+          {new Date() < new Date("2026-08-07T00:00:00") ? (
+            <div className="leather-card parchment-texture rounded-3xl p-8 text-center">
+              <div className="text-4xl mb-3">🤐</div>
+              <h3 className="font-lobster text-2xl text-rust-bark mb-2">The plan is a secret</h3>
+              <p className="text-sm text-rust-bark/70 max-w-md mx-auto">
+                The staging timeline reveals the surprise. It will unlock automatically on August 7, 2026.
+                Until then, it's under wraps.
+              </p>
+            </div>
+          ) : (
+            <>
+              <h3 className="mb-4 text-center font-lobster text-3xl text-rust-bark">
+                The Staging Timeline
+              </h3>
+              <ol className="relative space-y-4 pl-6 md:pl-8">
+                <span aria-hidden className="absolute left-2 top-1 bottom-1 w-0.5 bg-gradient-to-b from-rust-brass via-rust-ember to-rust-wax" />
+                {STAGING.map((s, i) => (
+                  <li key={s.time} className="relative">
+                    <span
+                      aria-hidden
+                      className="absolute -left-4 md:-left-6 top-2 h-3.5 w-3.5 rounded-full bg-rust-brass ring-4 ring-rust-cream"
+                    />
+                    <div className="leather-card parchment-texture rounded-2xl p-4 md:p-5">
+                      <div className="flex items-start gap-3">
+                        <span className="text-2xl" aria-hidden>{s.icon}</span>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="font-serif text-lg font-bold text-rust-bark">{s.title}</div>
+                            <span className="rounded-full bg-rust-forest/15 px-2 py-0.5 text-[10px] uppercase tracking-widest text-rust-forest font-semibold">
+                              {s.time}
+                            </span>
+                          </div>
+                          <p className="mt-1 text-sm text-rust-bark/75 leading-relaxed">{s.text}</p>
+                        </div>
                       </div>
-                      <p className="mt-1 text-sm text-rust-bark/75 leading-relaxed">{s.text}</p>
                     </div>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ol>
+                  </li>
+                ))}
+              </ol>
+            </>
+          )}
         </FlyIn>
 
         {/* P-06: The plan after — as a story, not a bullet list */}
@@ -275,25 +288,18 @@ function ProposalPageImpl() {
             {TRIP_STATS.ringEngraving}
           </div>
           <div className="mt-4 flex flex-wrap justify-center gap-3">
+            {/* Consolidated CTAs: 2 buttons maximum (per audit recommendation) */}
             <button
-              onClick={fireCelebration}
-              className="brass-button anim-glow-sweep inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold uppercase tracking-wider tap-feedback"
+              onClick={downloadCalendarEvent}
+              className="brass-button anim-glow-sweep inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold uppercase tracking-wider tap-feedback min-h-[44px]"
             >
-              <Sparkles className="w-4 h-4" /> 🎉 Celebrate
+              <CalendarPlus className="w-4 h-4" /> Add to Calendar
             </button>
-            {/* P-04: The Pause */}
-            <button
-              onClick={() => setPaused(true)}
-              className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold uppercase tracking-wider bg-rust-wax/30 border border-rust-wax/50 text-rust-cream hover:bg-rust-wax/40 tap-feedback"
-            >
-              <Heart className="w-4 h-4" /> 🫧 Experience the moment
-            </button>
-            {/* P-07: Share proposal moment */}
             <button
               onClick={async () => {
                 const url = typeof window !== "undefined" ? window.location.href : "";
                 const shareData = {
-                  title: "The Wilderness Romance — 💍 The Proposal",
+                  title: "The Wilderness Romance — The Proposal",
                   text: "August 7, 2026 · 7:30 PM · Lake Gloriette, Dixville Notch\n8.7.26 | As One",
                   url,
                 };
@@ -302,23 +308,13 @@ function ProposalPageImpl() {
                 } else if (typeof navigator !== "undefined" && navigator.clipboard) {
                   try {
                     await navigator.clipboard.writeText(url);
-                    toast({
-                      title: "Link copied",
-                      description: "Share it with family.",
-                    });
+                    toast({ title: "Link copied", description: "Share it with family." });
                   } catch {}
                 }
               }}
-              className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold uppercase tracking-wider bg-white/10 border border-white/20 text-rust-cream hover:bg-white/15 tap-feedback"
+              className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold uppercase tracking-wider bg-white/10 border border-white/20 text-rust-cream hover:bg-white/15 tap-feedback min-h-[44px]"
             >
-              <Share2 className="w-4 h-4" /> 📤 Share our moment
-            </button>
-            {/* Design H: Add to Calendar — generates .ics file */}
-            <button
-              onClick={downloadCalendarEvent}
-              className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold uppercase tracking-wider bg-rust-forest/30 border border-rust-forest/50 text-rust-cream hover:bg-rust-forest/40 tap-feedback"
-            >
-              <CalendarPlus className="w-4 h-4" /> 📅 Add to calendar
+              <Share2 className="w-4 h-4" /> Share This Moment
             </button>
           </div>
         </FlyIn>

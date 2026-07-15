@@ -749,6 +749,15 @@ export default function EngagementReveal3D() {
               Tap the box to open
             </p>
           </div>
+          {/* Skip link for repeat visitors or those who don't want to wait */}
+          <button
+            type="button"
+            onClick={() => { setPhase("done"); setVisible(false); }}
+            className="absolute bottom-4 right-4 text-[10px] text-amber-100/40 hover:text-amber-100/70 transition-colors pointer-events-auto tap-feedback min-h-[44px] min-w-[44px] px-3"
+            aria-label="Skip the surprise"
+          >
+            Skip →
+          </button>
         </div>
       )}
 

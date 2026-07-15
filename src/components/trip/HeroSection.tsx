@@ -77,6 +77,9 @@ export default function HeroSection() {
 
       <div className="relative z-10 mx-auto px-4 py-8 sm:px-6 sm:py-12 lg:py-20 max-w-6xl anim-fade-in-up">
         <div className="text-center">
+          {/* Today indicator — shows current trip day */}
+          <TodayIndicator />
+
           <h1 className="font-lobster text-5xl sm:text-7xl lg:text-9xl mb-4 sm:mb-6 tracking-tight leading-none">
             The Wilderness
             <br />
@@ -97,5 +100,51 @@ export default function HeroSection() {
         </div>
       </div>
     </section>
+  );
+}
+
+// ── Today Indicator ─────────────────────────────────────────────────────
+function TodayIndicator() {
+  const now = new Date();
+  const tripStart = new Date("2026-08-04T00:00:00");
+  const tripEnd = new Date("2026-08-10T00:00:00");
+  const dayLabels = [
+    "The Off-Grid Escape",
+    "Still Waters & Wildlife",
+    "The Powered Preparation",
+    "THE BIG PROPOSAL DAY",
+    "Frontier Horizons & Dark Skies",
+    "The Double-Header Grand Finale",
+  ];
+
+  if (now < tripStart) {
+    // Before trip — show countdown hint
+    return (
+      <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-amber-500/20 px-4 py-1.5 text-xs font-semibold text-amber-200 backdrop-blur-sm">
+        <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+        Trip starts August 4, 2026
+      </div>
+    );
+  }
+
+  if (now > tripEnd) {
+    // After trip
+    return (
+      <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-emerald-500/20 px-4 py-1.5 text-xs font-semibold text-emerald-200 backdrop-blur-sm">
+        <span>✓</span> The trip is complete — relive it below
+      </div>
+    );
+  }
+
+  // During trip — show current day
+  const dayIdx = Math.floor((now.getTime() - tripStart.getTime()) / (24 * 60 * 60 * 1000));
+  const dayNum = Math.min(dayIdx + 1, 6);
+  const label = dayLabels[dayNum - 1] || "";
+
+  return (
+    <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-rose-500/20 px-4 py-1.5 text-xs font-semibold text-rose-200 backdrop-blur-sm anim-breathe">
+      <span className="w-2 h-2 rounded-full bg-rose-400 animate-pulse" />
+      Day {dayNum} · {label}
+    </div>
   );
 }

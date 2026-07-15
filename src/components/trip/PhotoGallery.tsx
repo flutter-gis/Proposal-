@@ -38,6 +38,8 @@ const SECTION_LABELS: Record<string, string> = {
   the_basin: "The Basin",
   connecticut_lakes: "Connecticut Lakes",
   kancamagus_highway: "Kancamagus Highway",
+  ring_full: "The Ring — Full View",
+  ring_macro: "The Ring — Close-Up",
 };
 
 export default function PhotoGallery() {

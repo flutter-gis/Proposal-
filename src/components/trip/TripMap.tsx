@@ -208,12 +208,13 @@ export default function TripMap({
         {/* ── Main stop markers ── */}
         {PLACES.map((place) => {
           const isHighlighted = place.id === selectedId;
+          const isProposal = place.category === "proposal";
           return (
             <Marker
               key={place.id}
               position={[place.coords.lat, place.coords.lng]}
-              icon={createIcon(place.category, isHighlighted)}
-              zIndexOffset={isHighlighted ? 1000 : 100}
+              icon={createIcon(place.category, isHighlighted || isProposal)}
+              zIndexOffset={isHighlighted || isProposal ? 1000 : 100}
             >
               <Popup>
                 <div className="min-w-[200px]">
@@ -236,6 +237,22 @@ export default function TripMap({
             </Marker>
           );
         })}
+
+        {/* ── Pulsing proposal marker ── */}
+        {PLACES.filter(p => p.category === "proposal").map(place => (
+          <CircleMarker
+            key={`pulse-${place.id}`}
+            center={[place.coords.lat, place.coords.lng]}
+            radius={20}
+            pathOptions={{ color: "#e11d48", fillColor: "#e11d48", fillOpacity: 0.1, weight: 1 }}
+          >
+            <CircleMarker
+              center={[place.coords.lat, place.coords.lng]}
+              radius={30}
+              pathOptions={{ color: "#e11d48", fillColor: "#e11d48", fillOpacity: 0.05, weight: 0.5 }}
+            />
+          </CircleMarker>
+        ))}
 
         {/* ── Roadside attraction markers ── */}
         {showRoadside &&
