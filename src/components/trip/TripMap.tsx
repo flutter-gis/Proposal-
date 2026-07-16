@@ -215,7 +215,7 @@ export default function TripMap({
       <MapContainer
         center={[44.0, -71.4]}
         zoom={7}
-        scrollWheelZoom={false}
+        scrollWheelZoom={true}
         style={{ height: "100%", width: "100%", minHeight: 500, zIndex: 0 }}
         ref={(m) => { if (m) mapRef.current = m; }}
         className="bg-emerald-50"
@@ -366,7 +366,7 @@ export default function TripMap({
             key={layer.id}
             onClick={() => setLayerId(layer.id)}
             className={cn(
-              "px-2.5 py-1 text-[11px] font-semibold rounded transition-colors",
+              "px-2.5 py-1 text-[11px] font-semibold rounded transition-colors min-h-[32px]",
               layerId === layer.id ? "bg-emerald-700 text-white" : "text-slate-700 hover:bg-slate-100"
             )}
           >
@@ -406,6 +406,14 @@ export default function TripMap({
           <span className="text-[10px] font-semibold text-slate-600">
             💎 {ROADSIDE_ATTRACTIONS.length} roadside stops
           </span>
+        </div>
+      )}
+
+      {/* ── Proposal site callout (always visible, bottom-left to avoid clash) ── */}
+      {!showRoadside && (
+        <div className="absolute bottom-3 left-3 z-[1000] bg-gradient-to-r from-amber-500 to-rose-500 text-white rounded-lg shadow-lg px-3 py-1.5 pointer-events-none">
+          <div className="text-[9px] font-bold uppercase tracking-widest opacity-90">💍 Proposal Site</div>
+          <div className="text-[10px] font-semibold">Aug 7 · 7:30 PM</div>
         </div>
       )}
 

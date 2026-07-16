@@ -99,10 +99,10 @@ export default function AttractionCatalog({ legId }: { legId?: string }) {
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="font-lobster text-2xl text-rust-bark mb-1">
+            <h3 className="font-lobster text-2xl text-on-light mb-1">
               📋 Attraction Catalog
             </h3>
-            <p className="text-xs text-rust-bark/60">
+            <p className="text-xs text-on-light/60">
               {filtered.length} of {legId ? CATALOG.filter(e => e.legId === legId).length : CATALOG.length} stops
               {mapSelections.size > 0 && ` · ${mapSelections.size} added to map`}
             </p>
@@ -121,14 +121,14 @@ export default function AttractionCatalog({ legId }: { legId?: string }) {
 
         {/* Search bar */}
         <div className="relative mb-4" role="search">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-rust-bark/40" aria-hidden />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-light/40" aria-hidden />
           <input
             type="search"
             placeholder="Search attractions, food, grocery..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             aria-label="Search attractions"
-            className="w-full pl-10 pr-4 py-2.5 rounded-full bg-rust-cream/60 border border-rust-brass/30 text-sm text-rust-bark placeholder:text-rust-bark/40 focus:outline-none focus:border-rust-brass focus:ring-1 focus:ring-rust-brass min-h-[44px]"
+            className="w-full pl-10 pr-4 py-2.5 rounded-full bg-rust-cream/60 border border-rust-brass/30 text-sm text-on-light placeholder:text-on-light/40 focus:outline-none focus:border-rust-brass focus:ring-1 focus:ring-rust-brass min-h-[44px]"
           />
         </div>
 
@@ -140,7 +140,7 @@ export default function AttractionCatalog({ legId }: { legId?: string }) {
           >
             {/* Type filters */}
             <div>
-              <div className="text-[10px] font-bold uppercase tracking-widest text-rust-bark/50 mb-2">Type</div>
+              <div className="text-[10px] font-bold uppercase tracking-widest text-on-light/50 mb-2">Type</div>
               <div className="flex flex-wrap gap-1.5">
                 {Object.entries(TYPE_META).map(([type, meta]) => (
                   <button
@@ -150,7 +150,7 @@ export default function AttractionCatalog({ legId }: { legId?: string }) {
                       "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-all min-h-[32px]",
                       selectedTypes.has(type as AttractionType)
                         ? "text-white border-transparent"
-                        : "bg-transparent text-rust-bark/60 border-rust-brass/30 hover:border-rust-brass/50"
+                        : "bg-transparent text-on-light/60 border-rust-brass/30 hover:border-rust-brass/50"
                     )}
                     style={selectedTypes.has(type as AttractionType) ? { backgroundColor: meta.color } : {}}
                   >
@@ -162,7 +162,7 @@ export default function AttractionCatalog({ legId }: { legId?: string }) {
 
             {/* Difficulty filters */}
             <div>
-              <div className="text-[10px] font-bold uppercase tracking-widest text-rust-bark/50 mb-2">Difficulty</div>
+              <div className="text-[10px] font-bold uppercase tracking-widest text-on-light/50 mb-2">Difficulty</div>
               <div className="flex flex-wrap gap-1.5">
                 {Object.entries(DIFFICULTY_META).map(([diff, meta]) => (
                   <button
@@ -172,7 +172,7 @@ export default function AttractionCatalog({ legId }: { legId?: string }) {
                       "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-all min-h-[32px]",
                       selectedDifficulty.has(diff as Difficulty)
                         ? "text-white border-transparent"
-                        : "bg-transparent text-rust-bark/60 border-rust-brass/30 hover:border-rust-brass/50"
+                        : "bg-transparent text-on-light/60 border-rust-brass/30 hover:border-rust-brass/50"
                     )}
                     style={selectedDifficulty.has(diff as Difficulty) ? { backgroundColor: meta.color } : {}}
                   >
@@ -184,7 +184,7 @@ export default function AttractionCatalog({ legId }: { legId?: string }) {
 
             {/* Position filters */}
             <div>
-              <div className="text-[10px] font-bold uppercase tracking-widest text-rust-bark/50 mb-2">Position</div>
+              <div className="text-[10px] font-bold uppercase tracking-widest text-on-light/50 mb-2">Position</div>
               <div className="flex gap-1.5">
                 <button
                   onClick={() => togglePosition("in-between")}
@@ -192,7 +192,7 @@ export default function AttractionCatalog({ legId }: { legId?: string }) {
                     "px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-all min-h-[32px]",
                     selectedPosition.has("in-between")
                       ? "bg-rust-forest text-white border-transparent"
-                      : "bg-transparent text-rust-bark/60 border-rust-brass/30 hover:border-rust-brass/50"
+                      : "bg-transparent text-on-light/60 border-rust-brass/30 hover:border-rust-brass/50"
                   )}
                 >
                   🛣️ In-between stops
@@ -203,7 +203,7 @@ export default function AttractionCatalog({ legId }: { legId?: string }) {
                     "px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-all min-h-[32px]",
                     selectedPosition.has("near-stop")
                       ? "bg-rust-forest text-white border-transparent"
-                      : "bg-transparent text-rust-bark/60 border-rust-brass/30 hover:border-rust-brass/50"
+                      : "bg-transparent text-on-light/60 border-rust-brass/30 hover:border-rust-brass/50"
                   )}
                 >
                   📍 Near a stop
@@ -239,7 +239,7 @@ export default function AttractionCatalog({ legId }: { legId?: string }) {
         </div>
 
         {filtered.length === 0 && (
-          <div className="text-center py-8 text-rust-bark/40 text-sm">
+          <div className="text-center py-8 text-on-light/40 text-sm">
             No attractions match your filters.
           </div>
         )}
@@ -297,7 +297,7 @@ function CatalogCard({
             className="w-3.5 h-3.5 accent-rust-forest"
             aria-label={`Show ${entry.name} on the map`}
           />
-          <span className="text-[9px] font-semibold text-rust-bark" aria-hidden>Map</span>
+          <span className="text-[9px] font-semibold text-on-light" aria-hidden>Map</span>
         </label>
       </div>
 
@@ -318,15 +318,15 @@ function CatalogCard({
         </div>
 
         {/* Name + tagline */}
-        <h4 className="font-serif text-sm font-bold text-rust-bark mb-1">{entry.name}</h4>
-        <p className="text-xs text-rust-bark/70 italic mb-2">{entry.tagline}</p>
+        <h4 className="font-serif text-sm font-bold text-on-light mb-1">{entry.name}</h4>
+        <p className="text-xs text-on-light/70 italic mb-2">{entry.tagline}</p>
 
         {/* Quick stats */}
-        <div className="flex flex-wrap items-center gap-2 text-[10px] text-rust-bark/60 mb-1">
+        <div className="flex flex-wrap items-center gap-2 text-[10px] text-on-light/60 mb-1">
           <span className="inline-flex items-center gap-0.5"><DollarSign className="w-2.5 h-2.5" aria-hidden />{entry.cost}</span>
           <span className="inline-flex items-center gap-0.5"><Clock className="w-2.5 h-2.5" aria-hidden />{entry.visitDuration}</span>
           <span className="inline-flex items-center gap-0.5"><MapPin className="w-2.5 h-2.5" aria-hidden />+{entry.detourMinutes}m</span>
-          <span className="text-rust-bark/40 capitalize">{entry.position === "in-between" ? "🛣️ Between" : "📍 Near stop"}</span>
+          <span className="text-on-light/40 capitalize">{entry.position === "in-between" ? "🛣️ Between" : "📍 Near stop"}</span>
         </div>
 
         {/* Theme tags */}
@@ -347,35 +347,35 @@ function CatalogCard({
       {/* Expanded content */}
       {expanded && (
         <div className="px-4 pb-4 space-y-3 anim-fade-in-up">
-          <p className="text-xs text-rust-bark/80 leading-relaxed font-tinos">{entry.description}</p>
+          <p className="text-xs text-on-light/80 leading-relaxed font-tinos">{entry.description}</p>
 
           <div>
             <h5 className="text-[10px] font-bold uppercase tracking-widest text-rust-forest mb-1.5">Highlights</h5>
             <ul className="space-y-0.5">
               {entry.highlights.map((h, i) => (
-                <li key={i} className="text-[11px] text-rust-bark/70 flex items-start gap-1.5">
+                <li key={i} className="text-[11px] text-on-light/70 flex items-start gap-1.5">
                   <span className="text-rust-forest mt-0.5">✓</span>{h}
                 </li>
               ))}
             </ul>
           </div>
 
-          {entry.address && <div className="text-[11px] text-rust-bark/60"><MapPin className="w-2.5 h-2.5 inline mr-1" />{entry.address}</div>}
-          {entry.phone && <div className="text-[11px] text-rust-bark/60">📞 {entry.phone}</div>}
+          {entry.address && <div className="text-[11px] text-on-light/60"><MapPin className="w-2.5 h-2.5 inline mr-1" />{entry.address}</div>}
+          {entry.phone && <div className="text-[11px] text-on-light/60">📞 {entry.phone}</div>}
 
           <div className="flex gap-2">
             <a href={directionsLink} target="_blank" rel="noopener noreferrer" className="flex-1 inline-flex items-center justify-center gap-1 rounded-full bg-rust-forest text-rust-cream px-3 py-2 text-[11px] font-bold hover:bg-rust-forest/90 min-h-[44px]">
               <Navigation className="w-3 h-3" /> Directions
             </a>
             {entry.website && (
-              <a href={entry.website} target="_blank" rel="noopener noreferrer" className="flex-1 inline-flex items-center justify-center gap-1 rounded-full bg-rust-wax/20 border border-rust-wax/40 text-rust-bark px-3 py-2 text-[11px] font-bold hover:bg-rust-wax/30 min-h-[44px]">
+              <a href={entry.website} target="_blank" rel="noopener noreferrer" className="flex-1 inline-flex items-center justify-center gap-1 rounded-full bg-rust-wax/20 border border-rust-wax/40 text-on-light px-3 py-2 text-[11px] font-bold hover:bg-rust-wax/30 min-h-[44px]">
                 <ExternalLink className="w-3 h-3" /> Website
               </a>
             )}
           </div>
 
           {/* Footnote */}
-          <div className="text-[9px] text-rust-bark/40 border-t border-rust-brass/10 pt-2">
+          <div className="text-[9px] text-on-light/40 border-t border-rust-brass/10 pt-2">
             <sup>[{entry.footnoteId}]</sup>{" "}
             <a href={entry.sourceUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">
               {entry.source}

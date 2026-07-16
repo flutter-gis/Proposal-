@@ -171,10 +171,10 @@ export const THEME_PALETTES: Record<ColorTheme, ThemePalette> = {
   dawn: {
     bg: "#fef3c7", bgDark: "#78350f", cream: "#fffbeb", parchment: "#fef3c7",
     text: "#78350f", textMuted: "#92400e", textOnDark: "#fef3c7",
-    primary: "#d97706", accent: "#f59e0b", forest: "#92400e", bark: "#451a03",
-    ember: "#ea580c", wax: "#b91c1c", brass: "#f59e0b", sage: "#a16207", leather: "#92400e",
+    primary: "#b45309", accent: "#c2410c", forest: "#92400e", bark: "#451a03",
+    ember: "#ea580c", wax: "#b91c1c", brass: "#b45309", sage: "#a16207", leather: "#92400e",
     border: "#fde68a", borderDark: "#78350f",
-    chart1: "#d97706", chart2: "#f59e0b", chart3: "#ea580c",
+    chart1: "#b45309", chart2: "#d97706", chart3: "#ea580c",
     aurora1: "#fbbf24", aurora2: "#f97316", aurora3: "#dc2626",
     cardGradient: "linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)",
     cardDarkGradient: "linear-gradient(135deg, #78350f 0%, #451a03 100%)",
@@ -185,10 +185,10 @@ export const THEME_PALETTES: Record<ColorTheme, ThemePalette> = {
   day: {
     bg: "#e0f2fe", bgDark: "#0c4a6e", cream: "#f0f9ff", parchment: "#e0f2fe",
     text: "#0c4a6e", textMuted: "#075985", textOnDark: "#e0f2fe",
-    primary: "#0284c7", accent: "#0ea5e9", forest: "#0369a1", bark: "#082f49",
-    ember: "#0ea5e9", wax: "#0c4a6e", brass: "#0ea5e9", sage: "#0284c7", leather: "#0369a1",
+    primary: "#0369a1", accent: "#0c4a6e", forest: "#0369a1", bark: "#082f49",
+    ember: "#0ea5e9", wax: "#0c4a6e", brass: "#0369a1", sage: "#0284c7", leather: "#0369a1",
     border: "#bae6fd", borderDark: "#0c4a6e",
-    chart1: "#0284c7", chart2: "#0ea5e9", chart3: "#38bdf8",
+    chart1: "#0369a1", chart2: "#0ea5e9", chart3: "#38bdf8",
     aurora1: "#38bdf8", aurora2: "#0ea5e9", aurora3: "#0284c7",
     cardGradient: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
     cardDarkGradient: "linear-gradient(135deg, #0c4a6e 0%, #082f49 100%)",
@@ -199,10 +199,10 @@ export const THEME_PALETTES: Record<ColorTheme, ThemePalette> = {
   forest: {
     bg: "#f0fdf4", bgDark: "#14532d", cream: "#f7fef9", parchment: "#dcfce7",
     text: "#14532d", textMuted: "#166534", textOnDark: "#f0fdf4",
-    primary: "#16a34a", accent: "#15803d", forest: "#15803d", bark: "#052e16",
+    primary: "#15803d", accent: "#166534", forest: "#15803d", bark: "#052e16",
     ember: "#65a30d", wax: "#166534", brass: "#4d7c0f", sage: "#84cc16", leather: "#166534",
     border: "#bbf7d0", borderDark: "#14532d",
-    chart1: "#16a34a", chart2: "#65a30d", chart3: "#84cc16",
+    chart1: "#15803d", chart2: "#65a30d", chart3: "#84cc16",
     aurora1: "#22c55e", aurora2: "#16a34a", aurora3: "#15803d",
     cardGradient: "linear-gradient(135deg, #f7fef9 0%, #dcfce7 100%)",
     cardDarkGradient: "linear-gradient(135deg, #14532d 0%, #052e16 100%)",
@@ -213,10 +213,10 @@ export const THEME_PALETTES: Record<ColorTheme, ThemePalette> = {
   golden: {
     bg: "#fff7ed", bgDark: "#7c2d12", cream: "#fffbeb", parchment: "#ffedd5",
     text: "#7c2d12", textMuted: "#9a3412", textOnDark: "#fff7ed",
-    primary: "#f97316", accent: "#ea580c", forest: "#c2410c", bark: "#431407",
-    ember: "#f97316", wax: "#9a3412", brass: "#fb923c", sage: "#fdba74", leather: "#9a3412",
+    primary: "#c2410c", accent: "#9a3412", forest: "#c2410c", bark: "#431407",
+    ember: "#f97316", wax: "#9a3412", brass: "#c2410c", sage: "#fdba74", leather: "#9a3412",
     border: "#fed7aa", borderDark: "#7c2d12",
-    chart1: "#f97316", chart2: "#ea580c", chart3: "#fb923c",
+    chart1: "#c2410c", chart2: "#ea580c", chart3: "#fb923c",
     aurora1: "#fb923c", aurora2: "#f97316", aurora3: "#dc2626",
     cardGradient: "linear-gradient(135deg, #fffbeb 0%, #ffedd5 100%)",
     cardDarkGradient: "linear-gradient(135deg, #7c2d12 0%, #431407 100%)",
@@ -228,7 +228,7 @@ export const THEME_PALETTES: Record<ColorTheme, ThemePalette> = {
     bg: "#fef2f2", bgDark: "#7f1d1d", cream: "#fff5f5", parchment: "#fee2e2",
     text: "#7f1d1d", textMuted: "#991b1b", textOnDark: "#fef2f2",
     primary: "#dc2626", accent: "#b91c1c", forest: "#991b1b", bark: "#450a0a",
-    ember: "#ef4444", wax: "#991b1b", brass: "#f87171", sage: "#fca5a5", leather: "#991b1b",
+    ember: "#ef4444", wax: "#991b1b", brass: "#b91c1c", sage: "#fca5a5", leather: "#991b1b",
     border: "#fecaca", borderDark: "#7f1d1d",
     chart1: "#dc2626", chart2: "#ef4444", chart3: "#f87171",
     aurora1: "#ef4444", aurora2: "#dc2626", aurora3: "#991b1b",
@@ -242,7 +242,7 @@ export const THEME_PALETTES: Record<ColorTheme, ThemePalette> = {
     bg: "#f5f3ff", bgDark: "#4c1d95", cream: "#faf5ff", parchment: "#ede9fe",
     text: "#4c1d95", textMuted: "#5b21b6", textOnDark: "#f5f3ff",
     primary: "#7c3aed", accent: "#6d28d9", forest: "#5b21b6", bark: "#2e1065",
-    ember: "#8b5cf6", wax: "#5b21b6", brass: "#a78bfa", sage: "#c4b5fd", leather: "#5b21b6",
+    ember: "#8b5cf6", wax: "#5b21b6", brass: "#6d28d9", sage: "#c4b5fd", leather: "#5b21b6",
     border: "#ddd6fe", borderDark: "#4c1d95",
     chart1: "#7c3aed", chart2: "#8b5cf6", chart3: "#a78bfa",
     aurora1: "#8b5cf6", aurora2: "#7c3aed", aurora3: "#6d28d9",
@@ -253,40 +253,40 @@ export const THEME_PALETTES: Record<ColorTheme, ThemePalette> = {
     animParticle: "rgba(245,243,255,0.5)",
   },
   night: {
-    bg: "#1e1b4b", bgDark: "#0f0a2e", cream: "#e0e7ff", parchment: "#3730a3",
+    bg: "#1e1b4b", bgDark: "#0f0a2e", cream: "#2a2660", parchment: "#3730a3",
     text: "#e0e7ff", textMuted: "#a5b4fc", textOnDark: "#e0e7ff",
-    primary: "#818cf8", accent: "#6366f1", forest: "#6366f1", bark: "#e0e7ff",
-    ember: "#a5b4fc", wax: "#818cf8", brass: "#a5b4fc", sage: "#818cf8", leather: "#c7d2fe",
-    border: "#4338ca", borderDark: "#312e81",
-    chart1: "#6366f1", chart2: "#818cf8", chart3: "#a5b4fc",
+    primary: "#a5b4fc", accent: "#818cf8", forest: "#6366f1", bark: "#0f0a2e",
+    ember: "#c7d2fe", wax: "#818cf8", brass: "#c7d2fe", sage: "#a5b4fc", leather: "#6366f1",
+    border: "#4338ca", borderDark: "#1e1b4b",
+    chart1: "#818cf8", chart2: "#a5b4fc", chart3: "#c7d2fe",
     aurora1: "#6366f1", aurora2: "#4f46e5", aurora3: "#4338ca",
-    cardGradient: "linear-gradient(135deg, #312e81 0%, #1e1b4b 100%)",
+    cardGradient: "linear-gradient(135deg, #2a2660 0%, #1e1b4b 100%)",
     cardDarkGradient: "linear-gradient(135deg, #1e1b4b 0%, #0f0a2e 100%)",
-    buttonGradient: "linear-gradient(180deg, #818cf8 0%, #6366f1 50%, #4f46e5 100%)",
+    buttonGradient: "linear-gradient(180deg, #a5b4fc 0%, #818cf8 50%, #6366f1 100%)",
     animGlow: "rgba(99,102,241,0.4)",
     animParticle: "rgba(224,231,255,0.5)",
   },
   cosmic: {
-    bg: "#0f0a2e", bgDark: "#020617", cream: "#e0e7ff", parchment: "#1e293b",
+    bg: "#0f0a2e", bgDark: "#020617", cream: "#1e1b4b", parchment: "#1e293b",
     text: "#e0e7ff", textMuted: "#94a3b8", textOnDark: "#e0e7ff",
-    primary: "#a78bfa", accent: "#8b5cf6", forest: "#8b5cf6", bark: "#e0e7ff",
-    ember: "#c4b5fd", wax: "#a78bfa", brass: "#c4b5fd", sage: "#a78bfa", leather: "#c4b5fd",
+    primary: "#c4b5fd", accent: "#a78bfa", forest: "#8b5cf6", bark: "#020617",
+    ember: "#ddd6fe", wax: "#a78bfa", brass: "#ddd6fe", sage: "#c4b5fd", leather: "#8b5cf6",
     border: "#312e81", borderDark: "#1e1b4b",
-    chart1: "#8b5cf6", chart2: "#a78bfa", chart3: "#c4b5fd",
+    chart1: "#a78bfa", chart2: "#c4b5fd", chart3: "#ddd6fe",
     aurora1: "#8b5cf6", aurora2: "#6366f1", aurora3: "#4338ca",
     cardGradient: "linear-gradient(135deg, #1e1b4b 0%, #0f0a2e 100%)",
     cardDarkGradient: "linear-gradient(135deg, #0f0a2e 0%, #020617 100%)",
-    buttonGradient: "linear-gradient(180deg, #a78bfa 0%, #8b5cf6 50%, #7c3aed 100%)",
+    buttonGradient: "linear-gradient(180deg, #c4b5fd 0%, #a78bfa 50%, #8b5cf6 100%)",
     animGlow: "rgba(139,92,246,0.4)",
     animParticle: "rgba(196,181,253,0.5)",
   },
   love: {
     bg: "#fdf2f8", bgDark: "#831843", cream: "#fef5f9", parchment: "#fce7f3",
     text: "#831843", textMuted: "#9d174d", textOnDark: "#fdf2f8",
-    primary: "#ec4899", accent: "#db2777", forest: "#be185d", bark: "#500724",
-    ember: "#f472b6", wax: "#9d174d", brass: "#f9a8d4", sage: "#ec4899", leather: "#9d174d",
+    primary: "#be185d", accent: "#9d174d", forest: "#be185d", bark: "#500724",
+    ember: "#f472b6", wax: "#9d174d", brass: "#be185d", sage: "#ec4899", leather: "#9d174d",
     border: "#fbcfe8", borderDark: "#831843",
-    chart1: "#ec4899", chart2: "#f472b6", chart3: "#f9a8d4",
+    chart1: "#be185d", chart2: "#ec4899", chart3: "#f472b6",
     aurora1: "#f472b6", aurora2: "#ec4899", aurora3: "#db2777",
     cardGradient: "linear-gradient(135deg, #fef5f9 0%, #fce7f3 100%)",
     cardDarkGradient: "linear-gradient(135deg, #831843 0%, #500724 100%)",
@@ -298,8 +298,8 @@ export const THEME_PALETTES: Record<ColorTheme, ThemePalette> = {
   proposal: {
     bg: "#fff5f0", bgDark: "#7c2d3a", cream: "#fffaf5", parchment: "#ffe8d6",
     text: "#7c2d3a", textMuted: "#9a4456", textOnDark: "#fff5f0",
-    primary: "#d4749a", accent: "#c2185b", forest: "#a8385a", bark: "#4a1828",
-    ember: "#e91e63", wax: "#ad1457", brass: "#e8b4a0", sage: "#d4749a", leather: "#9a4456",
+    primary: "#c2185b", accent: "#ad1457", forest: "#a8385a", bark: "#4a1828",
+    ember: "#e91e63", wax: "#ad1457", brass: "#c2185b", sage: "#d4749a", leather: "#9a4456",
     border: "#ffd6c4", borderDark: "#7c2d3a",
     chart1: "#c2185b", chart2: "#e91e63", chart3: "#f48fb1",
     aurora1: "#f48fb1", aurora2: "#e91e63", aurora3: "#c2185b",
@@ -416,7 +416,66 @@ export function updatePWAIcons(icon: IconTheme): void {
 // Theme 7.2 (audit): For dark themes (night, cosmic), `--card` and `--popover`
 // must be dark surface colors, not the light `cream` value. Otherwise cards
 // render as bright rectangles on a near-black background.
+//
+// Contrast fix: We now derive semantic text colors that adapt to the theme:
+//   --text-on-light   — dark text for use on light backgrounds (cream, parchment, bg)
+//   --text-on-dark    — light text for use on dark backgrounds (bark, bgDark)
+//   --text-muted-light — muted dark text for secondary content on light bg
+//   --text-muted-dark  — muted light text for secondary content on dark bg
+// These ensure text is ALWAYS visible regardless of which theme is active.
 const DARK_THEMES: ReadonlySet<ColorTheme> = new Set(["night", "cosmic"]);
+
+/** Compute relative luminance (WCAG) for contrast calculations. */
+function relLuminance(hex: string): number {
+  const h = hex.replace("#", "");
+  if (h.length < 6) return 0;
+  const r = parseInt(h.slice(0, 2), 16) / 255;
+  const g = parseInt(h.slice(2, 4), 16) / 255;
+  const b = parseInt(h.slice(4, 6), 16) / 255;
+  const lin = (c: number) => (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+  return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+}
+
+/** Darken a hex color by a factor (0-1, lower = darker). */
+function darken(hex: string, factor: number): string {
+  const h = hex.replace("#", "");
+  if (h.length < 6) return hex;
+  const r = Math.round(parseInt(h.slice(0, 2), 16) * factor);
+  const g = Math.round(parseInt(h.slice(2, 4), 16) * factor);
+  const b = Math.round(parseInt(h.slice(4, 6), 16) * factor);
+  return "#" + [r, g, b].map(v => v.toString(16).padStart(2, "0")).join("");
+}
+
+/** Lighten a hex color by mixing with white (0-1, higher = lighter). */
+function lighten(hex: string, factor: number): string {
+  const h = hex.replace("#", "");
+  if (h.length < 6) return hex;
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  const nr = Math.round(r + (255 - r) * factor);
+  const ng = Math.round(g + (255 - g) * factor);
+  const nb = Math.round(b + (255 - b) * factor);
+  return "#" + [nr, ng, nb].map(v => v.toString(16).padStart(2, "0")).join("");
+}
+
+/**
+ * Given a background hex, return a text color (dark or light) that achieves
+ * at least the target contrast ratio. Tries the palette's text and textOnDark
+ * first, then falls back to pure black/white.
+ */
+function bestTextColor(bgHex: string, lightColor: string, darkColor: string, target = 4.5): string {
+  const bgLum = relLuminance(bgHex);
+  const lightLum = relLuminance(lightColor);
+  const darkLum = relLuminance(darkColor);
+  // Contrast = (lighter + 0.05) / (darker + 0.05)
+  const lightContrast = (Math.max(bgLum, lightLum) + 0.05) / (Math.min(bgLum, lightLum) + 0.05);
+  const darkContrast = (Math.max(bgLum, darkLum) + 0.05) / (Math.min(bgLum, darkLum) + 0.05);
+  if (lightContrast >= target) return lightColor;
+  if (darkContrast >= target) return darkColor;
+  // Neither passes — pick the better one and darken/lighten to meet target
+  return bgLum > 0.4 ? darken(darkColor, 0.3) : lighten(lightColor, 0.3);
+}
 
 export function applyThemeToDocument(theme: ColorTheme): void {
   if (typeof document === "undefined") return;
@@ -426,12 +485,38 @@ export function applyThemeToDocument(theme: ColorTheme): void {
 
   const root = document.documentElement;
   const isDark = DARK_THEMES.has(theme);
+
+  // ── Semantic text colors that adapt to theme ────────────────────────
+  // In light themes: text-on-light = dark, text-on-dark = light
+  // In dark themes: text-on-light = light (because "light" surfaces are actually
+  //   dark in dark themes), text-on-dark = light
+  // The key insight: components use text-on-light when they're on a cream/parchment
+  // surface, and text-on-dark when on a bark/bgDark surface.
+  const textOnLight = isDark ? palette.textOnDark : palette.text;
+  const textOnDark = palette.textOnDark;
+  const textMutedLight = isDark ? palette.textMuted : palette.textMuted;
+  const textMutedDark = palette.textMuted;
+
+  // For dark themes, bark must stay DARK (it's used as bark-card background).
+  // The original night/cosmic palettes set bark to a light color which broke
+  // bark-card backgrounds. Fix: always use a dark bark for the background,
+  // and use textOnDark for text on bark-card.
+  const darkBark = isDark ? palette.bgDark : palette.bark;
+
   // For dark themes, use a dark surface for cards; for light themes, use cream.
   const cardSurface = isDark ? palette.bgDark : palette.cream;
   const cardFg = isDark ? palette.textOnDark : palette.text;
   const popoverSurface = isDark ? palette.bgDark : palette.cream;
   const popoverFg = isDark ? palette.textOnDark : palette.text;
   const mutedSurface = isDark ? palette.bgDark : palette.parchment;
+
+  // Compute best text colors for common backgrounds
+  const textOnBg = bestTextColor(palette.bg, palette.textOnDark, palette.text);
+  const textOnCream = bestTextColor(palette.cream, palette.textOnDark, palette.text);
+  const textOnParchment = bestTextColor(palette.parchment, palette.textOnDark, palette.text);
+  const textOnBrass = bestTextColor(palette.brass, "#ffffff", "#1a1410");
+  const textOnPrimary = bestTextColor(palette.primary, "#ffffff", "#1a1410");
+  const textOnAccent = bestTextColor(palette.accent, "#ffffff", "#1a1410");
 
   // Set data-theme attribute for any CSS that uses [data-theme="..."]
   root.setAttribute("data-theme", theme);
@@ -443,26 +528,26 @@ export function applyThemeToDocument(theme: ColorTheme): void {
     "--rust-cream": palette.cream,
     "--rust-parchment": palette.parchment,
     "--rust-forest": palette.forest,
-    "--rust-bark": palette.bark,
+    "--rust-bark": darkBark,
     "--rust-ember": palette.ember,
     "--rust-wax": palette.wax,
     "--rust-brass": palette.brass,
     "--rust-sage": palette.sage,
     "--rust-leather": palette.leather,
     "--background": palette.bg,
-    "--foreground": palette.text,
+    "--foreground": textOnBg,
     "--card": cardSurface,
     "--card-foreground": cardFg,
     "--popover": popoverSurface,
     "--popover-foreground": popoverFg,
     "--primary": palette.primary,
-    "--primary-foreground": palette.cream,
+    "--primary-foreground": textOnPrimary,
     "--secondary": mutedSurface,
     "--secondary-foreground": cardFg,
     "--muted": mutedSurface,
-    "--muted-foreground": palette.textMuted,
+    "--muted-foreground": textMutedLight,
     "--accent": palette.accent,
-    "--accent-foreground": palette.cream,
+    "--accent-foreground": textOnAccent,
     "--destructive": palette.wax,
     "--border": isDark ? palette.borderDark : palette.border,
     "--input": palette.border,
@@ -473,13 +558,24 @@ export function applyThemeToDocument(theme: ColorTheme): void {
     "--chart-4": palette.wax,
     "--chart-5": palette.sage,
     "--sidebar": palette.parchment,
-    "--sidebar-foreground": palette.text,
+    "--sidebar-foreground": textOnParchment,
     "--sidebar-primary": palette.primary,
-    "--sidebar-primary-foreground": palette.cream,
+    "--sidebar-primary-foreground": textOnPrimary,
     "--sidebar-accent": palette.accent,
-    "--sidebar-accent-foreground": palette.cream,
+    "--sidebar-accent-foreground": textOnAccent,
     "--sidebar-border": palette.border,
     "--sidebar-ring": palette.brass,
+    // ── Semantic text colors (contrast-safe) ──────────────────────────
+    // Use these in components instead of raw text/bark to guarantee contrast.
+    "--text-on-light": textOnLight,        // dark text for cream/parchment/bg
+    "--text-on-dark": textOnDark,          // light text for bark/bgDark
+    "--text-muted-light": textMutedLight,  // muted text on light surfaces
+    "--text-muted-dark": textMutedDark,    // muted text on dark surfaces
+    "--text-on-bg": textOnBg,              // best text on page background
+    "--text-on-cream": textOnCream,        // best text on cream cards
+    "--text-on-brass": textOnBrass,        // best text on brass buttons
+    "--text-on-primary": textOnPrimary,    // best text on primary buttons
+    "--text-on-accent": textOnAccent,      // best text on accent backgrounds
     // Theme-specific extras
     "--theme-text-on-dark": palette.textOnDark,
     "--theme-border-dark": palette.borderDark,

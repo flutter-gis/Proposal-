@@ -70,14 +70,14 @@ export default function KeyboardShortcuts() {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-serif text-xl font-bold text-rust-bark flex items-center gap-2">
+          <h2 className="font-serif text-xl font-bold text-on-light flex items-center gap-2">
             <Keyboard className="h-5 w-5" />
             Keyboard Shortcuts
           </h2>
           <button
             onClick={() => setOpen(false)}
             aria-label="Close help"
-            className="p-1 rounded-lg hover:bg-rust-bark/10 text-rust-bark/60 hover:text-rust-bark transition-colors"
+            className="p-1 rounded-lg hover:bg-rust-bark/10 text-on-light/60 hover:text-on-light transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
@@ -86,12 +86,12 @@ export default function KeyboardShortcuts() {
         <ul className="space-y-2.5">
           {SHORTCUTS.map((s, i) => (
             <li key={i} className="flex items-center justify-between gap-4">
-              <span className="text-sm text-rust-bark/80">{s.action}</span>
+              <span className="text-sm text-on-light/80">{s.action}</span>
               <div className="flex gap-1 flex-shrink-0">
                 {s.keys.map((k) => (
                   <kbd
                     key={k}
-                    className="inline-flex items-center justify-center min-w-[2rem] h-7 px-2 rounded-md bg-rust-bark/10 border border-rust-bark/20 text-xs font-mono font-semibold text-rust-bark"
+                    className="inline-flex items-center justify-center min-w-[2rem] h-7 px-2 rounded-md bg-rust-bark/10 border border-rust-bark/20 text-xs font-mono font-semibold text-on-light"
                   >
                     {k}
                   </kbd>

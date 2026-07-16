@@ -95,9 +95,11 @@ function GlassStopCardImpl({
         onClick={() => onSelect?.(place)}
         className={cn(
           "group relative w-full overflow-hidden rounded-2xl text-left",
-          "bg-white/8 backdrop-blur-md border border-white/15",
-          "anim-hover-lift anim-glow-sweep tap-feedback",
+          "backdrop-blur-md border anim-hover-lift anim-glow-sweep tap-feedback",
           "p-3 md:p-4",
+          // Theme-aware surface: uses --card (dark in dark themes, cream in light)
+          // with 80% opacity for the glassmorphic effect.
+          "bg-[var(--card)]/80 border-[var(--border)]",
           isProposal && "border-amber-400/60 ring-2 ring-amber-400/30 anim-pulse-glow"
         )}
         style={
@@ -148,15 +150,15 @@ function GlassStopCardImpl({
           <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-rust-brass">
+                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-on-brass">
                   <span aria-hidden><Icon className="h-3.5 w-3.5" style={{ color: isProposal ? "#fbbf24" : color }} /></span>
                   <span>{cat}</span>
                   <span className="opacity-50">·</span>
-                  <span className="text-rust-cream/70">Stop {index + 1} of {total}</span>
+                  <span className="text-muted-light">Stop {index + 1} of {total}</span>
                 </div>
                 <h3 className={cn(
-                  "mt-0.5 font-serif text-base md:text-lg font-bold truncate group-hover:text-rust-brass transition-colors",
-                  isProposal ? "text-amber-300" : "text-rust-cream"
+                  "mt-0.5 font-serif text-base md:text-lg font-bold truncate group-hover:text-on-brass transition-colors",
+                  isProposal ? "text-amber-300" : "text-on-light"
                 )}>
                   {place.name}
                 </h3>
@@ -164,17 +166,17 @@ function GlassStopCardImpl({
               {!isProposal && place.lowEffortScenic && (
                 <span
                   className="rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
-                  style={{ backgroundColor: `${color}33`, color: "#faf3e3" }}
+                  style={{ backgroundColor: `${color}33`, color: "var(--text-on-light)" }}
                 >
                   Easy
                 </span>
               )}
             </div>
-            <p className="mt-1 line-clamp-2 text-xs md:text-sm text-rust-cream/75 leading-relaxed">
+            <p className="mt-1 line-clamp-2 text-xs md:text-sm text-muted-light leading-relaxed">
               {place.description}
             </p>
             {place.trailDistance && (
-              <div className="mt-1.5 text-[10px] text-rust-cream/60">
+              <div className="mt-1.5 text-[10px] text-muted-light">
                 🥾 {place.trailDistance}
               </div>
             )}
@@ -185,7 +187,7 @@ function GlassStopCardImpl({
         <button
           type="button"
           onClick={handleShare}
-          className="absolute bottom-2 right-2 z-10 inline-flex items-center gap-1 rounded-full bg-rust-bark/60 backdrop-blur-sm border border-white/15 px-2 py-1 text-[9px] font-semibold text-rust-cream/80 hover:bg-rust-bark/80 hover:text-rust-cream transition-colors tap-feedback min-h-[28px] min-w-[28px]"
+          className="absolute bottom-2 right-2 z-10 inline-flex items-center gap-1 rounded-full bg-black/20 backdrop-blur-sm border border-white/15 px-2 py-1 text-[9px] font-semibold text-on-light hover:bg-black/40 transition-colors tap-feedback min-h-[28px] min-w-[28px]"
           aria-label={`Share ${place.name}`}
         >
           <Share2 className="w-2.5 h-2.5" aria-hidden />

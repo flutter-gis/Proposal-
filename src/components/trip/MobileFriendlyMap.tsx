@@ -98,15 +98,15 @@ export default function MobileFriendlyMap({ onSelectPlace }: { onSelectPlace?: (
           <div className="text-center mb-6">
             <div
               className="inline-flex items-center gap-2 px-4 py-1 rounded-full text-xs uppercase tracking-widest font-semibold mb-3"
-              style={{ backgroundColor: `${palette.primary}20`, color: palette.primary }}
+              style={{ backgroundColor: `${palette.primary}20`, color: "var(--text-on-bg)" }}
             >
-              <Route className="w-3 h-3" />
+              <Route className="w-3 h-3" aria-hidden />
               Trip Atlas
             </div>
-            <h2 className="font-lobster text-3xl md:text-5xl mb-2" style={{ color: palette.bark }}>
+            <h2 className="font-lobster text-3xl md:text-5xl mb-2 text-on-bg">
               The Journey Map
             </h2>
-            <p className="text-sm md:text-base max-w-2xl mx-auto px-2" style={{ color: `${palette.bark}99` }}>
+            <p className="text-sm md:text-base max-w-2xl mx-auto px-2 text-muted-light">
               {totalMiles} miles · {TRIP_STATS.totalDays} days · {TRIP_STATS.majorStops} stops across New Hampshire
             </p>
           </div>
@@ -139,11 +139,12 @@ export default function MobileFriendlyMap({ onSelectPlace }: { onSelectPlace?: (
               className="h-full"
             />
 
-            {/* Fullscreen toggle */}
+            {/* Fullscreen toggle — bottom-right, above the legend on mobile */}
             <button
               onClick={() => setIsFullscreen(!isFullscreen)}
               aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
-              className="absolute top-3 right-3 z-[1000] p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg bg-white/90 backdrop-blur-sm shadow-md hover:bg-white transition-colors"
+              className="absolute bottom-3 right-3 z-[1001] p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg bg-white/90 backdrop-blur-sm shadow-md hover:bg-white transition-colors"
+              style={{ marginBottom: isFullscreen ? 0 : "60px" }}
             >
               {isFullscreen ? <Minimize2 className="w-4 h-4 text-slate-700" /> : <Maximize2 className="w-4 h-4 text-slate-700" />}
             </button>
@@ -152,24 +153,22 @@ export default function MobileFriendlyMap({ onSelectPlace }: { onSelectPlace?: (
           {/* Sidebar — stop list grouped by day */}
           {!isFullscreen && (
             <div
-              className="rounded-2xl overflow-y-auto max-h-[600px] shadow-lg"
-              style={{ backgroundColor: `${palette.cream}f0`, border: `1px solid ${palette.border}` }}
+              className="rounded-2xl overflow-y-auto max-h-[600px] shadow-lg bg-[var(--card)]/90 border border-[var(--border)]"
             >
               <div
-                className="sticky top-0 px-4 py-3 text-xs uppercase tracking-widest font-bold border-b z-10"
-                style={{ backgroundColor: `${palette.cream}f5`, color: palette.bark, borderColor: palette.border }}
+                className="sticky top-0 px-4 py-3 text-xs uppercase tracking-widest font-bold border-b z-10 bg-[var(--card)] text-on-light border-[var(--border)]"
               >
                 All {PLACES.length} Stops by Day
               </div>
 
               {/* Drive legs summary */}
-              <div className="p-3 border-b" style={{ borderColor: palette.border }}>
+              <div className="p-3 border-b border-[var(--border)]">
                 {DRIVE_LEGS.map((leg, i) => (
                   <div key={leg.id} className="flex items-center gap-2 py-1 text-[11px]">
                     <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: LEG_COLORS[i] }} />
-                    <span className="font-semibold" style={{ color: palette.bark }}>Leg {i + 1}</span>
-                    <span className="truncate" style={{ color: `${palette.bark}80` }}>{leg.from} → {leg.to}</span>
-                    <span className="ml-auto font-mono text-[10px]" style={{ color: palette.brass }}>{leg.miles} mi</span>
+                    <span className="font-semibold text-on-light">Leg {i + 1}</span>
+                    <span className="truncate text-muted-light">{leg.from} → {leg.to}</span>
+                    <span className="ml-auto font-mono text-[10px] text-on-brass">{leg.miles} mi</span>
                   </div>
                 ))}
               </div>
@@ -179,10 +178,10 @@ export default function MobileFriendlyMap({ onSelectPlace }: { onSelectPlace?: (
                 {DAY_PLANS.map((day, dayIdx) => (
                   <div key={day.day} className="mb-3">
                     <div
-                      className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded"
-                      style={{ color: palette.brass, backgroundColor: `${palette.brass}10` }}
+                      className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded text-on-brass"
+                      style={{ backgroundColor: "var(--theme-anim-glow)" }}
                     >
-                      Day {day.day} — {day.title}
+                      Day {dayIdx + 1} — {day.title}
                     </div>
                     <div className="mt-1 space-y-0.5">
                       {day.placeIds.map(placeId => {
@@ -195,12 +194,8 @@ export default function MobileFriendlyMap({ onSelectPlace }: { onSelectPlace?: (
                             onClick={() => handleSelect(place.id)}
                             className={cn(
                               "w-full text-left px-2 py-1.5 rounded-lg text-[11px] transition-colors flex items-center gap-2",
-                              isSelected ? "font-bold" : "hover:bg-black/5"
+                              isSelected ? "font-bold bg-[var(--rust-brass)]/20 text-on-brass" : "hover:bg-black/5 text-muted-light"
                             )}
-                            style={{
-                              backgroundColor: isSelected ? `${palette.brass}20` : "transparent",
-                              color: isSelected ? palette.brass : `${palette.bark}cc`,
-                            }}
                           >
                             <span className="text-sm">{place.category === "proposal" ? "💍" : place.category === "stay" ? "🛏️" : place.category === "water" ? "🚣" : place.category === "scenic" ? "📸" : place.category === "historic" ? "🏛️" : place.category === "dining" ? "🍽️" : "📍"}</span>
                             <span className="truncate flex-1">{place.name}</span>
@@ -232,12 +227,12 @@ export default function MobileFriendlyMap({ onSelectPlace }: { onSelectPlace?: (
 
 function StatCard({ icon, label, value, color }: { icon: React.ReactNode; label: string; value: string; color: string }) {
   return (
-    <div className="rounded-2xl p-4 text-center shadow-sm" style={{ backgroundColor: "rgba(255,255,255,0.6)", border: `1px solid ${color}30` }}>
+    <div className="rounded-2xl p-4 text-center shadow-sm bg-[var(--card)]/80 border border-[var(--border)]">
       <div className="inline-flex items-center justify-center w-8 h-8 rounded-full mb-2" style={{ backgroundColor: `${color}20` }}>
         <div style={{ color }}>{icon}</div>
       </div>
-      <div className="text-lg font-bold" style={{ color }}>{value}</div>
-      <div className="text-[10px] uppercase tracking-widest opacity-60">{label}</div>
+      <div className="text-lg font-bold text-on-light">{value}</div>
+      <div className="text-[10px] uppercase tracking-widest text-muted-light">{label}</div>
     </div>
   );
 }

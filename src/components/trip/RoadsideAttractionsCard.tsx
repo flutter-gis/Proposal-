@@ -93,10 +93,10 @@ export default function RoadsideAttractionsCard({
         {/* Header */}
         <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
           <div>
-            <h3 className="font-lobster text-2xl text-rust-bark mb-1">
+            <h3 className="font-lobster text-2xl text-on-light mb-1">
               💎 Roadside Gems
             </h3>
-            <p className="text-xs text-rust-bark/60">
+            <p className="text-xs text-on-light/60">
               {attractions.length} hidden stops · sorted by detour time
               {legId && " · this leg"}
               {savedIds.size > 0 && ` · ${savedIds.size} saved`}
@@ -120,7 +120,7 @@ export default function RoadsideAttractionsCard({
 
         {/* Cards grid */}
         {visibleAttractions.length === 0 ? (
-          <div className="text-center py-8 text-rust-bark/40 text-sm">
+          <div className="text-center py-8 text-on-light/40 text-sm">
             No saved gems yet. Tap the bookmark on any card to save it for later.
           </div>
         ) : (
@@ -207,7 +207,7 @@ function AttractionCard({
           {isSaved ? (
             <BookmarkCheck className="w-3.5 h-3.5 text-rust-brass" />
           ) : (
-            <Bookmark className="w-3.5 h-3.5 text-rust-bark/50" />
+            <Bookmark className="w-3.5 h-3.5 text-on-light/50" />
           )}
         </button>
         <button
@@ -215,7 +215,7 @@ function AttractionCard({
           className="w-7 h-7 min-h-[32px] min-w-[32px] rounded-full bg-white/80 backdrop-blur-sm shadow-sm flex items-center justify-center hover:bg-white transition-colors tap-feedback"
           aria-label={`Share ${attraction.name}`}
         >
-          <Share2 className="w-3.5 h-3.5 text-rust-bark/50" />
+          <Share2 className="w-3.5 h-3.5 text-on-light/50" />
         </button>
       </div>
 
@@ -240,11 +240,11 @@ function AttractionCard({
         </div>
 
         {/* Name + tagline */}
-        <h4 className="font-serif text-base font-bold text-rust-bark mb-1">{attraction.name}</h4>
-        <p className="text-xs text-rust-bark/70 italic mb-2">{attraction.tagline}</p>
+        <h4 className="font-serif text-base font-bold text-on-light mb-1">{attraction.name}</h4>
+        <p className="text-xs text-on-light/70 italic mb-2">{attraction.tagline}</p>
 
         {/* Quick stats */}
-        <div className="flex flex-wrap items-center gap-3 text-xs text-rust-bark/60 mb-2">
+        <div className="flex flex-wrap items-center gap-3 text-xs text-on-light/60 mb-2">
           <span className="inline-flex items-center gap-1">
             <DollarSign className="w-3 h-3" aria-hidden />
             {attraction.cost}
@@ -263,7 +263,7 @@ function AttractionCard({
 
         {/* Detour miles + badges */}
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="inline-flex items-center gap-1 text-[10px] text-rust-bark/50">
+          <span className="inline-flex items-center gap-1 text-[10px] text-on-light/50">
             <MapPin className="w-3 h-3" aria-hidden />
             {attraction.detourMiles} mi from route
           </span>
@@ -285,13 +285,13 @@ function AttractionCard({
       {/* Expanded content */}
       {expanded && (
         <div className="px-4 pb-4 space-y-3 anim-fade-in-up">
-          <p className="text-sm text-rust-bark/80 leading-relaxed font-tinos">{attraction.description}</p>
+          <p className="text-sm text-on-light/80 leading-relaxed font-tinos">{attraction.description}</p>
 
           <div>
             <h5 className="text-[10px] font-bold uppercase tracking-widest text-rust-forest mb-2">Highlights</h5>
             <ul className="grid grid-cols-1 gap-1">
               {attraction.highlights.map((h, i) => (
-                <li key={i} className="text-xs text-rust-bark/70 flex items-start gap-2">
+                <li key={i} className="text-xs text-on-light/70 flex items-start gap-2">
                   <span className="text-rust-forest mt-0.5">✓</span>
                   {h}
                 </li>
@@ -300,7 +300,7 @@ function AttractionCard({
           </div>
 
           {attraction.address && (
-            <div className="text-xs text-rust-bark/60">
+            <div className="text-xs text-on-light/60">
               <MapPin className="w-3 h-3 inline mr-1" aria-hidden />
               {attraction.address}
             </div>
@@ -325,7 +325,7 @@ function AttractionCard({
             </button>
           </div>
 
-          <div className="text-[10px] text-rust-bark/40 text-center">
+          <div className="text-[10px] text-on-light/40 text-center">
             Source: {attraction.source}
           </div>
         </div>

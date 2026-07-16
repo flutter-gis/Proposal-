@@ -114,6 +114,20 @@
   --sidebar-accent-foreground: #faf3e3;
   --sidebar-border: #d4c4a4;
   --sidebar-ring: #b8860b;
+
+  /* ── Semantic text colors (contrast-safe, set by applyThemeToDocument) ──
+     These guarantee text is always visible regardless of theme.
+     Use .text-on-light / .text-on-dark / .text-muted-light / .text-muted-dark
+     utility classes instead of raw text colors when the background is known. */
+  --text-on-light: #3d2817;
+  --text-on-dark: #faf3e3;
+  --text-muted-light: #6b4423;
+  --text-muted-dark: #d4c4a4;
+  --text-on-bg: #3d2817;
+  --text-on-cream: #3d2817;
+  --text-on-brass: #1a1410;
+  --text-on-primary: #faf3e3;
+  --text-on-accent: #faf3e3;
 }
 
 @layer base {
@@ -213,6 +227,19 @@
 }
 
 @layer utilities {
+  /* ── Semantic text color utilities (contrast-safe) ───────────────────
+     Use these instead of text-rust-bark / text-rust-cream when you know
+     the background. They auto-adapt to dark/light themes. */
+  .text-on-light { color: var(--text-on-light); }
+  .text-on-dark { color: var(--text-on-dark); }
+  .text-muted-light { color: var(--text-muted-light); }
+  .text-muted-dark { color: var(--text-muted-dark); }
+  .text-on-bg { color: var(--text-on-bg); }
+  .text-on-cream { color: var(--text-on-cream); }
+  .text-on-brass { color: var(--text-on-brass); }
+  .text-on-primary { color: var(--text-on-primary); }
+  .text-on-accent { color: var(--text-on-accent); }
+
   .anim-shimmer { background-size: 200% 200% !important; animation: css-shimmer 6s ease-in-out infinite; }
   .anim-breathe { animation: css-breathe 2.4s ease-in-out infinite; }
   .anim-float { animation: css-float 4s ease-in-out infinite; }

@@ -136,8 +136,8 @@ export default function QuoteCallout({
       className={cn(
         "relative overflow-hidden rounded-2xl border outline-none focus-visible:ring-2 focus-visible:ring-rust-brass/50",
         light
-          ? "bg-white/8 border-white/15 backdrop-blur-md text-rust-cream"
-          : "leather-card text-rust-bark",
+          ? "bg-[var(--card)]/80 border-[var(--border)] backdrop-blur-md text-on-light"
+          : "leather-card text-on-light",
         "p-6 md:p-8",
         className
       )}
@@ -151,7 +151,7 @@ export default function QuoteCallout({
         aria-hidden
         className={cn(
           "absolute -top-3 left-4 font-serif text-6xl leading-none select-none",
-          light ? "text-rust-brass/60" : "text-rust-brass/40"
+          "text-on-brass/50"
         )}
       >
         "
@@ -161,21 +161,18 @@ export default function QuoteCallout({
         key={q.text}
         className={cn(
           "relative z-10 anim-fade-in-up font-serif italic leading-relaxed text-lg md:text-xl",
-          light ? "text-rust-cream" : "text-rust-bark"
+          "text-on-light"
         )}
       >
         {q.text}
       </blockquote>
 
       <figcaption
-        className={cn(
-          "relative z-10 mt-3 text-sm uppercase tracking-widest",
-          light ? "text-rust-brass" : "text-rust-ember"
-        )}
+        className="relative z-10 mt-3 text-sm uppercase tracking-widest text-on-brass"
       >
         — {q.author}
         {q.source && (
-          <span className={cn("ml-1 italic normal-case tracking-normal", light ? "text-rust-cream/60" : "text-rust-bark/60")}>
+          <span className="ml-1 italic normal-case tracking-normal text-muted-light">
             · {q.source}
           </span>
         )}
@@ -190,7 +187,7 @@ export default function QuoteCallout({
           )}
           style={{
             width: `${progress}%`,
-            background: light ? "#b8860b" : "#b8541f",
+            background: "var(--rust-brass)",
           }}
           aria-hidden
         />
@@ -209,12 +206,8 @@ export default function QuoteCallout({
               className={cn(
                 "h-1.5 rounded-full transition-all",
                 i === idx
-                  ? light
-                    ? "w-6 bg-rust-brass"
-                    : "w-6 bg-rust-ember"
-                  : light
-                  ? "w-1.5 bg-rust-cream/30 hover:bg-rust-cream/60"
-                  : "w-1.5 bg-rust-bark/20 hover:bg-rust-bark/40"
+                  ? "w-6 bg-[var(--rust-brass)]"
+                  : "w-1.5 bg-[var(--text-on-light)]/30 hover:bg-[var(--text-on-light)]/60"
               )}
             >
               <span className="sr-only">Quote {i + 1}</span>

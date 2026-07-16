@@ -13,6 +13,7 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DAY_PLANS, PLACES, DRIVE_LEGS, type DayPlan, type Place } from "@/lib/trip-data";
 import { useTrip } from "@/lib/trip-context";
+import { cn } from "@/lib/utils";
 import { type QuoteTheme } from "@/lib/quotes";
 import DayHeader from "./DayHeader";
 import GlassStopCard, { WaxSealBadge } from "./GlassStopCard";
@@ -99,7 +100,7 @@ function DaySlideImpl({ day, index, total, onSelectPlace }: DaySlideProps) {
           <WaxSealBadge size={36} color="#7a2418">
             {day.emoji}
           </WaxSealBadge>
-          <div className="font-serif text-base font-bold text-rust-bark">
+          <div className="font-serif text-base font-bold text-on-light">
             {places.length} stops · Day {index + 1}
           </div>
         </div>
@@ -133,7 +134,7 @@ function DaySlideImpl({ day, index, total, onSelectPlace }: DaySlideProps) {
         </div>
         <ul className="space-y-1.5">
           {day.highlights.map((h, i) => (
-            <li key={i} className="flex items-start gap-1.5 text-xs text-rust-bark/75">
+            <li key={i} className="flex items-start gap-1.5 text-xs text-on-light/75">
               <span className="text-rust-forest font-bold mt-0.5">✓</span>
               <span>{h}</span>
             </li>
@@ -223,10 +224,10 @@ export default function DayTimeline({
           <div className="inline-flex items-center gap-2 rounded-full bg-rust-bark/80 px-3 py-1 text-[11px] uppercase tracking-widest text-rust-bg">
             <span aria-hidden>🗺</span> The Adventure Timeline
           </div>
-          <h2 className="mt-3 font-lobster text-2xl sm:text-3xl md:text-5xl text-rust-bark">
+          <h2 className="mt-3 font-lobster text-2xl sm:text-3xl md:text-5xl text-on-light">
             Six days of wilderness romance
           </h2>
-          <p className="mx-auto mt-3 max-w-xl text-sm md:text-base text-rust-bark/70">
+          <p className="mx-auto mt-3 max-w-xl text-sm md:text-base text-on-light/70">
             Tap any day to expand the full itinerary. Multiple days can be open at once.
           </p>
           <div className="mt-3 flex items-center justify-center gap-3 text-xs">
@@ -238,7 +239,7 @@ export default function DayTimeline({
             </button>
             <button
               onClick={collapseAll}
-              className="rounded-full bg-rust-bark/10 px-3 py-1 font-semibold text-rust-bark/70 hover:bg-rust-bark/20 min-h-[32px]"
+              className="rounded-full bg-rust-bark/10 px-3 py-1 font-semibold text-on-light/70 hover:bg-rust-bark/20 min-h-[32px]"
             >
               Collapse all
             </button>
@@ -284,11 +285,10 @@ export default function DayTimeline({
 
                 {/* Day card — NO card-level onClick (C-02 fix) */}
                 <div
-                  className="rounded-2xl overflow-hidden transition-all"
-                  style={{
-                    backgroundColor: isExpanded ? `${DAY_ACCENTS[i] || "#b8860b"}15` : "rgba(255,255,255,0.4)",
-                    border: `2px solid ${isExpanded ? DAY_ACCENTS[i] || "#b8860b" : "transparent"}`,
-                  }}
+                  className={cn(
+                    "rounded-2xl overflow-hidden transition-all border-2 bg-[var(--card)]",
+                    isExpanded ? "border-[var(--rust-brass)]" : "border-transparent"
+                  )}
                 >
                   {/* Day header — clickable summary (acts as accordion toggle) */}
                   <button
@@ -301,22 +301,22 @@ export default function DayTimeline({
                     <div className="flex items-start justify-between">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          {isCurrent && <span className="text-[9px] font-bold uppercase tracking-widest text-rose-600 bg-rose-100 px-2 py-0.5 rounded-full animate-pulse">Today</span>}
-                          {isPast && <span className="text-[9px] font-bold uppercase tracking-widest text-green-700">✓ Done</span>}
-                          <span className="text-[10px] uppercase tracking-widest text-rust-bark/50">
+                          {isCurrent && <span className="text-[9px] font-bold uppercase tracking-widest text-white bg-rose-600 px-2 py-0.5 rounded-full animate-pulse">Today</span>}
+                          {isPast && <span className="text-[9px] font-bold uppercase tracking-widest text-white bg-green-700 px-2 py-0.5 rounded-full">✓ Done</span>}
+                          <span className="text-[10px] uppercase tracking-widest text-muted-light">
                             Day {i + 1} · Aug {4 + i}
                           </span>
                         </div>
-                        <h3 className="font-lobster text-lg sm:text-xl text-rust-bark">
+                        <h3 className="font-lobster text-lg sm:text-xl text-on-light">
                           {day.emoji} {day.title}
                         </h3>
                         {leg && (
-                          <div className="mt-1 text-[10px] text-rust-bark/50">
+                          <div className="mt-1 text-[10px] text-on-light/50">
                             {leg.from} → {leg.to} · {leg.miles} mi · {leg.duration}
                           </div>
                         )}
                       </div>
-                      <div className="text-[10px] text-rust-bark/40" aria-hidden>
+                      <div className="text-[10px] text-on-light/40" aria-hidden>
                         {isExpanded ? "▲" : "▼"}
                       </div>
                     </div>
@@ -325,11 +325,11 @@ export default function DayTimeline({
                     {!isExpanded && places.length > 0 && (
                       <div className="mt-2 flex flex-wrap gap-1.5">
                         {places.slice(0, 3).map(p => (
-                          <span key={p.id} className="text-[10px] px-2 py-0.5 rounded-full bg-rust-bark/10 text-rust-bark/60">
+                          <span key={p.id} className="text-[10px] px-2 py-0.5 rounded-full bg-rust-bark/10 text-on-light/60">
                             {p.category === "proposal" ? "💍" : p.category === "stay" ? "🛏️" : p.category === "water" ? "🚣" : "📍"} {p.name}
                           </span>
                         ))}
-                        {places.length > 3 && <span className="text-[10px] text-rust-bark/40">+{places.length - 3} more</span>}
+                        {places.length > 3 && <span className="text-[10px] text-on-light/40">+{places.length - 3} more</span>}
                       </div>
                     )}
                   </button>
