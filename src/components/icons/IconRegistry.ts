@@ -19,8 +19,10 @@ import { CarIcon, LightningIcon, CroissantIcon } from "./day-icons-svg";
 
 // ── Icon name union (all supported icons) ─────────────────────────────
 // Phase 1: 14 category icons
-// Phase 2: 3 new day icons (car, lightning, croissant) + 3 reused (hike, proposal, stargaze)
-export type IconName = CategoryIconName | "car" | "lightning" | "croissant";
+// Phase 2: 3 day icons (car, lightning, croissant)
+export type IconName =
+  | CategoryIconName
+  | "car" | "lightning" | "croissant";
 
 // ── Registry entry type ───────────────────────────────────────────────
 interface IconEntry {
@@ -78,15 +80,36 @@ export {
 export { CarIcon, LightningIcon, CroissantIcon };
 
 // ── Day index → icon name mapping ─────────────────────────────────────
-// Maps day 1-6 to their themed icons.
-// Day 1: car (Off-Grid Escape), Day 2: hike (Still Waters),
-// Day 3: lightning (Powered Prep), Day 4: proposal (Big Proposal),
-// Day 5: stargaze (Dark Skies), Day 6: croissant (Grand Finale)
 export const DAY_ICON_MAP: IconName[] = [
-  "car",       // Day 1
-  "hike",      // Day 2
-  "lightning", // Day 3
-  "proposal",  // Day 4
-  "stargaze",  // Day 5
-  "croissant", // Day 6
+  "car", "hike", "lightning", "proposal", "stargaze", "croissant",
 ];
+
+// ── Attraction type → icon name mapping (Phase 3-4 icons pending) ────
+// For types without custom icons yet, falls back to "nearby".
+export const TYPE_TO_ICON: Record<string, IconName> = {
+  historic: "historic",
+  dining: "dining",
+  hike: "hike",
+  swimming: "swimming",
+  brewery: "brewery",
+  grocery: "grocery",
+  "scenic-drive": "car",
+  museum: "historic",
+  // These will map to new icons once extra-icons-svg is fixed:
+  waterfall: "water",
+  viewpoint: "scenic",
+  oddity: "scenic",
+  nature: "scenic",
+  bridge: "scenic",
+  gas: "grocery",
+  "farm-stand": "grocery",
+};
+
+// ── Difficulty → icon name mapping ────────────────────────────────────
+export const DIFFICULTY_TO_ICON: Record<string, IconName> = {
+  "drive-up": "car",
+  "easy": "hike",
+  "moderate": "hike",
+  "strenuous": "hike",
+  "none": "nearby",
+};

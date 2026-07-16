@@ -24,6 +24,7 @@ import {
 } from "@/lib/attraction-catalog";
 import { cn } from "@/lib/utils";
 import { useTrip } from "@/lib/trip-context";
+import { Icon as SvgIcon, TYPE_TO_ICON, DIFFICULTY_TO_ICON } from "@/components/icons/Icon";
 import { Search, MapPin, Clock, DollarSign, Navigation, ChevronDown, Gem, ExternalLink, Filter } from "lucide-react";
 
 export default function AttractionCatalog({ legId }: { legId?: string }) {
@@ -154,7 +155,7 @@ export default function AttractionCatalog({ legId }: { legId?: string }) {
                     )}
                     style={selectedTypes.has(type as AttractionType) ? { backgroundColor: meta.color } : {}}
                   >
-                    {meta.emoji} {meta.label}
+                    <SvgIcon name={TYPE_TO_ICON[type as string] ?? "nearby"} size={12} /> {meta.label}
                   </button>
                 ))}
               </div>
@@ -176,7 +177,7 @@ export default function AttractionCatalog({ legId }: { legId?: string }) {
                     )}
                     style={selectedDifficulty.has(diff as Difficulty) ? { backgroundColor: meta.color } : {}}
                   >
-                    {meta.icon} {meta.label}
+                    <SvgIcon name={DIFFICULTY_TO_ICON[diff as string] ?? "none"} size={12} /> {meta.label}
                   </button>
                 ))}
               </div>
@@ -310,10 +311,10 @@ function CatalogCard({
         {/* Badges */}
         <div className="flex items-start justify-between mb-2 ml-14 mr-12">
           <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white" style={{ backgroundColor: meta.color }}>
-            {meta.emoji} {meta.label}
+            <SvgIcon name={TYPE_TO_ICON[entry.type as string] ?? "nearby"} size={12} /> {meta.label}
           </span>
           <span className="inline-flex items-center gap-1 text-[10px] font-bold" style={{ color: diffMeta.color }}>
-            {diffMeta.icon} {diffMeta.label}
+            <SvgIcon name={DIFFICULTY_TO_ICON[entry.difficulty as string] ?? "none"} size={12} /> {diffMeta.label}
           </span>
         </div>
 

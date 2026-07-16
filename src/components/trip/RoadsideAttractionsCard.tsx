@@ -17,6 +17,7 @@ import {
   type RoadsideAttraction,
 } from "@/lib/roadside-attractions";
 import { cn } from "@/lib/utils";
+import { Icon as SvgIcon, TYPE_TO_ICON } from "@/components/icons/Icon";
 import { Clock, MapPin, DollarSign, Star, Navigation, ChevronDown, Gem, Bookmark, BookmarkCheck, Share2 } from "lucide-react";
 
 const SAVED_KEY = "wilderness-saved-gems";
@@ -231,7 +232,7 @@ function AttractionCard({
             className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white"
             style={{ backgroundColor: meta.color }}
           >
-            {meta.emoji} {meta.label}
+            <SvgIcon name={TYPE_TO_ICON[attraction.category as string] ?? "nearby"} size={12} /> {meta.label}
           </span>
           <span className="inline-flex items-center gap-1 text-[10px] font-bold text-rust-ember">
             <Clock className="w-3 h-3" aria-hidden />

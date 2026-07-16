@@ -34,7 +34,7 @@ export function CarIcon(id: string, animated: boolean): ReactNode {
         <ThemeGradient id={`${id}-window`} stops={[
           { offset: "0%", color: "var(--rust-brass)" },
           { offset: "100%", color: "var(--rust-cream)" },
-        ]} opacity={0.7} />
+        ]} />
       </defs>
       {/* Dust particles behind car */}
       <Particles count={18} seed={37} cx={12} cy={48} spread={12} size={0.8} animated={animated} idPrefix={id} driftY={-3} />
