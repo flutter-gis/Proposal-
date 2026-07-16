@@ -449,3 +449,26 @@ Stage Summary:
 - Dark themes (night/cosmic) now have proper dark surfaces with light text
 - Map page fully readable with semantic colors
 - Committed as next commit.
+
+---
+Task ID: 11
+Agent: main (Real-time adaptive text)
+Task: Identify background colors around each character and dynamically change text in real time.
+
+Work Log:
+- Built src/lib/adaptive-text.ts — real-time adaptive text color system:
+  * sampleEffectiveBackground(el): walks up DOM tree, handles rgba/transparent layers, parses linear/radial gradients at element's vertical position, alpha-blends layers, returns opaque RGB
+  * bestTextColorForBg(bg, options): tries light + dark colors, picks WCAG-compliant (4.5:1 normal, 3:1 large), darkens/lightens if neither passes
+  * useAdaptiveText(ref, options): React hook that re-samples on scroll, resize, theme change (MutationObserver on data-theme), element class/style changes, and viewport entry (IntersectionObserver). All sampling throttled via requestAnimationFrame.
+- Built src/components/trip/AdaptiveText.tsx — drop-in wrapper component with props: as, largeText, lightColor, darkColor, ensureShadow
+- Applied to CountdownToProposal: badge, heading, subtitle, tile numbers, tile labels, coordinates — all adapt to bark-card gradient bg
+- Applied to GlassStopCard: title + description use useAdaptiveText hook directly (adapts to glassmorphic translucent card)
+- VLM verification: light theme countdown fully readable, dark theme (Stargazing) countdown fully readable
+- All tests pass: 20/20 audit, 37/37 E2E, 27/27 theme, 13/13 perf (no jank)
+
+Stage Summary:
+- Real-time adaptive text system live — samples actual rendered background per-element
+- Handles solid colors, linear/radial gradients, translucent overlays, theme switches
+- Re-samples on scroll/resize/theme-change/DOM-mutation
+- rAF throttling + IntersectionObserver = no performance impact
+- Committed as next commit.
