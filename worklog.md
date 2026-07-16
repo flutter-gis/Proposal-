@@ -281,3 +281,26 @@ Stage Summary:
 - 5 unused vars/functions removed across 5 source files
 - Build still green, lint still green
 - Project tree clean and ready for hand-off
+
+---
+Task ID: 6
+Agent: main (Trip tab audit implementation)
+Task: Implement all 27 findings from the JD-Dee-Trip-Tab-Engineering-Audit.pdf
+
+Work Log:
+- Read the 19-page PDF audit. Catalogued 2 CRITICAL, 5 HIGH, 8 MEDIUM, 12 LOW findings.
+- Verified which findings were already fixed in current code (C-01, M-01, L-03, L-04, L-06).
+- Phase 1 (C-02, H-01, H-02, H-03): Restructured DayTimeline — removed card-level onClick, toggle only on day-number button + dedicated summary header. Added aria-expanded/controls. AttractionCatalog: 300ms search debounce, Filters aria-expanded+haspopup+controls, Map checkbox navigates to Map tab via trip-context.mapHighlightId, rank number is now clickable Map link.
+- Phase 2 (H-04, H-05): Upgraded service worker to v6 — full app-shell precache, stale-while-revalidate for static assets, Google Fonts caching, DOWNLOAD_FOR_OFFLINE message handler. Added 'Download for Offline' button to SettingsPage that caches 7 pages + 16 photos + leaflet markers. Switched URL routing from path-based (caused 404s) to hash-based — supports #/trip, #/trip/day4, #/trip/stop-X, #/map/attraction-X. Back/forward via popstate+hashchange.
+- Phase 3 (M-02 through M-08): Multiple days expandable simultaneously (Set<number>) + Expand/Collapse all buttons. Auto-scroll to current day on mount (Aug 4-9, 2026). Added checkOut to Bear Brook stay + Check-Out card in PlaceDetailDialog. Roadside Gems Save toggle with localStorage + 'Show saved' filter. Proposal stop visual treatment: golden glow border, 'The Proposal' banner with gem icon, larger pulsing gold dot, anim-pulse-glow. Quote carousel prev/next ChevronLeft/ChevronRight arrows. Share buttons on GlassStopCard (stopPropagation) + RoadsideAttractionsCard using Web Share API + clipboard fallback.
+- Phase 4 (L-02, L-05, L-07, Theme 7.2, ARIA): EngagementReveal3D adds pointer-events-none during fade-out. Differentiated Proposal (rose-gold/champagne) and Anniversary (champagne gold/deep plum) themes from Sunset/Dusk. Catalog rank number clickable to navigate to Map. Dark themes (night, cosmic) now use bgDark for --card/--popover/--secondary/--muted and borderDark for --border. Comprehensive aria-labels on all interactive elements.
+- Verified: npx next build succeeds (8 routes prerendered). npx eslint: 0 errors, 43 warnings (down from 46). Committed as e5ca6e0.
+
+Stage Summary:
+- 27 audit findings addressed (some already fixed, verified).
+- Files modified: trip-context.tsx, DayTimeline.tsx, AttractionCatalog.tsx, RoadsideAttractionsCard.tsx, GlassStopCard.tsx, PlaceDetailDialog.tsx, QuoteCallout.tsx, SettingsPage.tsx, MobileFriendlyMap.tsx, EngagementReveal3D.tsx, preferences.ts, trip-data.ts, globals.css, public/sw.js.
+- New CSS animations: anim-pulse-scale, anim-pulse-glow (for proposal stop).
+- New ColorTheme entries: 'proposal', 'anniversary' (distinct from sunset/dusk).
+- New trip-context state: mapHighlightId (for catalog → map navigation).
+- New service worker capability: DOWNLOAD_FOR_OFFLINE message handler.
+- Build green, lint clean (0 errors).

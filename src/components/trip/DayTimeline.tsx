@@ -264,11 +264,11 @@ export default function DayTimeline({
                     color: "white",
                     border: isExpanded ? "3px solid #fbbf24" : "3px solid white",
                   }}
-                  aria-label={`Day ${day.day}: ${day.title}. ${isExpanded ? "Collapse" : "Expand"} day.`}
+                  aria-label={`Day ${i + 1}: ${day.title}. ${isExpanded ? "Collapse" : "Expand"} day.`}
                   aria-expanded={isExpanded}
-                  aria-controls={`day-${day.day}-content`}
+                  aria-controls={`day-${i + 1}-content`}
                 >
-                  {day.day}
+                  {i + 1}
                 </button>
 
                 {/* Day card — NO card-level onClick (C-02 fix) */}
@@ -285,7 +285,7 @@ export default function DayTimeline({
                     onClick={() => toggleDay(i)}
                     className="w-full text-left p-4 tap-feedback"
                     aria-expanded={isExpanded}
-                    aria-controls={`day-${day.day}-content`}
+                    aria-controls={`day-${i + 1}-content`}
                   >
                     <div className="flex items-start justify-between">
                       <div>
@@ -293,7 +293,7 @@ export default function DayTimeline({
                           {isCurrent && <span className="text-[9px] font-bold uppercase tracking-widest text-rose-600 bg-rose-100 px-2 py-0.5 rounded-full animate-pulse">Today</span>}
                           {isPast && <span className="text-[9px] font-bold uppercase tracking-widest text-green-700">✓ Done</span>}
                           <span className="text-[10px] uppercase tracking-widest text-rust-bark/50">
-                            Day {day.day} · Aug {3 + day.day}
+                            Day {i + 1} · Aug {4 + i}
                           </span>
                         </div>
                         <h3 className="font-lobster text-lg sm:text-xl text-rust-bark">
@@ -325,7 +325,7 @@ export default function DayTimeline({
 
                   {/* Expanded content: full day slide */}
                   {isExpanded && (
-                    <div id={`day-${day.day}-content`} className="anim-fade-in-up">
+                    <div id={`day-${i + 1}-content`} className="anim-fade-in-up">
                       <DaySlide
                         day={day}
                         index={i}
