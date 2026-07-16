@@ -15,6 +15,7 @@ import { Gem, Compass } from "lucide-react";
 import { PROPOSAL_DATE } from "@/lib/relationship-data";
 import { haptics } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
+import AdaptiveText from "./AdaptiveText";
 
 function useCountdown(target: Date): {
   days: number;
@@ -112,19 +113,36 @@ export default function CountdownToProposal({ className }: { className?: string 
       />
 
       <div className="relative z-10 text-center">
-        <div className="inline-flex items-center gap-2 rounded-full bg-rust-brass/20 px-3 py-1 text-[11px] uppercase tracking-widest text-rust-brass mb-4">
+        <AdaptiveText
+          as="div"
+          className="inline-flex items-center gap-2 rounded-full bg-rust-brass/20 px-3 py-1 text-[11px] uppercase tracking-widest mb-4"
+          lightColor="#faf3e3"
+          darkColor="#1a1410"
+        >
           <Gem className="h-3 w-3" aria-hidden />
           {past ? "Anniversary Clock" : "💎 The Big Moment"}
-        </div>
-        <h2 className="font-serif text-2xl sm:text-3xl md:text-5xl font-bold text-rust-cream mb-2">
+        </AdaptiveText>
+        <AdaptiveText
+          as="h2"
+          className="font-serif text-2xl sm:text-3xl md:text-5xl font-bold mb-2"
+          largeText
+          lightColor="#faf3e3"
+          darkColor="#1a1410"
+          ensureShadow
+        >
           {past ? "Forever begins here" : "⏳ Counting down to forever 💛"}
-        </h2>
-        <p className="text-sm md:text-base text-rust-cream/70 mb-6 md:mb-8">
+        </AdaptiveText>
+        <AdaptiveText
+          as="p"
+          className="text-sm md:text-base mb-6 md:mb-8"
+          lightColor="#faf3e3"
+          darkColor="#1a1410"
+        >
           {past
             ? `${days} days since the proposal · `
             : ""}
           Friday, August 7, 2026 · 7:30 PM Eastern · Lake Gloriette, Dixville Notch
-        </p>
+        </AdaptiveText>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-3xl mx-auto">
           {TILES.map((t) => {
@@ -145,21 +163,37 @@ export default function CountdownToProposal({ className }: { className?: string 
                     background: "linear-gradient(120deg, transparent, rgba(184,134,11,0.18), transparent)",
                   }}
                 />
-                <div className="relative z-10 font-dejavu-mono text-3xl sm:text-4xl md:text-6xl font-bold tabular-nums text-rust-brass">
+                <AdaptiveText
+                  as="div"
+                  className="relative z-10 font-dejavu-mono text-3xl sm:text-4xl md:text-6xl font-bold tabular-nums"
+                  largeText
+                  lightColor="#faf3e3"
+                  darkColor="#1a1410"
+                >
                   {String(value).padStart(2, "0")}
-                </div>
-                <div className="relative z-10 mt-1 text-[10px] md:text-xs uppercase tracking-widest text-rust-cream/70">
+                </AdaptiveText>
+                <AdaptiveText
+                  as="div"
+                  className="relative z-10 mt-1 text-[10px] md:text-xs uppercase tracking-widest"
+                  lightColor="#faf3e3"
+                  darkColor="#1a1410"
+                >
                   {past ? `Since ${t.label.toLowerCase()}` : t.label}
-                </div>
+                </AdaptiveText>
               </div>
             );
           })}
         </div>
 
-        <div className="mt-6 md:mt-8 inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-4 py-2 text-xs text-rust-cream/80">
+        <AdaptiveText
+          as="div"
+          className="mt-6 md:mt-8 inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-4 py-2 text-xs"
+          lightColor="#faf3e3"
+          darkColor="#1a1410"
+        >
           <Compass className="h-3 w-3" aria-hidden />
           <span>44.870° N, -71.305° W · 1,000 ft granite cliff · mirror-calm lake</span>
-        </div>
+        </AdaptiveText>
       </div>
     </section>
   );

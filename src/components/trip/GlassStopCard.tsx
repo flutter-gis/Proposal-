@@ -17,12 +17,13 @@
  * Both are memoized.
  */
 
-import { memo, useMemo, type ReactNode } from "react";
+import { memo, useMemo, useRef, type ReactNode } from "react";
 import type { Place } from "@/lib/trip-data";
 import { getImage } from "@/lib/images";
 import { LazyImage } from "@/lib/use-lazy-image";
 import { CATEGORY_ICON, CATEGORY_COLOR } from "@/lib/category-icons";
 import { cn } from "@/lib/utils";
+import { useAdaptiveText } from "@/lib/adaptive-text";
 import { Share2, Gem } from "lucide-react";
 
 interface GlassStopCardProps {
@@ -47,6 +48,14 @@ function GlassStopCardImpl({
   // M-06: Proposal stop gets distinct visual treatment — golden glow border,
   // a "The Proposal" badge with a gem icon, and a slow pulse animation.
   const isProposal = cat === "proposal";
+
+  // Adaptive text colors — sample the actual card background and pick the
+  // best contrast color in real time. Handles glassmorphic translucent
+  // surfaces, gradient backgrounds, and theme switches.
+  const titleRef = useRef<HTMLElement>(null);
+  const descRef = useRef<HTMLElement>(null);
+  const titleColor = useAdaptiveText(titleRef, { largeText: true });
+  const descColor = useAdaptiveText(descRef, { largeText: false });
 
   // M-08: Share button — uses Web Share API on mobile, clipboard fallback.
   const handleShare = async (e: React.MouseEvent) => {
@@ -156,10 +165,14 @@ function GlassStopCardImpl({
                   <span className="opacity-50">·</span>
                   <span className="text-muted-light">Stop {index + 1} of {total}</span>
                 </div>
-                <h3 className={cn(
-                  "mt-0.5 font-serif text-base md:text-lg font-bold truncate group-hover:text-on-brass transition-colors",
-                  isProposal ? "text-amber-300" : "text-on-light"
-                )}>
+                <h3
+                  ref={titleRef as React.RefObject<HTMLHeadingElement>}
+                  className={cn(
+                    "mt-0.5 font-serif text-base md:text-lg font-bold truncate group-hover:text-on-brass transition-colors",
+                    isProposal && "text-amber-300"
+                  )}
+                  style={{ color: isProposal ? undefined : (titleColor ?? undefined) }}
+                >
                   {place.name}
                 </h3>
               </div>
@@ -172,7 +185,11 @@ function GlassStopCardImpl({
                 </span>
               )}
             </div>
-            <p className="mt-1 line-clamp-2 text-xs md:text-sm text-muted-light leading-relaxed">
+            <p
+              ref={descRef as React.RefObject<HTMLParagraphElement>}
+              className="mt-1 line-clamp-2 text-xs md:text-sm text-muted-light leading-relaxed"
+              style={{ color: descColor ?? undefined }}
+            >
               {place.description}
             </p>
             {place.trailDistance && (
