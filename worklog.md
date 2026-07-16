@@ -384,3 +384,32 @@ Stage Summary:
 - All hydration mismatch errors eliminated (Math.cos/sin rounding in ThemeIcon).
 - All Three.js deprecation warnings suppressed (PCFShadowMap override + console.warn patch).
 - Console is now completely clean: 0 errors, 0 warnings.
+
+---
+Task ID: 9
+Agent: main (Comprehensive test suite)
+Task: Debug, make, and run lots of tests.
+
+Work Log:
+- Created 9 test suites covering all aspects of the application:
+  1. unit-tests.mjs (50 tests) — lib data integrity, exports, types
+  2. e2e-tests.mjs (37 tests) — user flows, navigation, dialogs, search, share
+  3. a11y-tests.mjs (25 tests) — ARIA, keyboard, touch targets, dialog trap
+  4. mobile-tests.mjs (14 tests) — 375px viewport, no overflow, readability
+  5. perf-tests.mjs (13 tests) — load time, DOM, console, resources, vitals
+  6. pwa-tests.mjs (19 tests) — SW, manifest, icons, offline, meta tags
+  7. theme-tests.mjs (27 tests) — 12 themes, dark mode, distinctness, CSS vars
+  8. reveal-tests.mjs (14 tests) — 3D flow, box click, skip, escape
+  9. audit-verify.mjs (20 tests) — all 27 audit findings
+- Created run-all-tests.sh master runner.
+- Found and fixed bug: DayTimeline expandedDays didn't sync with currentDay
+  when navigating via #/trip/day4 hash. Added useEffect to expand day.
+- Fixed multiple test issues: JSON parsing, async eval, timing, selectors.
+- All 219 tests pass across 9 suites.
+
+Stage Summary:
+- 9 test suites, 219 tests, all passing.
+- Bug fix: hash routing #/trip/day4 now expands Day 4.
+- Master runner: bash scripts/run-all-tests.sh
+- Individual: node scripts/<suite>.mjs
+- Committed as next commit.
