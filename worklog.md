@@ -304,3 +304,30 @@ Stage Summary:
 - New trip-context state: mapHighlightId (for catalog → map navigation).
 - New service worker capability: DOWNLOAD_FOR_OFFLINE message handler.
 - Build green, lint clean (0 errors).
+
+---
+Task ID: 6 (followup)
+Agent: main
+Task: Catch C-01 real bug found via browser verification
+
+Work Log:
+- Ran agent-browser against http://localhost:3100/#/trip and inspected DOM.
+- Discovered `day.day` is a STRING ("Day 1", "Day 2", ...) not a number.
+  The expression `Aug {3 + day.day}` was producing `Aug 3Day 1` via string
+  concatenation — the audit's C-01 was REAL, my initial verification was
+  wrong (I assumed day.day was numeric).
+- Fixed: replaced `Aug {3 + day.day}` with `Aug {4 + i}` using array index.
+  Day-number button text: replaced `{day.day}` with `{i + 1}`.
+  aria-label, aria-controls, id: all now use `i + 1` instead of `day.day`.
+- Verified in browser:
+  * Dates: Day 1 · Aug 4, Day 2 · Aug 5, Day 3 · Aug 6, Day 4 · Aug 7, Day 5 · Aug 8, Day 6 · Aug 9 ✓
+  * Day buttons show 1-6 (not "Day 1"-"Day 6") ✓
+  * C-02: clicking Filters does NOT collapse Day 1 (aria-expanded stays "true") ✓
+  * H-01: filters panel becomes visible after click ✓
+  * H-02: search "waterfall" → 4 results; search "zzzznomatch" → "No attractions match" ✓
+- Committed as f7aca35.
+
+Stage Summary:
+- C-01 actually fixed (was incorrectly marked done earlier).
+- Browser verification caught the bug that static code review missed.
+- All 27 audit findings now genuinely addressed.
