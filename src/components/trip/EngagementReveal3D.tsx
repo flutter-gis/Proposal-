@@ -673,6 +673,21 @@ export default function EngagementReveal3D() {
     return () => clearTimeout(t);
   }, []);
 
+  // L-02: Global Escape key — dismisses the reveal from any phase.
+  // Ensures the canvas never permanently blocks navigation.
+  useEffect(() => {
+    if (!visible) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setPhase("done");
+        setVisible(false);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [visible, setPhase, setVisible]);
+
   const handleBoxClick = useCallback(() => {
     if (phase !== "box") return;
     setPhase("opening");
@@ -738,6 +753,21 @@ export default function EngagementReveal3D() {
 
       {/* ── UI Overlay ─────────────────────────────────────────────────── */}
 
+      {/* L-02: Persistent skip button — visible from the very first frame
+          so the canvas never blocks navigation without an escape hatch.
+          Also handles Escape key. */}
+      <button
+        type="button"
+        onClick={() => { setPhase("done"); setVisible(false); }}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") { setPhase("done"); setVisible(false); }
+        }}
+        className="absolute bottom-4 right-4 z-50 text-[10px] text-amber-100/40 hover:text-amber-100/70 transition-colors pointer-events-auto tap-feedback min-h-[44px] min-w-[44px] px-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-300"
+        aria-label="Skip the surprise"
+      >
+        Skip →
+      </button>
+
       {/* Box phase */}
       {phase === "box" && (
         <div className="absolute inset-0 flex flex-col items-center justify-end pb-[18vh] pointer-events-none">
@@ -749,15 +779,6 @@ export default function EngagementReveal3D() {
               Tap the box to open
             </p>
           </div>
-          {/* Skip link for repeat visitors or those who don't want to wait */}
-          <button
-            type="button"
-            onClick={() => { setPhase("done"); setVisible(false); }}
-            className="absolute bottom-4 right-4 text-[10px] text-amber-100/40 hover:text-amber-100/70 transition-colors pointer-events-auto tap-feedback min-h-[44px] min-w-[44px] px-3"
-            aria-label="Skip the surprise"
-          >
-            Skip →
-          </button>
         </div>
       )}
 
