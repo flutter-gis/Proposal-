@@ -413,3 +413,39 @@ Stage Summary:
 - Master runner: bash scripts/run-all-tests.sh
 - Individual: node scripts/<suite>.mjs
 - Committed as next commit.
+
+---
+Task ID: 10
+Agent: main (Theme contrast + map repair)
+Task: Identify theme/color clashes, ensure text always visible, dynamic text colors, repair map.
+
+Work Log:
+- Wrote contrast-check.mjs to audit all 12 theme palettes for WCAG contrast issues.
+- Found 62 contrast issues across 12 themes (night/cosmic had 1:1 ratio — text same color as bg).
+- Root cause: dark themes (night/cosmic) set bark to LIGHT color (#e0e7ff) for text use, but bark is also used as bark-card BACKGROUND — causing light cards on light bg.
+- Built dynamic contrast system:
+  * relLuminance(), darken(), lighten() color utilities
+  * bestTextColor(bg, light, dark) — picks WCAG-compliant text color
+  * 9 semantic CSS variables: --text-on-light, --text-on-dark, --text-muted-light/dark, --text-on-bg/cream/brass/primary/accent
+  * 9 utility classes: .text-on-light, .text-on-dark, .text-muted-light, etc.
+- Fixed palettes:
+  * Dark themes: bark now dark (#0f0a2e/#020617), cream now dark surface
+  * Light themes: darkened brass/primary in dawn, day, forest, golden, love, proposal, sunset, dusk
+- Updated components to use semantic text classes:
+  * GlassStopCard: bg-[var(--card)]/80 + text-on-light
+  * QuoteCallout: removed light/dark ternaries, uses semantic classes
+  * DayTimeline: bg-[var(--card)] + text-on-light, badges use solid bg+white text
+  * AttractionCatalog, RoadsideAttractionsCard, KeyboardShortcuts: text-on-light
+- Map repairs:
+  * MobileFriendlyMap: Trip Atlas label, stats cards, sidebar all use semantic colors
+  * TripMap: enabled scrollWheelZoom, added proposal site callout
+  * Fullscreen button moved to bottom-right to avoid clashes
+- Bug fix: DayTimeline missing cn import (caused runtime error)
+- VLM verification: dark theme text readable, map page readable
+- All tests pass: 20/20 audit, 37/37 E2E, 27/27 theme.
+
+Stage Summary:
+- 62 contrast issues → 20 (dynamic bestTextColor handles at runtime)
+- Dark themes (night/cosmic) now have proper dark surfaces with light text
+- Map page fully readable with semantic colors
+- Committed as next commit.
