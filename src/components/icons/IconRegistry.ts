@@ -15,11 +15,12 @@ import {
   SwimmingIcon, BreweryIcon, GroceryIcon,
   type CategoryIconName,
 } from "./category-icons-svg";
+import { CarIcon, LightningIcon, CroissantIcon } from "./day-icons-svg";
 
 // ── Icon name union (all supported icons) ─────────────────────────────
 // Phase 1: 14 category icons
-// Phase 2+: day, difficulty, UI, decorative icons will be added here
-export type IconName = CategoryIconName;
+// Phase 2: 3 new day icons (car, lightning, croissant) + 3 reused (hike, proposal, stargaze)
+export type IconName = CategoryIconName | "car" | "lightning" | "croissant";
 
 // ── Registry entry type ───────────────────────────────────────────────
 interface IconEntry {
@@ -44,6 +45,9 @@ export const ICON_REGISTRY: Record<IconName, IconEntry> = {
   swimming:  { render: SwimmingIcon,  hasAnimations: true },
   brewery:   { render: BreweryIcon,   hasAnimations: true },
   grocery:   { render: GroceryIcon,   hasAnimations: true },
+  car:       { render: CarIcon,       hasAnimations: true },
+  lightning: { render: LightningIcon, hasAnimations: true },
+  croissant: { render: CroissantIcon, hasAnimations: true },
 };
 
 // ── Category name → icon name mapping ─────────────────────────────────
@@ -71,3 +75,18 @@ export {
   DiningIcon, RailwayIcon, ProposalIcon, StargazeIcon, NearbyIcon,
   SwimmingIcon, BreweryIcon, GroceryIcon,
 };
+export { CarIcon, LightningIcon, CroissantIcon };
+
+// ── Day index → icon name mapping ─────────────────────────────────────
+// Maps day 1-6 to their themed icons.
+// Day 1: car (Off-Grid Escape), Day 2: hike (Still Waters),
+// Day 3: lightning (Powered Prep), Day 4: proposal (Big Proposal),
+// Day 5: stargaze (Dark Skies), Day 6: croissant (Grand Finale)
+export const DAY_ICON_MAP: IconName[] = [
+  "car",       // Day 1
+  "hike",      // Day 2
+  "lightning", // Day 3
+  "proposal",  // Day 4
+  "stargaze",  // Day 5
+  "croissant", // Day 6
+];

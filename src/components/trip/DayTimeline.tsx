@@ -14,7 +14,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DAY_PLANS, PLACES, DRIVE_LEGS, type DayPlan, type Place } from "@/lib/trip-data";
 import { useTrip } from "@/lib/trip-context";
 import { cn } from "@/lib/utils";
-import { Icon as SvgIcon, CATEGORY_TO_ICON } from "@/components/icons/Icon";
+import { Icon as SvgIcon, CATEGORY_TO_ICON, DAY_ICON_MAP } from "@/components/icons/Icon";
 import { type QuoteTheme } from "@/lib/quotes";
 import DayHeader from "./DayHeader";
 import GlassStopCard, { WaxSealBadge } from "./GlassStopCard";
@@ -89,7 +89,7 @@ function DaySlideImpl({ day, index, total, onSelectPlace }: DaySlideProps) {
       {/* Driving leg info (inline, not a sidebar) */}
       {leg && (
         <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-rust-bark/80 px-4 py-2 text-xs text-rust-bg">
-          <span aria-hidden>🚗</span>
+          <SvgIcon name="car" size={14} />
           <span className="font-semibold">{leg.from} → {leg.to}</span>
           <span className="opacity-60">· {leg.miles} mi · {leg.duration}</span>
         </div>
@@ -99,7 +99,7 @@ function DaySlideImpl({ day, index, total, onSelectPlace }: DaySlideProps) {
       <div className="mt-4">
         <div className="mb-3 flex items-center gap-2">
           <WaxSealBadge size={36} color="#7a2418">
-            {day.emoji}
+            <SvgIcon name={DAY_ICON_MAP[index] ?? "nearby"} size={20} />
           </WaxSealBadge>
           <div className="font-serif text-base font-bold text-on-light">
             {places.length} stops · Day {index + 1}
@@ -308,8 +308,8 @@ export default function DayTimeline({
                             Day {i + 1} · Aug {4 + i}
                           </span>
                         </div>
-                        <h3 className="font-lobster text-lg sm:text-xl text-on-light">
-                          {day.emoji} {day.title}
+                        <h3 className="font-lobster text-lg sm:text-xl text-on-light flex items-center gap-2">
+                          <SvgIcon name={DAY_ICON_MAP[i] ?? "nearby"} size={20} animated /> {day.title}
                         </h3>
                         {leg && (
                           <div className="mt-1 text-[10px] text-on-light/50">

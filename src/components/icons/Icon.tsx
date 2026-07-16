@@ -79,4 +79,4 @@ function IconImpl({
 export const Icon = memo(IconImpl);
 export default Icon;
 export type { IconName };
-export { CATEGORY_TO_ICON } from "./IconRegistry";
+export { CATEGORY_TO_ICON, DAY_ICON_MAP } from "./IconRegistry";

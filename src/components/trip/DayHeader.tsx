@@ -19,6 +19,7 @@
 import { memo } from "react";
 import type { DayPlan } from "@/lib/trip-data";
 import { cn } from "@/lib/utils";
+import { Icon as SvgIcon, DAY_ICON_MAP } from "@/components/icons/Icon";
 
 interface DayTexture {
   // Mesh gradient stops (top-left, top-right, bottom-left, bottom-right)
@@ -228,7 +229,9 @@ function DayHeaderImpl({ day, index }: { day: DayPlan; index: number }) {
                 } as React.CSSProperties
               }
             >
-              <span aria-hidden>{day.emoji}</span>
+              <span aria-hidden style={{ display: "inline-flex", alignItems: "center" }}>
+                <SvgIcon name={DAY_ICON_MAP[index] ?? "nearby"} size={16} animated />
+              </span>
               {day.day} · {day.theme}
             </div>
             <div className="text-right">
