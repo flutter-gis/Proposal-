@@ -227,6 +227,15 @@ export default function RootLayout({
         <link rel="canonical" href="https://w1jq650c98f0-d.space-z.ai/" />
         {/* G-09: JSON-LD structured data for SEO */}
         <StructuredData />
+        {/* Suppress known third-party deprecation warnings (THREE.Clock,
+            THREE.PCFSoftShadowMap) before any JS module loads. These are
+            upstream issues in Three.js r183+ / R3F that we can't fix
+            without forking. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){if(typeof console==='undefined')return;var w=console.warn;var s=['Clock: This module has been deprecated','PCFSoftShadowMap has been deprecated'];console.warn=function(){var a=arguments[0];if(typeof a==='string'&&s.some(function(x){return a.indexOf(x)>=0}))return;return w.apply(console,arguments)};})();`,
+          }}
+        />
       </head>
       <body
         className={`${allFontVariables} antialiased bg-background text-foreground`}

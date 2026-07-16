@@ -204,8 +204,15 @@ export default function ThemeIcon({ name, className, size }: ThemeIconProps) {
               const angle = (i / 12) * Math.PI * 2;
               const r1 = bodyR + 1;
               const r2 = bodyR + 3;
+              // Round to 4 decimal places to prevent SSR/CSR hydration mismatches
+              // (V8 Node vs browser JS engines can differ in the last decimal).
+              const round = (n: number) => Math.round(n * 10000) / 10000;
+              const p1x = round(bodyX + Math.cos(angle) * r2);
+              const p1y = round(bodyY + Math.sin(angle) * r2);
+              const p2x = round(bodyX + Math.cos(angle + 0.4) * r2);
+              const p2y = round(bodyY + Math.sin(angle + 0.4) * r2);
               return (
-                <polygon key={`ray-${i}`} points={`${bodyX},${bodyY} ${bodyX + Math.cos(angle) * r2},${bodyY + Math.sin(angle) * r2} ${bodyX + Math.cos(angle + 0.4) * r2},${bodyY + Math.sin(angle + 0.4) * r2}`} fill={p.sun} opacity="0.3">
+                <polygon key={`ray-${i}`} points={`${bodyX},${bodyY} ${p1x},${p1y} ${p2x},${p2y}`} fill={p.sun} opacity="0.3">
                   <animate attributeName="opacity" values="0.2;0.4;0.2" dur={`${3 + i * 0.2}s`} repeatCount="indefinite" />
                 </polygon>
               );
@@ -222,7 +229,8 @@ export default function ThemeIcon({ name, className, size }: ThemeIconProps) {
             {Array.from({ length: 6 }, (_, i) => {
               const ca = (i / 6) * Math.PI * 2;
               const cr = bodyR * 0.4;
-              return <circle key={`crater-${i}`} cx={bodyX + Math.cos(ca) * cr * 0.6} cy={bodyY + Math.sin(ca) * cr * 0.6} r={0.5 + rng() * 0.8} fill={p.sky[2]} opacity="0.3" />;
+              const round = (n: number) => Math.round(n * 10000) / 10000;
+              return <circle key={`crater-${i}`} cx={round(bodyX + Math.cos(ca) * cr * 0.6)} cy={round(bodyY + Math.sin(ca) * cr * 0.6)} r={0.5 + rng() * 0.8} fill={p.sky[2]} opacity="0.3" />;
             })}
           </>
         )}

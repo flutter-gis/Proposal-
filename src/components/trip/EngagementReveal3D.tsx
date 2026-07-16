@@ -277,6 +277,14 @@ function RingBox({ opened, onClick }: { opened: boolean; onClick: () => void }) 
 
   return (
     <group onClick={onClick} position={[0, 0, 0]}>
+      {/* Invisible click-catcher — extends the clickable area beyond the
+          visible meshes so users don't have to click precisely on the box.
+          Fully transparent (opacity 0) but still raycast-tested. */}
+      <mesh position={[0, 0.2, 0]}>
+        <boxGeometry args={[3, 2.5, 3]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+      </mesh>
+
       {/* Box base — exterior velvet */}
       <mesh position={[0, -0.25, 0]} castShadow receiveShadow>
         <boxGeometry args={[1.8, 0.5, 1.3]} />
@@ -698,11 +706,15 @@ export default function EngagementReveal3D() {
         if (comp) getSoundEngine().play(comp).catch(() => {});
       });
     });
+    // After the box finishes opening, transition to reveal phase.
     setTimeout(() => setPhase("reveal"), 1800);
+    // Auto-dismiss the reveal after 8s if the user doesn't click "Enter".
+    // This is long enough to read the text + click the button (which
+    // appears at 2.5s into reveal), but not so long it feels stuck.
     setTimeout(() => {
       setPhase("done");
       setTimeout(() => setVisible(false), 800);
-    }, 5500);
+    }, 8000);
   }, [phase]);
 
   if (!visible) return null;
@@ -731,7 +743,11 @@ export default function EngagementReveal3D() {
       <Canvas
         shadows
         camera={{ position: [0, 1.4, 5.0], fov: 50 }}
-        className="absolute inset-0"
+        className={cn("absolute inset-0", phase === "box" && "cursor-pointer")}
+        onCreated={({ gl }) => {
+          // L-01: Use PCFShadowMap (non-deprecated) instead of PCFSoftShadowMap.
+          gl.shadowMap.type = THREE.PCFShadowMap;
+        }}
         gl={{
           antialias: true,
           alpha: false,
