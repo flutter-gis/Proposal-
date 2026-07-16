@@ -171,6 +171,17 @@ export default function DayTimeline({
     return new Set(todayIdx >= 0 ? [todayIdx] : [currentDay]);
   });
 
+  // H-05: When currentDay changes (e.g. via #/trip/day4 hash), expand that day.
+  // This syncs the accordion with URL-driven navigation.
+  useEffect(() => {
+    setExpandedDays(prev => {
+      if (prev.has(currentDay)) return prev; // already expanded
+      const next = new Set(prev);
+      next.add(currentDay);
+      return next;
+    });
+  }, [currentDay]);
+
   // M-04: Auto-scroll to current day on mount. Use a ref to the day wrapper.
   const currentDayRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
