@@ -21,6 +21,7 @@ import AttractionCatalog from "./AttractionCatalog";
 import RoadsideAttractionsCard from "./RoadsideAttractionsCard";
 import { usePreferences } from "@/lib/preferences-context";
 import { useTrip } from "@/lib/trip-context";
+import { Icon as SvgIcon, CATEGORY_TO_ICON } from "@/components/icons/Icon";
 import { cn } from "@/lib/utils";
 import { Map as MapIcon, Maximize2, Minimize2, Clock, MapPin, Route, Calendar } from "lucide-react";
 
@@ -197,7 +198,7 @@ export default function MobileFriendlyMap({ onSelectPlace }: { onSelectPlace?: (
                               isSelected ? "font-bold bg-[var(--rust-brass)]/20 text-on-brass" : "hover:bg-black/5 text-muted-light"
                             )}
                           >
-                            <span className="text-sm">{place.category === "proposal" ? "💍" : place.category === "stay" ? "🛏️" : place.category === "water" ? "🚣" : place.category === "scenic" ? "📸" : place.category === "historic" ? "🏛️" : place.category === "dining" ? "🍽️" : "📍"}</span>
+                            <SvgIcon name={CATEGORY_TO_ICON[place.category] ?? "nearby"} size={14} animated />
                             <span className="truncate flex-1">{place.name}</span>
                             {place.cost && (
                               <span className="text-[9px] opacity-50 flex-shrink-0">{place.cost.split("(")[0].trim()}</span>

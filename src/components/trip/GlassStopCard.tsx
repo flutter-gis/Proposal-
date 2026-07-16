@@ -21,7 +21,8 @@ import { memo, useMemo, useRef, type ReactNode } from "react";
 import type { Place } from "@/lib/trip-data";
 import { getImage } from "@/lib/images";
 import { LazyImage } from "@/lib/use-lazy-image";
-import { CATEGORY_ICON, CATEGORY_COLOR } from "@/lib/category-icons";
+import { CATEGORY_COLOR } from "@/lib/category-icons";
+import { Icon as SvgIcon, CATEGORY_TO_ICON } from "@/components/icons/Icon";
 import { cn } from "@/lib/utils";
 import { useAdaptiveText } from "@/lib/adaptive-text";
 import { Share2, Gem } from "lucide-react";
@@ -44,7 +45,7 @@ function GlassStopCardImpl({
   const img = getImage(place.imageKeys?.[0] || "franconia_notch", 0);
   const cat = place.category;
   const color = CATEGORY_COLOR[cat] ?? "#5a6f4a";
-  const Icon = CATEGORY_ICON[cat] ?? CATEGORY_ICON.nearby;
+  const iconName = CATEGORY_TO_ICON[cat] ?? "nearby";
   // M-06: Proposal stop gets distinct visual treatment — golden glow border,
   // a "The Proposal" badge with a gem icon, and a slow pulse animation.
   const isProposal = cat === "proposal";
@@ -147,10 +148,10 @@ function GlassStopCardImpl({
             ) : (
               <div
                 className="flex h-full w-full items-center justify-center"
-                style={{ backgroundColor: `${color}55` }}
+                style={{ backgroundColor: `${color}55`, color }}
                 aria-hidden
               >
-                <Icon className="h-6 w-6" style={{ color }} />
+                <SvgIcon name={iconName} size={24} animated />
               </div>
             )}
           </div>
@@ -160,7 +161,9 @@ function GlassStopCardImpl({
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-on-brass">
-                  <span aria-hidden><Icon className="h-3.5 w-3.5" style={{ color: isProposal ? "#fbbf24" : color }} /></span>
+                  <span aria-hidden style={{ color: isProposal ? "#fbbf24" : color }}>
+                    <SvgIcon name={iconName} size={14} animated />
+                  </span>
                   <span>{cat}</span>
                   <span className="opacity-50">·</span>
                   <span className="text-muted-light">Stop {index + 1} of {total}</span>
@@ -193,8 +196,8 @@ function GlassStopCardImpl({
               {place.description}
             </p>
             {place.trailDistance && (
-              <div className="mt-1.5 text-[10px] text-muted-light">
-                🥾 {place.trailDistance}
+              <div className="mt-1.5 text-[10px] text-muted-light flex items-center gap-1">
+                <SvgIcon name="hike" size={10} /> {place.trailDistance}
               </div>
             )}
           </div>

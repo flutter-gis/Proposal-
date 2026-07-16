@@ -352,6 +352,12 @@
     .anim-page-forward, .anim-page-backward {
       animation: none !important;
     }
+    /* Pause all SVG SMIL animations on icons */
+    [data-animated="true"] animate,
+    [data-animated="true"] animateTransform,
+    [data-animated="true"] animateMotion {
+      display: none !important;
+    }
     .anim-fade-in-up, .anim-stagger > *,
     .anim-page-forward, .anim-page-backward { opacity: 1 !important; transform: none !important; filter: none !important; }
   }

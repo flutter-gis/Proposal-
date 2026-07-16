@@ -14,6 +14,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DAY_PLANS, PLACES, DRIVE_LEGS, type DayPlan, type Place } from "@/lib/trip-data";
 import { useTrip } from "@/lib/trip-context";
 import { cn } from "@/lib/utils";
+import { Icon as SvgIcon, CATEGORY_TO_ICON } from "@/components/icons/Icon";
 import { type QuoteTheme } from "@/lib/quotes";
 import DayHeader from "./DayHeader";
 import GlassStopCard, { WaxSealBadge } from "./GlassStopCard";
@@ -326,7 +327,7 @@ export default function DayTimeline({
                       <div className="mt-2 flex flex-wrap gap-1.5">
                         {places.slice(0, 3).map(p => (
                           <span key={p.id} className="text-[10px] px-2 py-0.5 rounded-full bg-rust-bark/10 text-on-light/60">
-                            {p.category === "proposal" ? "💍" : p.category === "stay" ? "🛏️" : p.category === "water" ? "🚣" : "📍"} {p.name}
+                            <SvgIcon name={CATEGORY_TO_ICON[p.category] ?? "nearby"} size={12} /> {p.name}
                           </span>
                         ))}
                         {places.length > 3 && <span className="text-[10px] text-on-light/40">+{places.length - 3} more</span>}
