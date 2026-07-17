@@ -101,7 +101,7 @@ export default function AttractionCatalog({ legId }: { legId?: string }) {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="font-lobster text-2xl text-on-light mb-1">
-              📋 Attraction Catalog
+              Attraction Catalog
             </h3>
             <p className="text-xs text-on-light/60">
               {filtered.length} of {legId ? CATALOG.filter(e => e.legId === legId).length : CATALOG.length} stops
@@ -196,7 +196,7 @@ export default function AttractionCatalog({ legId }: { legId?: string }) {
                       : "bg-transparent text-on-light/60 border-rust-brass/30 hover:border-rust-brass/50"
                   )}
                 >
-                  🛣️ In-between stops
+                  In-between stops
                 </button>
                 <button
                   onClick={() => togglePosition("near-stop")}
@@ -207,7 +207,7 @@ export default function AttractionCatalog({ legId }: { legId?: string }) {
                       : "bg-transparent text-on-light/60 border-rust-brass/30 hover:border-rust-brass/50"
                   )}
                 >
-                  📍 Near a stop
+                  Near a stop
                 </button>
               </div>
             </div>
@@ -327,7 +327,7 @@ function CatalogCard({
           <span className="inline-flex items-center gap-0.5"><DollarSign className="w-2.5 h-2.5" aria-hidden />{entry.cost}</span>
           <span className="inline-flex items-center gap-0.5"><Clock className="w-2.5 h-2.5" aria-hidden />{entry.visitDuration}</span>
           <span className="inline-flex items-center gap-0.5"><MapPin className="w-2.5 h-2.5" aria-hidden />+{entry.detourMinutes}m</span>
-          <span className="text-on-light/40 capitalize">{entry.position === "in-between" ? "🛣️ Between" : "📍 Near stop"}</span>
+          <span className="text-on-light/40 capitalize">{entry.position === "in-between" ? "Between" : "Near stop"}</span>
         </div>
 
         {/* Theme tags */}
@@ -362,7 +362,7 @@ function CatalogCard({
           </div>
 
           {entry.address && <div className="text-[11px] text-on-light/60"><MapPin className="w-2.5 h-2.5 inline mr-1" />{entry.address}</div>}
-          {entry.phone && <div className="text-[11px] text-on-light/60">📞 {entry.phone}</div>}
+          {entry.phone && <div className="text-[11px] text-on-light/60">{entry.phone}</div>}
 
           <div className="flex gap-2">
             <a href={directionsLink} target="_blank" rel="noopener noreferrer" className="flex-1 inline-flex items-center justify-center gap-1 rounded-full bg-rust-forest text-rust-cream px-3 py-2 text-[11px] font-bold hover:bg-rust-forest/90 min-h-[44px]">

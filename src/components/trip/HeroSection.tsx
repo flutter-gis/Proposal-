@@ -94,7 +94,7 @@ export default function HeroSection() {
               onClick={() => setPage(1)}
               className="bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-white border-0 px-6 py-4 sm:px-8 sm:py-6 text-sm sm:text-base font-semibold shadow-xl shadow-rose-900/30 w-full sm:w-auto"
             >
-              See the Itinerary 🗺️ →
+              See the Itinerary →
             </Button>
           </div>
         </div>

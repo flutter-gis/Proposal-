@@ -223,7 +223,7 @@ export default function DayTimeline({
       <div className="mx-auto max-w-3xl">
         <FlyIn className="mb-6 text-center">
           <div className="inline-flex items-center gap-2 rounded-full bg-rust-bark/80 px-3 py-1 text-[11px] uppercase tracking-widest text-rust-bg">
-            <span aria-hidden>🗺</span> The Adventure Timeline
+            The Adventure Timeline
           </div>
           <h2 className="mt-3 font-lobster text-2xl sm:text-3xl md:text-5xl text-on-light">
             Six days of wilderness romance

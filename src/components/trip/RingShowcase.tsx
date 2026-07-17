@@ -6,7 +6,7 @@
  * SVG ring illustration (rose gold band, green fire opal, moss agate leaves).
  * 6 detail cards.
  * 6 symbolism cards.
- * "💍 Ring Meets Wilderness" poem.
+ * "Ring Meets Wilderness" poem.
  * Ring quote.
  *
  * Gender-neutral throughout ("Partner Set" — never "His & Hers").
@@ -159,7 +159,7 @@ function RingShowcaseImpl() {
         {/* 6 symbolism cards */}
         <FlyIn className="mb-8">
           <h3 className="mb-4 text-center font-serif text-2xl font-bold text-rust-bark">
-            💍 Ring Meets Wilderness
+            Ring Meets Wilderness
           </h3>
           <FlyInStagger className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 md:gap-4">
             {SYMBOLISM.map((s) => (

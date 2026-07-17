@@ -63,7 +63,7 @@ export default function PhotoGallery() {
             </span>
           </div>
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold font-serif mb-3">
-            🖼️ Destination Photo Gallery
+            Destination Photo Gallery
           </h2>
           <p className="text-sm sm:text-base lg:text-lg text-slate-300 max-w-2xl mx-auto">
             Browse {Object.keys(IMAGES).length} themed categories of imagery from

@@ -120,7 +120,7 @@ export default function CountdownToProposal({ className }: { className?: string 
           darkColor="#1a1410"
         >
           <Gem className="h-3 w-3" aria-hidden />
-          {past ? "Anniversary Clock" : "💎 The Big Moment"}
+          {past ? "Anniversary Clock" : "The Big Moment"}
         </AdaptiveText>
         <AdaptiveText
           as="h2"
@@ -130,7 +130,7 @@ export default function CountdownToProposal({ className }: { className?: string 
           darkColor="#1a1410"
           ensureShadow
         >
-          {past ? "Forever begins here" : "⏳ Counting down to forever 💛"}
+          {past ? "Forever begins here" : "Counting down to forever"}
         </AdaptiveText>
         <AdaptiveText
           as="p"

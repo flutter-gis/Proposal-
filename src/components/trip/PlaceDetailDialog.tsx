@@ -27,6 +27,7 @@ import type { Place } from "@/lib/trip-data";
 import { getImages } from "@/lib/images";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { Icon as SvgIcon, CATEGORY_TO_ICON } from "@/components/icons/Icon";
 
 const CATEGORY_LABEL: Record<string, string> = {
   stay: "Stay",
@@ -137,29 +138,9 @@ export default function PlaceDetailDialog({
                 fallbackGradient
               )}
             >
-              <div className="text-center text-white">
-                <div className="text-6xl mb-2">
-                  {place.category === "proposal"
-                    ? "💍"
-                    : place.category === "stay"
-                    ? "🛏️"
-                    : place.category === "water"
-                    ? "🚣"
-                    : place.category === "scenic"
-                    ? "📸"
-                    : place.category === "hike"
-                    ? "🥾"
-                    : place.category === "wildlife"
-                    ? "🦌"
-                    : place.category === "railway"
-                    ? "🚂"
-                    : place.category === "stargaze"
-                    ? "🌌"
-                    : place.category === "dining"
-                    ? "🍽️"
-                    : place.category === "historic"
-                    ? "🏛️"
-                    : "📍"}
+              <div className="text-center text-white flex flex-col items-center justify-center">
+                <div className="mb-2 flex items-center justify-center" style={{ color: "white" }}>
+                  <SvgIcon name={CATEGORY_TO_ICON[place.category] ?? "nearby"} size={48} animated />
                 </div>
                 <div className="text-sm opacity-80">Image loading…</div>
               </div>

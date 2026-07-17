@@ -27,6 +27,7 @@ import { useReveal } from "@/lib/reveal-context";
 import { getIconForHour, type IconTheme } from "@/lib/preferences";
 import ThemedReveal from "./ThemedReveal";
 import { getSceneForIcon } from "./WildernessScenes";
+import { Icon as SvgIcon } from "@/components/icons/Icon";
 
 type Phase = "intro" | "box" | "opening" | "reveal" | "done";
 
@@ -822,7 +823,7 @@ export default function EngagementReveal3D() {
             <p className="font-dancing text-2xl sm:text-3xl md:text-4xl text-amber-200" style={{ textShadow: "0 0 20px rgba(251,191,36,0.5), 0 2px 8px rgba(0,0,0,0.5)" }}>
               are getting engaged!
             </p>
-            <div className="mt-6 text-3xl anim-heartbeat">💍</div>
+            <div className="mt-6 anim-heartbeat"><SvgIcon name="proposal" size={32} /></div>
             <p className="mt-4 text-xs text-amber-100/70 uppercase tracking-widest" style={{ textShadow: "0 2px 8px rgba(0,0,0,0.6)" }}>
               #JAndDeeSayIDo · 8.7.26
             </p>

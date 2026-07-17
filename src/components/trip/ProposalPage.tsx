@@ -44,7 +44,7 @@ const STAGING = [
   },
   {
     time: "7:30 PM",
-    title: "💍 The Proposal",
+    title: "The Proposal",
     text: "Drop to one knee as the setting sun turns the 1,000-ft vertical granite face pink and orange across the mirror-calm lake. The question will be asked.",
     icon: "💍",
   },
@@ -92,8 +92,8 @@ function downloadCalendarEvent() {
     "DTSTAMP:20260801T000000Z",
     `DTSTART:${start}`,
     `DTEND:${end}`,
-    "SUMMARY:💍 The Proposal 💍",
-    "DESCRIPTION:🏔️ One knee at the cliff's edge 💍 at Lake Gloriette, Dixville Notch. The 1,000-ft granite face of Table Rock turns pink and orange at golden hour as the sun sets over the lake.",
+    "SUMMARY:The Proposal 💍",
+    "DESCRIPTION:One knee at the cliff's edge 💍 at Lake Gloriette, Dixville Notch. The 1,000-ft granite face of Table Rock turns pink and orange at golden hour as the sun sets over the lake.",
     "LOCATION:Lake Gloriette, Dixville Notch, NH",
     "BEGIN:VALARM",
     "TRIGGER:-PT1H",
@@ -121,7 +121,7 @@ function ProposalPageImpl() {
   return (
     <section className="relative px-3 py-8 sm:px-4 sm:py-12 md:px-6 md:py-16">
       {/* #4 FIX: Visually-hidden H1 for SEO + screen readers */}
-      <h1 className="sr-only">💍 The Proposal — Lake Gloriette, Dixville Notch</h1>
+      <h1 className="sr-only">The Proposal — Lake Gloriette, Dixville Notch</h1>
       <div className="mx-auto max-w-5xl">
         {/* Hero */}
         <FlyIn className="relative overflow-hidden rounded-3xl bark-card p-6 md:p-10 mb-8">
@@ -138,10 +138,10 @@ function ProposalPageImpl() {
           />
           <div className="relative z-10 text-center text-rust-cream">
             <div className="inline-flex items-center gap-2 rounded-full bg-rust-brass/20 px-3 py-1 text-[11px] uppercase tracking-widest text-rust-brass">
-              <Sparkles className="w-3 h-3" /> 💍 The Proposal
+              <Sparkles className="w-3 h-3" /> The Proposal
             </div>
             <h2 className="mt-3 font-satisfy text-4xl sm:text-5xl md:text-7xl">
-              🏔️ One knee at the cliff's edge 💍
+              One knee at the cliff's edge 💍
             </h2>
             <p className="mx-auto mt-3 max-w-2xl text-sm md:text-base text-rust-cream/80">
               Friday, August 7, 2026 · 7:30 PM Eastern · Lake Gloriette, Dixville
@@ -153,7 +153,7 @@ function ProposalPageImpl() {
                 onClick={fireCelebration}
                 className="brass-button anim-glow-sweep inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bangers tracking-wider text-lg tap-feedback"
               >
-                <Heart className="w-4 h-4" /> 🎉 CELEBRATE THE MOMENT
+                <Heart className="w-4 h-4" /> CELEBRATE THE MOMENT
               </button>
             </div>
           </div>
@@ -175,7 +175,7 @@ function ProposalPageImpl() {
         {/* P-03: Why this spot — first-person love letter */}
         <FlyIn className="leather-card parchment-texture rounded-3xl p-6 md:p-8 mb-8">
           <h3 className="font-lobster text-3xl text-rust-bark mb-3">
-            💌 Why this spot?
+            Why this spot?
           </h3>
           <p className="font-tinos text-base md:text-lg leading-relaxed text-rust-bark/80 italic">
             We chose Lake Gloriette because the mountain does the talking. Table
@@ -198,7 +198,7 @@ function ProposalPageImpl() {
         <FlyIn className="mb-8">
           {new Date() < new Date("2026-08-07T00:00:00") ? (
             <div className="leather-card parchment-texture rounded-3xl p-8 text-center">
-              <div className="text-4xl mb-3">🤐</div>
+              <div className="text-4xl mb-3">shh</div>
               <h3 className="font-lobster text-2xl text-rust-bark mb-2">The plan is a secret</h3>
               <p className="text-sm text-rust-bark/70 max-w-md mx-auto">
                 The staging timeline reveals the surprise. It will unlock automatically on August 7, 2026.
@@ -244,7 +244,7 @@ function ProposalPageImpl() {
           <div className="leather-card parchment-texture rounded-3xl p-5 md:p-6">
             <div className="mb-4 flex items-center gap-2">
               <Heart className="w-4 h-4 text-rust-wax" />
-              <h3 className="font-serif text-lg font-bold text-rust-bark">✨ The Afterglow</h3>
+              <h3 className="font-serif text-lg font-bold text-rust-bark">The Afterglow</h3>
             </div>
             <div className="space-y-4">
               <div className="border-l-2 border-rust-brass/40 pl-4 relative group">
