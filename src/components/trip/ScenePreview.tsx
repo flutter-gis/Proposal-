@@ -76,7 +76,7 @@ export default function ScenePreview() {
     return (
       <div className="leather-card parchment-texture rounded-2xl p-6 mt-6">
         <h3 className="font-lobster text-2xl text-rust-bark mb-2">
-          🎬 3D Scene Preview
+          3D Scene Preview
         </h3>
         <p className="text-sm text-rust-bark/70 mb-4">
           Preview all 12 wilderness 3D scenes one after another. Each scene
@@ -171,7 +171,7 @@ export default function ScenePreview() {
           }}
           className="brass-button anim-glow-sweep inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold uppercase tracking-wider tap-feedback min-h-[44px]"
         >
-          ✨ Set "{ICON_LIST[idx].label}" as active theme
+          Set "{ICON_LIST[idx].label}" as active theme
         </button>
       </div>
 

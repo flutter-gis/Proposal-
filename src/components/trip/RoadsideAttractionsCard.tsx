@@ -5,7 +5,7 @@
  *
  * Displays verified road-side attractions near the trip route.
  * Attractions are sorted by detour time (closest = highest priority).
- * Hidden gems are marked with 💎.
+ * Hidden gems are marked with a diamond.
  */
 
 import { useState, useMemo, useEffect, useCallback } from "react";
@@ -95,7 +95,7 @@ export default function RoadsideAttractionsCard({
         <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
           <div>
             <h3 className="font-lobster text-2xl text-on-light mb-1">
-              💎 Roadside Gems
+              Roadside Gems
             </h3>
             <p className="text-xs text-on-light/60">
               {attractions.length} hidden stops · sorted by detour time
@@ -269,10 +269,10 @@ function AttractionCard({
             {attraction.detourMiles} mi from route
           </span>
           {attraction.dogFriendly && (
-            <span className="text-[10px] text-rust-forest font-semibold">🐕 Dog OK</span>
+            <span className="text-[10px] text-rust-forest font-semibold">Dog OK</span>
           )}
           {attraction.restrooms && (
-            <span className="text-[10px] text-rust-forest font-semibold">🚻 Restrooms</span>
+            <span className="text-[10px] text-rust-forest font-semibold">Restrooms</span>
           )}
         </div>
 

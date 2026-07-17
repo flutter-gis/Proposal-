@@ -93,7 +93,7 @@ function downloadCalendarEvent() {
     `DTSTART:${start}`,
     `DTEND:${end}`,
     "SUMMARY:The Proposal 💍",
-    "DESCRIPTION:One knee at the cliff's edge 💍 at Lake Gloriette, Dixville Notch. The 1,000-ft granite face of Table Rock turns pink and orange at golden hour as the sun sets over the lake.",
+    "DESCRIPTION:One knee at the cliff's edge at Lake Gloriette, Dixville Notch. The 1,000-ft granite face of Table Rock turns pink and orange at golden hour as the sun sets over the lake.",
     "LOCATION:Lake Gloriette, Dixville Notch, NH",
     "BEGIN:VALARM",
     "TRIGGER:-PT1H",
@@ -141,7 +141,7 @@ function ProposalPageImpl() {
               <Sparkles className="w-3 h-3" /> The Proposal
             </div>
             <h2 className="mt-3 font-satisfy text-4xl sm:text-5xl md:text-7xl">
-              One knee at the cliff's edge 💍
+              One knee at the cliff's edge
             </h2>
             <p className="mx-auto mt-3 max-w-2xl text-sm md:text-base text-rust-cream/80">
               Friday, August 7, 2026 · 7:30 PM Eastern · Lake Gloriette, Dixville

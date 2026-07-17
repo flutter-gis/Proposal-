@@ -129,10 +129,10 @@ function RingShowcaseImpl() {
         {/* Heading */}
         <FlyIn className="mb-8 text-center">
           <div className="inline-flex items-center gap-2 rounded-full bg-rust-bark/80 px-3 py-1 text-[11px] uppercase tracking-widest text-rust-bg">
-            <span aria-hidden>💍</span> The Ring · Partner Set
+            The Ring · Partner Set
           </div>
           <h2 className="mt-3 font-serif text-2xl sm:text-3xl md:text-5xl font-bold text-rust-bark">
-            ⛰️ Forged from the forest &amp; the cliff
+            Forged from the forest &amp; the cliff
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-sm md:text-base text-rust-bark/70">
             A partner set — two rings that mirror each other the way the lake

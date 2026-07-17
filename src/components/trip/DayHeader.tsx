@@ -280,7 +280,7 @@ function DayHeaderImpl({ day, index }: { day: DayPlan; index: number }) {
                   animationDelay: `${i * 0.4}s`,
                 }}
               >
-                ✓ {h}
+                {h}
               </span>
             ))}
             {day.highlights.length > 4 && (

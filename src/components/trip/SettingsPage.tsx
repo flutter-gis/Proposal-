@@ -7,7 +7,7 @@
  * Settings contains:
  *   - Icon mode: auto (time-based) or manual (pick one)
  *   - Icon picker grid with 12 themes
- *   - 🐌 Reduced motion toggle
+ *   - Reduced motion toggle
  */
 
 import { memo, useEffect, useState } from "react";
@@ -35,7 +35,7 @@ function SettingsPageImpl() {
             <SettingsIcon className="w-3 h-3" /> Settings
           </div>
           <h2 className="mt-3 font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-rust-bark">
-            ⚙️ Make it yours ✨
+            Make it yours
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-sm md:text-base text-rust-bark/70">
             Choose an app icon — the color theme follows automatically.
@@ -54,7 +54,7 @@ function SettingsPageImpl() {
             </div>
             <div className="min-w-0 flex-1">
               <div className="text-[10px] uppercase tracking-widest text-rust-ember font-semibold">
-                📍 Current Icon
+                Current Icon
               </div>
               <div className="font-serif text-xl font-bold text-rust-bark capitalize">
                 {effectiveIcon}
@@ -62,7 +62,7 @@ function SettingsPageImpl() {
               <div className="text-xs text-rust-bark/60 mt-0.5">
                 {prefs.iconMode === "auto"
                   ? "Auto-switching based on time of day"
-                  : "✋ Manually selected"}
+                  : "Manually selected"}
               </div>
             </div>
             <div className="flex-shrink-0">
@@ -80,7 +80,7 @@ function SettingsPageImpl() {
         <FlyIn className="leather-card parchment-texture rounded-3xl p-6 mb-6">
           <h3 className="mb-4 font-serif text-lg font-bold text-rust-bark flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-rust-brass" />
-            📱 App Icon
+            App Icon
           </h3>
 
           {/* Mode toggle */}
@@ -95,7 +95,7 @@ function SettingsPageImpl() {
               )}
             >
               <Clock className="w-4 h-4" />
-              🕐 Auto (time-based)
+              Auto (time-based)
             </button>
             <button
               onClick={() => setIconMode("manual")}
@@ -107,7 +107,7 @@ function SettingsPageImpl() {
               )}
             >
               <Sparkles className="w-4 h-4" />
-              ✋ Manual
+              Manual
             </button>
           </div>
 
@@ -170,10 +170,10 @@ function SettingsPageImpl() {
           </div>
         </FlyIn>
 
-        {/* 🎬 Motion preference */}
+        {/* Motion preference */}
         <FlyIn className="leather-card parchment-texture rounded-3xl p-6 mb-6">
           <h3 className="mb-4 font-serif text-lg font-bold text-rust-bark">
-            🎬 Motion
+            Motion
           </h3>
           <button
             onClick={() => setReducedMotion(!prefs.reducedMotion)}
@@ -188,10 +188,10 @@ function SettingsPageImpl() {
               <div className={cn("h-5 w-5 rounded-full", prefs.reducedMotion ? "bg-rust-forest" : "bg-rust-brass/30")} />
               <div>
                 <div className="text-sm font-semibold text-rust-bark">
-                  🐌 Reduced motion
+                  Reduced motion
                 </div>
                 <div className="text-xs text-rust-bark/60">
-                  Minimize animations and transitions 🌬️
+                  Minimize animations and transitions
                 </div>
               </div>
             </div>
@@ -210,7 +210,7 @@ function SettingsPageImpl() {
         {/* Reset & Replay */}
         <FlyIn className="leather-card parchment-texture rounded-3xl p-6 mb-6">
           <h3 className="mb-4 font-serif text-lg font-bold text-rust-bark">
-            🔄 Replay Opening
+            Replay Opening
           </h3>
           <p className="text-xs text-rust-bark/60 mb-4 leading-relaxed">
             Reset the engagement reveal so it plays again next time you visit.
@@ -224,7 +224,7 @@ function SettingsPageImpl() {
             className="w-full flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold bg-rust-wax/20 border border-rust-wax/40 text-rust-wax hover:bg-rust-wax/30 transition-all tap-feedback"
           >
             <RotateCcw className="w-4 h-4" />
-            Reset & 🔄 Replay Opening
+            Reset & Replay Opening
           </button>
         </FlyIn>
 

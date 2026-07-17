@@ -21,20 +21,20 @@ import { Camera, Signal, CloudSun, Footprints, Sunrise, Mountain, Waves } from "
 const EXPECTATIONS = [
   {
     icon: Signal,
-    title: "Cell Service 📵",
-    text: "Vanishes north of Berlin, NH. Download offline maps before Pawtuckaway. 🗺️",
+    title: "Cell Service ",
+    text: "Vanishes north of Berlin, NH. Download offline maps before Pawtuckaway. ",
     color: "#0d9488",
   },
   {
     icon: CloudSun,
-    title: "August Weather 🌤️",
-    text: "70–80°F days, 50–60°F nights. Pack layers — the cliff is 10° cooler at sunset. 🧥",
+    title: "August Weather ",
+    text: "70–80°F days, 50–60°F nights. Pack layers — the cliff is 10° cooler at sunset. ",
     color: "#d97706",
   },
   {
     icon: Footprints,
-    title: "Daily Pace 🥾",
-    text: "2–4 hours of driving per day, 1–3 short hikes. Nothing over 2 miles round-trip. 🚗",
+    title: "Daily Pace ",
+    text: "2–4 hours of driving per day, 1–3 short hikes. Nothing over 2 miles round-trip. ",
     color: "#16a34a",
   },
 ];
@@ -42,25 +42,25 @@ const EXPECTATIONS = [
 const PHOTO_OPS = [
   {
     icon: Sunrise,
-    title: "Golden Hour at Table Rock 🌅",
+    title: "Golden Hour at Table Rock ",
     where: "Day 4 · 7:00–7:40 PM",
-    text: "The 1,000-ft granite face turns pink and orange. Shoot from the Lake Gloriette shore. 📸",
+    text: "The 1,000-ft granite face turns pink and orange. Shoot from the Lake Gloriette shore. ",
   },
   {
     icon: Mountain,
-    title: "Artists Bluff Overlook 🏔️",
+    title: "Artists Bluff Overlook ",
     where: "Day 4 · Morning",
-    text: "Classic Franconia Notch vista — Echo Lake below, Cannon Cliff above. 0.3 mi hike. 🥾",
+    text: "Classic Franconia Notch vista — Echo Lake below, Cannon Cliff above. 0.3 mi hike. ",
   },
   {
     icon: Waves,
-    title: "Lower Falls Swimming Hole 🏊",
+    title: "Lower Falls Swimming Hole ",
     where: "Day 4 · Afternoon",
-    text: "Granite slides and emerald pools. Best in afternoon light when the water glows. 💎",
+    text: "Granite slides and emerald pools. Best in afternoon light when the water glows. ",
   },
   {
     icon: Camera,
-    title: "Bortle Class 2 Stars 🌌",
+    title: "Bortle Class 2 Stars ",
     where: "Day 5 · 11:00 PM",
     text: "Milky Way horizon to horizon at Coleman. No light pollution for 50 miles. ⭐",
   },
@@ -74,10 +74,10 @@ function TripOverviewImpl() {
         {/* Heading */}
         <FlyIn className="mb-8 text-center">
           <div className="inline-flex items-center gap-2 rounded-full bg-rust-bark/80 px-3 py-1 text-[11px] uppercase tracking-widest text-rust-bg">
-            <span aria-hidden>📜</span> The Trip at a Glance
+            <span aria-hidden></span> The Trip at a Glance
           </div>
           <h2 className="mt-3 font-lobster text-3xl sm:text-4xl md:text-6xl text-rust-bark">
-            ✨ What this week will feel like
+             What this week will feel like
           </h2>
         </FlyIn>
 
@@ -96,7 +96,7 @@ function TripOverviewImpl() {
         <FlyIn className="mb-6">
           <div className="leather-card parchment-texture rounded-3xl p-5 md:p-6">
             <h3 className="mb-4 font-serif text-lg font-bold text-rust-bark text-center">
-              📊 The Arc of the Week
+               The Arc of the Week
             </h3>
             <div className="flex items-end justify-between gap-1 sm:gap-2">
               {[
@@ -128,7 +128,7 @@ function TripOverviewImpl() {
               ))}
             </div>
             <p className="mt-4 text-xs text-rust-bark/60 text-center italic">
-              The emotional shape of the trip 🌅 — from quiet start to crescendo to gentle return.
+              The emotional shape of the trip  — from quiet start to crescendo to gentle return.
             </p>
           </div>
         </FlyIn>
@@ -148,12 +148,12 @@ function TripOverviewImpl() {
           ))}
         </FlyInStagger>
 
-        {/* 📸 Best Photo Opportunities — curated shot list */}
+        {/*  Best Photo Opportunities — curated shot list */}
         <FlyIn className="bark-card rounded-3xl p-5 md:p-6">
           <div className="flex items-center gap-2 mb-4">
             <Camera className="w-5 h-5 text-rust-brass" />
             <h3 className="font-serif text-lg font-bold text-rust-cream">
-              📸 Best Photo Opportunities
+               Best Photo Opportunities
             </h3>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">

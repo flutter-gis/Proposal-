@@ -293,7 +293,7 @@ export default function PlaceDetailDialog({
                     key={i}
                     className="flex items-start gap-2 p-3 rounded-lg bg-emerald-50/50 border border-emerald-100"
                   >
-                    <span className="text-emerald-600 font-bold mt-0.5">🌿</span>
+                    <span className="text-emerald-600 font-bold mt-0.5"></span>
                     <span className="text-sm text-slate-700 leading-relaxed">
                       {note}
                     </span>
@@ -337,7 +337,7 @@ export default function PlaceDetailDialog({
                     key={i}
                     className="flex items-start gap-2 p-3 rounded-lg bg-amber-50/70 border border-amber-200"
                   >
-                    <span className="text-amber-600 font-bold mt-0.5">💡</span>
+                    <span className="text-amber-600 font-bold mt-0.5"></span>
                     <span className="text-sm text-slate-700 leading-relaxed">
                       {tip}
                     </span>
