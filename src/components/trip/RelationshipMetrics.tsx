@@ -28,6 +28,7 @@ import {
 } from "@/lib/relationship-data";
 import { FlyIn, FlyInStagger, FlyInItem } from "./FlyIn";
 import QuoteCallout from "./QuoteCallout";
+import { Icon as SvgIcon, type IconName } from "@/components/icons/Icon";
 
 function useNow(intervalMs: number = 1000): Date {
   const [now, setNow] = useState<Date>(() => new Date(0));
@@ -181,7 +182,9 @@ function RelationshipMetricsImpl() {
           {METRIC_CARDS.map((c) => (
             <FlyInItem key={c.key}>
               <div className="leather-card parchment-texture anim-hover-lift rounded-2xl p-4 text-center h-full">
-                <div className="mb-1 text-2xl" aria-hidden>{c.icon}</div>
+                <div className="mb-1 flex items-center justify-center" aria-hidden>
+                  <SvgIcon name={c.icon as IconName} size={28} animated />
+                </div>
                 <div className="font-serif text-xl md:text-2xl font-bold text-rust-ember tabular-nums">
                   {c.format(metrics)}
                 </div>

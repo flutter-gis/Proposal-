@@ -293,7 +293,7 @@ function AttractionCard({
             <ul className="grid grid-cols-1 gap-1">
               {attraction.highlights.map((h, i) => (
                 <li key={i} className="text-xs text-on-light/70 flex items-start gap-2">
-                  <span className="text-rust-forest mt-0.5">✓</span>
+                  <span className="text-rust-forest mt-0.5"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l3.5 3.5L13 5"/></svg></span>
                   {h}
                 </li>
               ))}

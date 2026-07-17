@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "J & Dee — The Wilderness Romance | #JAndDeeSayIDo",
     short_name: "J & Dee",
     description:
-      "🎉 J & Dee have an exciting moment to share! 💛 Follow their 6-day New Hampshire wilderness adventure — something special happens Friday Aug 7 @ 7:30 PM. #JAndDeeSayIDo 🌲",
+      "J & Dee have an exciting moment to share! Follow their 6-day New Hampshire wilderness adventure — something special happens Friday Aug 7 @ 7:30 PM. #JAndDeeSayIDo",
     start_url: "/",
     display: "standalone",
     orientation: "portrait",

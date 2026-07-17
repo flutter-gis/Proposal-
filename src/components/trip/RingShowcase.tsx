@@ -18,23 +18,24 @@ import { FlyIn, FlyInStagger, FlyInItem } from "./FlyIn";
 import { LazyImage } from "@/lib/use-lazy-image";
 import { getImage } from "@/lib/images";
 import QuoteCallout from "./QuoteCallout";
+import { Icon as SvgIcon, type IconName } from "@/components/icons/Icon";
 
 const DETAILS = [
-  { icon: "🌹", title: "Rose Gold Band", text: "14k rose gold — a warm, blush-toned metal that mirrors the colors of sunset on Table Rock." },
-  { icon: "💚", title: "Green Fire Opal", text: "Ethically sourced green fire opal center stone — flashes of emerald and amber in changing light." },
-  { icon: "🍃", title: "Moss Agate Leaves", text: "Two hand-carved moss agate leaves flank the stone, each with unique dendritic inclusions like miniature forests." },
-  { icon: "🌿", title: "Vine Motif Shoulders", text: "Tapered shoulders sweep up in a hand-engraved vine motif, cradling the center stone." },
-  { icon: "✨", title: "Pavé Trail Band", text: "A delicate pavé trail of conflict-free diamonds runs along the gallery, catching lantern light." },
-  { icon: "🪨", title: "Comfort Fit Inside", text: "Inside the band is rounded for an all-day comfort fit — ready for trails, campfires, and canoe paddles." },
+  { icon: "nature", title: "Rose Gold Band", text: "14k rose gold — a warm, blush-toned metal that mirrors the colors of sunset on Table Rock." },
+  { icon: "heart", title: "Green Fire Opal", text: "Ethically sourced green fire opal center stone — flashes of emerald and amber in changing light." },
+  { icon: "nature", title: "Moss Agate Leaves", text: "Two hand-carved moss agate leaves flank the stone, each with unique dendritic inclusions like miniature forests." },
+  { icon: "nature", title: "Vine Motif Shoulders", text: "Tapered shoulders sweep up in a hand-engraved vine motif, cradling the center stone." },
+  { icon: "sparkle", title: "Pavé Trail Band", text: "A delicate pavé trail of conflict-free diamonds runs along the gallery, catching lantern light." },
+  { icon: "mountain", title: "Comfort Fit Inside", text: "Inside the band is rounded for an all-day comfort fit — ready for trails, campfires, and canoe paddles." },
 ];
 
 const SYMBOLISM = [
-  { icon: "⛰️", title: "The Cliff", text: "The center opal stands like Table Rock — held aloft by the band as the cliff is held by the notch." },
-  { icon: "🌲", title: "The Pines", text: "Moss agate leaves mirror the deep pine canopy that shelters every campsite on the route." },
-  { icon: "🪞", title: "The Mirror", text: "The opal's play of color reflects the lake that mirrors the cliff — two surfaces, one light." },
-  { icon: "🌅", title: "The Golden Hour", text: "Rose gold captures the exact 7:30 PM warmth that turns the granite pink and orange." },
-  { icon: "🌌", title: "The Dark Sky", text: "Pavé diamonds recall the Bortle Class 2 Milky Way reflected in Little Diamond Pond." },
-  { icon: "∞", title: "The Circle", text: "An unbroken band — no beginning, no end — the simplest and oldest promise two people can make." },
+  { icon: "mountain", title: "The Cliff", text: "The center opal stands like Table Rock — held aloft by the band as the cliff is held by the notch." },
+  { icon: "nature", title: "The Pines", text: "Moss agate leaves mirror the deep pine canopy that shelters every campsite on the route." },
+  { icon: "water", title: "The Mirror", text: "The opal's play of color reflects the lake that mirrors the cliff — two surfaces, one light." },
+  { icon: "sparkle", title: "The Golden Hour", text: "Rose gold captures the exact 7:30 PM warmth that turns the granite pink and orange." },
+  { icon: "stargaze", title: "The Dark Sky", text: "Pavé diamonds recall the Bortle Class 2 Milky Way reflected in Little Diamond Pond." },
+  { icon: "infinity", title: "The Circle", text: "An unbroken band — no beginning, no end — the simplest and oldest promise two people can make." },
 ];
 
 function RingSVG() {
@@ -148,7 +149,7 @@ function RingShowcaseImpl() {
           {DETAILS.map((d) => (
             <FlyInItem key={d.title}>
               <div className="leather-card parchment-texture anim-hover-lift rounded-2xl p-4 h-full">
-                <div className="mb-1 text-2xl" aria-hidden>{d.icon}</div>
+                <div className="mb-1 flex items-center justify-center" aria-hidden><SvgIcon name={d.icon as IconName} size={28} animated /></div>
                 <div className="font-serif text-base font-bold text-rust-bark">{d.title}</div>
                 <p className="mt-1 text-xs text-rust-bark/70 leading-relaxed">{d.text}</p>
               </div>
@@ -165,7 +166,7 @@ function RingShowcaseImpl() {
             {SYMBOLISM.map((s) => (
               <FlyInItem key={s.title}>
                 <div className="bark-card rounded-2xl p-4 h-full text-rust-cream">
-                  <div className="mb-1 text-2xl" aria-hidden>{s.icon}</div>
+                  <div className="mb-1 flex items-center justify-center" aria-hidden><SvgIcon name={s.icon as IconName} size={28} animated /></div>
                   <div className="font-serif text-base font-bold text-rust-brass">{s.title}</div>
                   <p className="mt-1 text-xs text-rust-cream/80 leading-relaxed">{s.text}</p>
                 </div>

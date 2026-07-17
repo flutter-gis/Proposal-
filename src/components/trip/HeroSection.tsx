@@ -131,7 +131,7 @@ function TodayIndicator() {
     // After trip
     return (
       <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-emerald-500/20 px-4 py-1.5 text-xs font-semibold text-emerald-200 backdrop-blur-sm">
-        <span>✓</span> The trip is complete — relive it below
+        <span><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l3.5 3.5L13 5"/></svg></span> The trip is complete — relive it below
       </div>
     );
   }

@@ -128,7 +128,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://w1jq650c98f0-d.space-z.ai"),
   title: "J & Dee — The Wilderness Romance | #JAndDeeSayIDo",
   description:
-    "🎉 J & Dee have an exciting moment to share! 💛 Follow their 6-day New Hampshire wilderness adventure — something special happens Friday Aug 7 @ 7:30 PM. #JAndDeeSayIDo 🌲",
+    "J & Dee have an exciting moment to share! Follow their 6-day New Hampshire wilderness adventure — something special happens Friday Aug 7 @ 7:30 PM. #JAndDeeSayIDo",
   keywords: [
     "JAndDeeSayIDo",
     "J and Dee",
@@ -168,7 +168,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "J & Dee — The Wilderness Romance | #JAndDeeSayIDo",
-    description: "🎉 J & Dee have an exciting moment to share! 💛 Follow their 6-day New Hampshire wilderness adventure — something special happens Friday Aug 7 @ 7:30 PM. #JAndDeeSayIDo 🌲",
+    description: "J & Dee have an exciting moment to share! Follow their 6-day New Hampshire wilderness adventure — something special happens Friday Aug 7 @ 7:30 PM. #JAndDeeSayIDo",
     type: "website",
     siteName: "J & Dee — Wilderness Romance",
     images: [
@@ -183,7 +183,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "J & Dee — The Wilderness Romance | #JAndDeeSayIDo",
-    description: "🎉 J & Dee have an exciting moment to share! 💛 #JAndDeeSayIDo 🌲",
+    description: "J & Dee have an exciting moment to share! #JAndDeeSayIDo",
     images: ["/icons/icon-512.png"],
   },
   robots: {

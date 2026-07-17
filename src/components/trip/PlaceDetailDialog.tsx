@@ -316,7 +316,7 @@ export default function PlaceDetailDialog({
                     key={i}
                     className="flex items-start gap-2 p-2 rounded-lg bg-emerald-50/50 border border-emerald-100"
                   >
-                    <span className="text-emerald-600 font-bold mt-0.5">✓</span>
+                    <span className="text-emerald-600 font-bold mt-0.5"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l3.5 3.5L13 5"/></svg></span>
                     <span className="text-sm text-slate-700">{h}</span>
                   </div>
                 ))}

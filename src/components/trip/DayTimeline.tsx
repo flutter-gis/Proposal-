@@ -136,7 +136,7 @@ function DaySlideImpl({ day, index, total, onSelectPlace }: DaySlideProps) {
         <ul className="space-y-1.5">
           {day.highlights.map((h, i) => (
             <li key={i} className="flex items-start gap-1.5 text-xs text-on-light/75">
-              <span className="text-rust-forest font-bold mt-0.5">✓</span>
+              <span className="text-rust-forest font-bold mt-0.5"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l3.5 3.5L13 5"/></svg></span>
               <span>{h}</span>
             </li>
           ))}
@@ -303,7 +303,7 @@ export default function DayTimeline({
                       <div>
                         <div className="flex items-center gap-2 mb-1">
                           {isCurrent && <span className="text-[9px] font-bold uppercase tracking-widest text-white bg-rose-600 px-2 py-0.5 rounded-full animate-pulse">Today</span>}
-                          {isPast && <span className="text-[9px] font-bold uppercase tracking-widest text-white bg-green-700 px-2 py-0.5 rounded-full">✓ Done</span>}
+                          {isPast && <span className="text-[9px] font-bold uppercase tracking-widest text-white bg-green-700 px-2 py-0.5 rounded-full">Done</span>}
                           <span className="text-[10px] uppercase tracking-widest text-muted-light">
                             Day {i + 1} · Aug {4 + i}
                           </span>

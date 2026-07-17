@@ -53,7 +53,7 @@ const CATEGORY_CONFIG: Record<string, { color: string; emoji: string; label: str
   historic: { color: "#92400e", emoji: "🏛️", label: "Historic" },
   dining: { color: "#dc2626", emoji: "🍽️", label: "Dining" },
   railway: { color: "#7c2d12", emoji: "🚂", label: "Railway" },
-  proposal: { color: "#e11d48", emoji: "💍", label: "Proposal" },
+  proposal: { color: "#e11d48", emoji: "P", label: "Proposal" },
   stargaze: { color: "#6d28d9", emoji: "🌌", label: "Stargaze" },
   potential: { color: "#475569", emoji: "📍", label: "Nearby" },
 };
@@ -72,9 +72,11 @@ function createIcon(category: string, isHighlighted: boolean = false) {
   const cfg = CATEGORY_CONFIG[category] || CATEGORY_CONFIG.scenic;
   const size = isHighlighted ? 40 : 30;
   const ringW = isHighlighted ? 4 : 2;
+  // Use first letter of label instead of emoji (emoji renders inconsistently)
+  const label = cfg.label.charAt(0).toUpperCase();
   return L.divIcon({
     className: "custom-marker",
-    html: `<div style="width:${size}px;height:${size}px;background:${cfg.color};border:${ringW}px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:${size * 0.5}px;box-shadow:0 2px 6px rgba(0,0,0,0.35);transition:transform 0.2s;${isHighlighted ? "transform:scale(1.1);" : ""}">${cfg.emoji}</div>`,
+    html: `<div style="width:${size}px;height:${size}px;background:${cfg.color};border:${ringW}px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:${size * 0.4}px;font-weight:bold;color:white;box-shadow:0 2px 6px rgba(0,0,0,0.35);transition:transform 0.2s;font-family:sans-serif;${isHighlighted ? "transform:scale(1.1);" : ""}">${label}</div>`,
     iconSize: [size, size],
     iconAnchor: [size / 2, size / 2],
     popupAnchor: [0, -size / 2],
@@ -84,9 +86,10 @@ function createIcon(category: string, isHighlighted: boolean = false) {
 function createRoadsideIcon(category: string) {
   const meta = CATEGORY_META[category as keyof typeof CATEGORY_META] || CATEGORY_META.scenic;
   const size = 22;
+  const label = meta.label.charAt(0).toUpperCase();
   return L.divIcon({
     className: "custom-marker roadside-marker",
-    html: `<div style="width:${size}px;height:${size}px;background:${meta.color};border:2px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:${size * 0.45}px;box-shadow:0 1px 4px rgba(0,0,0,0.3);opacity:0.85;">${meta.emoji}</div>`,
+    html: `<div style="width:${size}px;height:${size}px;background:${meta.color};border:2px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:${size * 0.4}px;font-weight:bold;color:white;box-shadow:0 1px 4px rgba(0,0,0,0.3);opacity:0.85;font-family:sans-serif;">${label}</div>`,
     iconSize: [size, size],
     iconAnchor: [size / 2, size / 2],
     popupAnchor: [0, -size / 2],
@@ -412,7 +415,7 @@ export default function TripMap({
       {/* ── Proposal site callout (always visible, bottom-left to avoid clash) ── */}
       {!showRoadside && (
         <div className="absolute bottom-3 left-3 z-[1000] bg-gradient-to-r from-amber-500 to-rose-500 text-white rounded-lg shadow-lg px-3 py-1.5 pointer-events-none">
-          <div className="text-[9px] font-bold uppercase tracking-widest opacity-90">💍 Proposal Site</div>
+          <div className="text-[9px] font-bold uppercase tracking-widest opacity-90">Proposal Site</div>
           <div className="text-[10px] font-semibold">Aug 7 · 7:30 PM</div>
         </div>
       )}

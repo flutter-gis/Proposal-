@@ -20,13 +20,14 @@ import { haptics } from "@/lib/haptics";
 import { useToast } from "@/hooks/use-toast";
 import { FlyIn, FlyInStagger, FlyInItem } from "./FlyIn";
 import QuoteCallout from "./QuoteCallout";
+import { Icon as SvgIcon, type IconName } from "@/components/icons/Icon";
 import { Sparkles, Heart, Share2, CalendarPlus } from "lucide-react";
 
 const FACTS = [
-  { icon: "📅", label: "Date", value: "Friday, Aug 7 2026" },
-  { icon: "🌗", label: "Time", value: "7:30 PM ET" },
-  { icon: "⛰️", label: "Cliff", value: "1,000 ft granite" },
-  { icon: "🪞", label: "Reflection", value: "Lake Gloriette mirror" },
+  { icon: "sparkle", label: "Date", value: "Friday, Aug 7 2026" },
+  { icon: "sparkle", label: "Time", value: "7:30 PM ET" },
+  { icon: "mountain", label: "Cliff", value: "1,000 ft granite" },
+  { icon: "water", label: "Reflection", value: "Lake Gloriette mirror" },
 ];
 
 const STAGING = [
@@ -34,19 +35,19 @@ const STAGING = [
     time: "5:30 PM",
     title: "Landscape Painting Setup",
     text: "Arrive at the Lake Gloriette pull-off. Set up travel easels on the flat grassy edge between car and water — the cover story is a sunset landscape painting date.",
-    icon: "🎨",
+    icon: "sparkle",
   },
   {
     time: "7:00 PM",
     title: "Photo Team In Position",
     text: "Photographer team parks 0.2 mi east at the Table Rock trailhead lot, then walks the brush line to set up telephoto lenses hidden from view.",
-    icon: "📷",
+    icon: "scenic",
   },
   {
     time: "7:30 PM",
     title: "The Proposal",
     text: "Drop to one knee as the setting sun turns the 1,000-ft vertical granite face pink and orange across the mirror-calm lake. The question will be asked.",
-    icon: "💍",
+    icon: "proposal",
   },
 ];
 
@@ -164,7 +165,9 @@ function ProposalPageImpl() {
           {FACTS.map((f) => (
             <FlyInItem key={f.label}>
               <div className="leather-card parchment-texture anim-hover-lift rounded-2xl p-4 text-center">
-                <div className="mb-1 text-2xl" aria-hidden>{f.icon}</div>
+                <div className="mb-1 flex items-center justify-center" aria-hidden>
+                  <SvgIcon name={f.icon as IconName} size={28} animated />
+                </div>
                 <div className="font-serif text-base md:text-lg font-bold text-rust-bark">{f.value}</div>
                 <div className="text-[10px] uppercase tracking-widest text-rust-bark/60">{f.label}</div>
               </div>
@@ -220,7 +223,9 @@ function ProposalPageImpl() {
                     />
                     <div className="leather-card parchment-texture rounded-2xl p-4 md:p-5">
                       <div className="flex items-start gap-3">
-                        <span className="text-2xl" aria-hidden>{s.icon}</span>
+                        <span className="flex items-center" aria-hidden>
+                          <SvgIcon name={s.icon as IconName} size={28} animated />
+                        </span>
                         <div className="flex-1">
                           <div className="flex items-center justify-between gap-2">
                             <div className="font-serif text-lg font-bold text-rust-bark">{s.title}</div>
