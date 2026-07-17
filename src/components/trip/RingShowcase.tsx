@@ -149,7 +149,7 @@ function RingShowcaseImpl() {
           {DETAILS.map((d) => (
             <FlyInItem key={d.title}>
               <div className="leather-card parchment-texture anim-hover-lift rounded-2xl p-4 h-full">
-                <div className="mb-1 flex items-center justify-center" aria-hidden><SvgIcon name={d.icon as IconName} size={28} animated /></div>
+                <div className="mb-1 flex items-center justify-center" aria-hidden><SvgIcon name={d.icon as IconName} size={28} /></div>
                 <div className="font-serif text-base font-bold text-rust-bark">{d.title}</div>
                 <p className="mt-1 text-xs text-rust-bark/70 leading-relaxed">{d.text}</p>
               </div>
@@ -166,7 +166,7 @@ function RingShowcaseImpl() {
             {SYMBOLISM.map((s) => (
               <FlyInItem key={s.title}>
                 <div className="bark-card rounded-2xl p-4 h-full text-rust-cream">
-                  <div className="mb-1 flex items-center justify-center" aria-hidden><SvgIcon name={s.icon as IconName} size={28} animated /></div>
+                  <div className="mb-1 flex items-center justify-center" aria-hidden><SvgIcon name={s.icon as IconName} size={28} /></div>
                   <div className="font-serif text-base font-bold text-rust-brass">{s.title}</div>
                   <p className="mt-1 text-xs text-rust-cream/80 leading-relaxed">{s.text}</p>
                 </div>

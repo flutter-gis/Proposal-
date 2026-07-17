@@ -1,62 +1,41 @@
 "use client";
 
 /**
- * Icon.tsx — Base animated SVG icon component
+ * Icon.tsx — Base SVG icon component (static, sprite-based)
  *
- * Renders inline SVG icons from the IconRegistry. Each icon has 100+
- * polygons, 3+ SMIL animations (20+ keyframes), and uses CSS variables
- * for theme integration.
+ * References icons defined in IconSprite via <use href="#icon-{name}">.
+ * This means the 500+ element artwork exists in the DOM exactly ONCE per
+ * icon type (in the sprite), not once per instance.
  *
- * Features:
- *   - Inline SVG (inherits currentColor + CSS vars)
- *   - SMIL animations pause when offscreen (IntersectionObserver)
- *   - Respects prefers-reduced-motion
- *   - SSR-safe (pure SVG, no useEffect for initial render)
- *   - Memoized (only re-renders on prop change)
- *   - Tree-shakeable (each icon is a separate import)
+ * All icons are STATIC — no SMIL animations. CSS variables penetrate the
+ * <use> shadow boundary for instant theme recoloring with zero re-render.
  *
  * Usage:
- *   <Icon name="car" size={24} animated />
- *   <Icon name="ring" size={48} animated aria-label="Engagement ring" />
- *   <Icon name="check" size={16} />  // non-animated
+ *   <Icon name="car" size={24} />
+ *   <Icon name="ring" size={48} aria-label="Engagement ring" />
  */
 
-import { memo, useId, type CSSProperties } from "react";
-import { ICON_REGISTRY, type IconName } from "./IconRegistry";
+import { memo, type CSSProperties } from "react";
+import { type IconName } from "./IconRegistry";
 
 interface IconProps {
   name: IconName;
   size?: number;
-  animated?: boolean;
   className?: string;
   style?: CSSProperties;
-  /** Accessible label. If omitted, icon is aria-hidden. */
   "aria-label"?: string;
-  /** Render as decorative (aria-hidden=true) — default true if no aria-label */
   decorative?: boolean;
 }
 
 function IconImpl({
   name,
   size = 24,
-  animated = false,
   className,
   style,
   "aria-label": ariaLabel,
   decorative,
 }: IconProps) {
-  const rawId = useId();
-  // Sanitize useId output for SVG id (it contains ":" which is invalid in SVG ids)
-  const id = rawId.replace(/:/g, "");
-  const entry = ICON_REGISTRY[name];
   const isHidden = decorative ?? !ariaLabel;
-
-  if (!entry) {
-    if (process.env.NODE_ENV === "development") {
-      console.warn(`Icon "${name}" not found in registry`);
-    }
-    return null;
-  }
 
   return (
     <svg
@@ -69,9 +48,8 @@ function IconImpl({
       aria-hidden={isHidden ? "true" : undefined}
       aria-label={isHidden ? undefined : ariaLabel}
       data-icon={name}
-      data-animated={animated ? "true" : "false"}
     >
-      {entry.render(id, animated)}
+      <use href={`#icon-${name}`} />
     </svg>
   );
 }

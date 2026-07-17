@@ -198,7 +198,7 @@ export default function MobileFriendlyMap({ onSelectPlace }: { onSelectPlace?: (
                               isSelected ? "font-bold bg-[var(--rust-brass)]/20 text-on-brass" : "hover:bg-black/5 text-muted-light"
                             )}
                           >
-                            <SvgIcon name={CATEGORY_TO_ICON[place.category] ?? "nearby"} size={14} animated />
+                            <SvgIcon name={CATEGORY_TO_ICON[place.category] ?? "nearby"} size={14} />
                             <span className="truncate flex-1">{place.name}</span>
                             {place.cost && (
                               <span className="text-[9px] opacity-50 flex-shrink-0">{place.cost.split("(")[0].trim()}</span>

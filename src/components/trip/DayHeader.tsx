@@ -230,7 +230,7 @@ function DayHeaderImpl({ day, index }: { day: DayPlan; index: number }) {
               }
             >
               <span aria-hidden style={{ display: "inline-flex", alignItems: "center" }}>
-                <SvgIcon name={DAY_ICON_MAP[index] ?? "nearby"} size={16} animated />
+                <SvgIcon name={DAY_ICON_MAP[index] ?? "nearby"} size={16} />
               </span>
               {day.day} · {day.theme}
             </div>

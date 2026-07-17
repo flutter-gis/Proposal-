@@ -183,7 +183,7 @@ function RelationshipMetricsImpl() {
             <FlyInItem key={c.key}>
               <div className="leather-card parchment-texture anim-hover-lift rounded-2xl p-4 text-center h-full">
                 <div className="mb-1 flex items-center justify-center" aria-hidden>
-                  <SvgIcon name={c.icon as IconName} size={28} animated />
+                  <SvgIcon name={c.icon as IconName} size={28} />
                 </div>
                 <div className="font-serif text-xl md:text-2xl font-bold text-rust-ember tabular-nums">
                   {c.format(metrics)}

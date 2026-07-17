@@ -8,6 +8,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import AppBootstrap from "@/components/pwa/AppBootstrap";
 import ServiceWorkerRegister from "@/components/pwa/ServiceWorkerRegister";
+import IconSprite from "@/components/icons/IconSprite";
 import InstallPrompt from "@/components/pwa/InstallPrompt";
 import { RevealProvider } from "@/lib/reveal-context";
 import StructuredData from "@/components/trip/StructuredData";
@@ -240,6 +241,10 @@ export default function RootLayout({
       <body
         className={`${allFontVariables} antialiased bg-background text-foreground`}
       >
+        {/* Icon sprite — defines all 33 icons as <symbol> elements ONCE.
+            Icons reference these via <use href="#icon-{name}"> — 500+ element
+            artwork exists in DOM once per icon type, not per instance. */}
+        <IconSprite />
         {/* G-01: Skip-to-content link — keyboard users bypass the app bar */}
         <a
           href="#main-content"

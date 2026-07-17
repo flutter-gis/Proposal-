@@ -309,7 +309,7 @@ export default function DayTimeline({
                           </span>
                         </div>
                         <h3 className="font-lobster text-lg sm:text-xl text-on-light flex items-center gap-2">
-                          <SvgIcon name={DAY_ICON_MAP[i] ?? "nearby"} size={20} animated /> {day.title}
+                          <SvgIcon name={DAY_ICON_MAP[i] ?? "nearby"} size={20} /> {day.title}
                         </h3>
                         {leg && (
                           <div className="mt-1 text-[10px] text-on-light/50">

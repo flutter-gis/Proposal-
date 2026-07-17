@@ -166,7 +166,7 @@ function ProposalPageImpl() {
             <FlyInItem key={f.label}>
               <div className="leather-card parchment-texture anim-hover-lift rounded-2xl p-4 text-center">
                 <div className="mb-1 flex items-center justify-center" aria-hidden>
-                  <SvgIcon name={f.icon as IconName} size={28} animated />
+                  <SvgIcon name={f.icon as IconName} size={28} />
                 </div>
                 <div className="font-serif text-base md:text-lg font-bold text-rust-bark">{f.value}</div>
                 <div className="text-[10px] uppercase tracking-widest text-rust-bark/60">{f.label}</div>
@@ -224,7 +224,7 @@ function ProposalPageImpl() {
                     <div className="leather-card parchment-texture rounded-2xl p-4 md:p-5">
                       <div className="flex items-start gap-3">
                         <span className="flex items-center" aria-hidden>
-                          <SvgIcon name={s.icon as IconName} size={28} animated />
+                          <SvgIcon name={s.icon as IconName} size={28} />
                         </span>
                         <div className="flex-1">
                           <div className="flex items-center justify-between gap-2">

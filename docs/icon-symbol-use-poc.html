@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SVG &lt;symbol&gt;+&lt;use&gt; vs inline SVG — icon rendering PoC</title>
+<style>
+  :root {
+    /* Theme tokens (the "--rust-*" model from the real app) */
+    --rust-accent: #c2410c;
+    --rust-sky:    #1e3a8a;
+    --rust-gold:   #fbbf24;
+    --rust-bg:     #0f0a2e;
+    --rust-bg-dark:#050416;
+    --rust-fg:     #fef3c7;
+  }
+  body.dark {
+    --rust-accent: #f97316;
+    --rust-sky:    #60a5fa;
+    --rust-gold:   #fde68a;
+    --rust-bg:     #020617;
+  }
+  body { font: 14px/1.5 system-ui, sans-serif; margin: 0; padding: 16px; background: var(--rust-bg-dark); color: #e5e7eb; }
+  h1 { font-size: 18px; margin: 0 0 4px; }
+  p.lead { margin: 0 0 12px; color: #9ca3af; }
+  .controls { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  button { background: #1f2937; color: #f9fafb; border: 1px solid #374151; border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+  button:hover { background: #374151; }
+  button.active { background: var(--rust-accent); border-color: var(--rust-accent); }
+  .stats { background: #111827; border: 1px solid #374151; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; font-variant-numeric: tabular-nums; }
+  .stats b { color: var(--rust-gold); }
+  .grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; max-width: 720px; }
+  .cell { width: 64px; height: 64px; }
+  .legend { margin-top: 14px; color: #9ca3af; font-size: 12px; }
+  code { background: #1f2937; padding: 1px 5px; border-radius: 4px; color: #fbbf24; }
+</style>
+</head>
+<body class="dark">
+<h1>SVG <code>&lt;symbol&gt;</code> + <code>&lt;use&gt;</code> vs inline SVG</h1>
+<p class="lead">500-element icon × 20 instances. Toggle the technique and theme; watch the document-DOM node count.</p>
+
+<div class="controls">
+  <button id="btn-use" class="active">&lt;symbol&gt; + &lt;use&gt;</button>
+  <button id="btn-inline">inline SVG (×20 copies)</button>
+  <button id="btn-theme">toggle theme (light/dark)</button>
+</div>
+
+<div class="stats">
+  Document DOM nodes: <b id="node-count">—</b> &nbsp;|&nbsp;
+  Technique: <b id="technique">symbol+use</b> &nbsp;|&nbsp;
+  Theme: <b id="theme-name">dark</b>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<!--
+  ── THE SPRITE ──────────────────────────────────────────────────────
+  One hidden <svg> holding each icon as a <symbol>. Mounted ONCE.
+  Colors use var(--rust-*) — these resolve against each <use> host's
+  inherited custom properties (i.e. the theme tokens above).
+  This symbol contains ~515 SVG elements (1 sky rect + 100 stars
+  + 2×(30 arm ellipses + 90 arm stars) + 16 nebula ellipses + 50
+  sparkles + core circles + 60 particles). Deterministic via a
+  seeded PRNG so SSR and client match.
+-->
+<svg id="sprite" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+  <symbol id="icon-galaxy" viewBox="0 0 64 64">
+    <defs>
+      <radialGradient id="g-core">
+        <stop offset="0%"  stop-color="#ffffff"/>
+        <stop offset="10%" stop-color="var(--rust-fg)"/>
+        <stop offset="30%" stop-color="#c4b5fd"/>
+        <stop offset="60%" stop-color="#8b5cf6" stop-opacity="0.4"/>
+        <stop offset="100%" stop-color="var(--rust-bg-dark)" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="g-sky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="var(--rust-bg)"/>
+        <stop offset="100%" stop-color="var(--rust-bg-dark)"/>
+      </linearGradient>
+    </defs>
+    <rect x="0" y="0" width="64" height="64" fill="url(#g-sky)" opacity="0.6"/>
+    <!-- 100 background stars (deterministic) -->
+    <g id="g-stars" fill="var(--rust-fg)"></g>
+    <!-- 2 spiral arms × 30 segments + 3 stars each -->
+    <g id="g-arm1"></g>
+    <g id="g-arm2"></g>
+    <!-- 8 nebula clouds × 2 ellipses -->
+    <g id="g-neb"></g>
+    <!-- core glow -->
+    <circle cx="32" cy="32" r="22" fill="url(#g-core)" opacity="0.3"/>
+    <circle cx="32" cy="32" r="16" fill="url(#g-core)" opacity="0.4"/>
+    <circle cx="32" cy="32" r="10" fill="url(#g-core)" opacity="0.6"/>
+    <circle cx="32" cy="32" r="6"  fill="var(--rust-fg)" opacity="0.5"/>
+    <circle cx="32" cy="32" r="3"  fill="#ffffff" opacity="0.8"/>
+    <circle cx="32" cy="32" r="1.5" fill="#ffffff"/>
+    <!-- 50 foreground sparkles -->
+    <g id="g-spark" fill="var(--rust-fg)"></g>
+    <!-- 60 particle dust -->
+    <g id="g-dust" fill="var(--rust-accent)"></g>
+  </symbol>
+</svg>
+
+<script>
+// ── Deterministic PRNG (matches mulberry32 in svg-helpers.tsx) ────────
+function mulberry32(seed){return function(){seed|=0;seed=(seed+0x6d2b79f5)|0;let t=Math.imul(seed^(seed>>>15),1|seed);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};}
+
+// ── Populate the symbol's <g> groups once (515+ elements total) ──────
+(function buildSymbol(){
+  const svgNS = "http://www.w3.org/2000/svg";
+  const rng = mulberry32(314);
+
+  const stars = document.getElementById('g-stars');
+  for (let i=0;i<100;i++){
+    const a=rng()*Math.PI*2, r=rng()*30, x=32+Math.cos(a)*r, y=32+Math.sin(a)*r;
+    const c=document.createElementNS(svgNS,'circle');
+    c.setAttribute('cx',x.toFixed(2)); c.setAttribute('cy',y.toFixed(2));
+    c.setAttribute('r',(0.3+rng()*1.2).toFixed(2)); c.setAttribute('opacity',(0.4+rng()*0.4).toFixed(2));
+    stars.appendChild(c);
+  }
+  function arm(groupId, phase){
+    const g=document.getElementById(groupId);
+    for(let i=0;i<30;i++){
+      const t=i/30, ang=t*Math.PI*3+phase, r=5+t*20;
+      const x=32+Math.cos(ang)*r, y=32+Math.sin(ang)*r*0.7, sz=(1-t)*3+0.5;
+      const e=document.createElementNS(svgNS,'ellipse');
+      e.setAttribute('cx',x.toFixed(1)); e.setAttribute('cy',y.toFixed(1));
+      e.setAttribute('rx',sz.toFixed(1)); e.setAttribute('ry',(sz*0.6).toFixed(1));
+      e.setAttribute('fill', i%2? 'var(--rust-accent)':'#a78bfa');
+      e.setAttribute('opacity',((1-t)*0.6+0.1).toFixed(2));
+      g.appendChild(e);
+      for(let j=0;j<3;j++){
+        const sa=ang+(j-1)*0.3, sr=r+(j-1)*1.5;
+        const sx=32+Math.cos(sa)*sr, sy=32+Math.sin(sa)*sr*0.7;
+        const cc=document.createElementNS(svgNS,'circle');
+        cc.setAttribute('cx',sx.toFixed(1)); cc.setAttribute('cy',sy.toFixed(1));
+        cc.setAttribute('r',(0.4+rng()*0.6).toFixed(1));
+        cc.setAttribute('fill','var(--rust-gold)'); cc.setAttribute('opacity','0.6');
+        g.appendChild(cc);
+      }
+    }
+  }
+  arm('g-arm1', 0);
+  arm('g-arm2', Math.PI);
+
+  const neb=document.getElementById('g-neb');
+  for(let i=0;i<8;i++){
+    const a=(i/8)*Math.PI*2, r=10+rng()*8, x=32+Math.cos(a)*r, y=32+Math.sin(a)*r*0.7;
+    const rx=4+rng()*4, ry=rx*0.5, col=i%3===0?'var(--rust-sky)':i%3===1?'#ec4899':'var(--rust-accent)';
+    for(const op of [0.08,0.12]){
+      const e=document.createElementNS(svgNS,'ellipse');
+      e.setAttribute('cx',x.toFixed(1)); e.setAttribute('cy',y.toFixed(1));
+      e.setAttribute('rx',rx.toFixed(1)); e.setAttribute('ry',ry.toFixed(1));
+      e.setAttribute('fill',col); e.setAttribute('opacity',op);
+      neb.appendChild(e);
+    }
+  }
+  const spark=document.getElementById('g-spark');
+  for(let i=0;i<50;i++){
+    const x=rng()*56+4, y=rng()*56+4, s=0.3+rng()*0.8;
+    const p=document.createElementNS(svgNS,'polygon');
+    p.setAttribute('points',
+      `${x.toFixed(1)},${(y-s).toFixed(1)} ${(x+s*0.2).toFixed(1)},${(y-s*0.2).toFixed(1)} ${(x+s).toFixed(1)},${y.toFixed(1)} ${(x+s*0.2).toFixed(1)},${(y+s*0.2).toFixed(1)} ${x.toFixed(1)},${(y+s).toFixed(1)} ${(x-s*0.2).toFixed(1)},${(y+s*0.2).toFixed(1)} ${(x-s).toFixed(1)},${y.toFixed(1)} ${(x-s*0.2).toFixed(1)},${(y-s*0.2).toFixed(1)}`);
+    p.setAttribute('opacity',(0.3+rng()*0.4).toFixed(2));
+    spark.appendChild(p);
+  }
+  const dust=document.getElementById('g-dust');
+  for(let i=0;i<60;i++){
+    const x=rng()*64, y=rng()*64;
+    const c=document.createElementNS(svgNS,'circle');
+    c.setAttribute('cx',x.toFixed(1)); c.setAttribute('cy',y.toFixed(1));
+    c.setAttribute('r',(0.2+rng()*0.3).toFixed(1)); c.setAttribute('opacity',(0.2+rng()*0.3).toFixed(2));
+    dust.appendChild(c);
+  }
+})();
+
+// ── Render grid in either mode ───────────────────────────────────────
+const grid = document.getElementById('grid');
+const COUNT = 20;
+let mode = 'use'; // 'use' | 'inline'
+
+// Cache the fully-built symbol's inner markup string for inline mode
+const symbolEl = document.getElementById('icon-galaxy');
+const symbolInnerHTML = symbolEl.innerHTML; // the ~515 elements
+
+function render(){
+  grid.innerHTML = '';
+  if (mode === 'use'){
+    for (let i=0;i<COUNT;i++){
+      const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+      svg.setAttribute('viewBox','0 0 64 64');
+      svg.setAttribute('width','64'); svg.setAttribute('height','64');
+      svg.setAttribute('class','cell');
+      const use = document.createElementNS('http://www.w3.org/2000/svg','use');
+      use.setAttribute('href','#icon-galaxy');
+      svg.appendChild(use);
+      grid.appendChild(svg);
+    }
+  } else {
+    // inline: deep-clone the symbol's contents into each <svg> (≈ current app behavior)
+    for (let i=0;i<COUNT;i++){
+      const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+      svg.setAttribute('viewBox','0 0 64 64');
+      svg.setAttribute('width','64'); svg.setAttribute('height','64');
+      svg.setAttribute('class','cell');
+      svg.innerHTML = symbolInnerHTML; // full 515-element copy each time
+      grid.appendChild(svg);
+    }
+  }
+  updateStats();
+}
+
+function countDocumentNodes(){
+  // Count real document-tree nodes (NOT shadow-tree clones from <use>).
+  // This is what the DOM API, querySelectorAll, mutation observers, and
+  // style/layout recalc see — the actual perf bottleneck at this scale.
+  return document.getElementsByTagName('*').length;
+}
+
+function updateStats(){
+  document.getElementById('node-count').textContent = countDocumentNodes().toLocaleString();
+  document.getElementById('technique').textContent = mode === 'use' ? 'symbol+use' : 'inline (×20)';
+  document.getElementById('theme-name').textContent = document.body.classList.contains('dark') ? 'dark' : 'light';
+}
+
+document.getElementById('btn-use').onclick   = ()=>{ mode='use';   setActive('btn-use'); render(); };
+document.getElementById('btn-inline').onclick = ()=>{ mode='inline';setActive('btn-inline'); render(); };
+document.getElementById('btn-theme').onclick = ()=>{
+  document.body.classList.toggle('dark');
+  updateStats();
+};
+function setActive(id){
+  for (const b of document.querySelectorAll('.controls button')) b.classList.remove('active');
+  document.getElementById(id).classList.add('active');
+}
+
+render();
+</script>
+
+<div class="legend">
+  <p><b>What this proves:</b></p>
+  <ul>
+    <li>In <code>&lt;symbol&gt;+&lt;use&gt;</code> mode the document holds <b>~520 nodes</b>: one 515-element symbol definition + 20 <code>&lt;use&gt;</code> refs + chrome.</li>
+    <li>In <code>inline</code> mode the same 20 icons cost <b>~10,300 document nodes</b> (515 × 20). That is the current app's bottleneck.</li>
+    <li>The <b>theme toggle</b> recolors all 20 icons instantly by flipping CSS variables — proving <code>var(--rust-*)</code> resolves through the <code>&lt;use&gt;</code> shadow boundary. No re-render needed.</li>
+    <li>Icons stay vector-crisp at any size (resize the window / zoom to verify).</li>
+  </ul>
+  <p>Compare the node-count number between the two techniques — that delta (~10,300 → ~520) is the ~95% document-DOM reduction driving the recommendation in <code>docs/emoji-rendering-research.md</code>.</p>
+</div>
+</body>
+</html>

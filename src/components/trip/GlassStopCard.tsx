@@ -151,7 +151,7 @@ function GlassStopCardImpl({
                 style={{ backgroundColor: `${color}55`, color }}
                 aria-hidden
               >
-                <SvgIcon name={iconName} size={24} animated />
+                <SvgIcon name={iconName} size={24} />
               </div>
             )}
           </div>
@@ -162,7 +162,7 @@ function GlassStopCardImpl({
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-on-brass">
                   <span aria-hidden style={{ color: isProposal ? "#fbbf24" : color }}>
-                    <SvgIcon name={iconName} size={14} animated />
+                    <SvgIcon name={iconName} size={14} />
                   </span>
                   <span>{cat}</span>
                   <span className="opacity-50">·</span>

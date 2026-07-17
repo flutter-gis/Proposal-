@@ -140,7 +140,7 @@ export default function PlaceDetailDialog({
             >
               <div className="text-center text-white flex flex-col items-center justify-center">
                 <div className="mb-2 flex items-center justify-center" style={{ color: "white" }}>
-                  <SvgIcon name={CATEGORY_TO_ICON[place.category] ?? "nearby"} size={48} animated />
+                  <SvgIcon name={CATEGORY_TO_ICON[place.category] ?? "nearby"} size={48} />
                 </div>
                 <div className="text-sm opacity-80">Image loading…</div>
               </div>
