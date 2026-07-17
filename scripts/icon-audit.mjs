@@ -163,19 +163,36 @@ for (const page of pages) {
       noAnims.length === 0 ? "" : `${noAnims.length} with 0 anims: ${noAnims.map(i => i.name).join(",")}`);
 
     // ── 4. Check for stripped text (empty spans where emoji was) ───────
+    // Only flag SPAN elements that are empty AND inside a text container
+    // (not structural divs which are always empty by design)
     const emptyScan = evalJS(`(() => {
-      const empties = document.querySelectorAll('span:empty, div:empty');
+      const empties = document.querySelectorAll('span:empty');
       let suspicious = 0;
       empties.forEach(el => {
+        // Skip spans that have no siblings (only child = structural)
+        if (!el.previousSibling && !el.nextSibling) return;
+        // Skip spans inside SVG elements (they're structural)
+        if (el.closest('svg')) return;
+        // Skip aria-hidden elements (decorative — intentionally empty)
+        if (el.getAttribute('aria-hidden') === 'true') return;
+        if (el.parentElement?.getAttribute('aria-hidden') === 'true') return;
+        // Skip absolutely positioned elements (decorative layers)
+        const style = getComputedStyle(el);
+        if (style.position === 'absolute') return;
+        // Flag only if the span is between text content
         const prev = el.previousSibling;
-        if (prev && prev.textContent && prev.textContent.trim().length > 0) suspicious++;
+        const next = el.nextSibling;
+        if ((prev && prev.textContent && prev.textContent.trim().length > 0) ||
+            (next && next.textContent && next.textContent.trim().length > 0)) {
+          suspicious++;
+        }
       });
       return String(suspicious);
     })()`);
 
     const emptyCount = parseInt(emptyScan) || 0;
-    test("No suspicious empty elements (stripped emojis)", emptyCount < 5,
-      emptyCount < 5 ? "" : `${emptyCount} empty elements found`);
+    test("No suspicious empty spans (stripped emojis)", emptyCount === 0,
+      emptyCount === 0 ? "" : `${emptyCount} suspicious empty spans`);
   });
 }
 

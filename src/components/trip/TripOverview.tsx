@@ -62,7 +62,7 @@ const PHOTO_OPS = [
     icon: Camera,
     title: "Bortle Class 2 Stars ",
     where: "Day 5 · 11:00 PM",
-    text: "Milky Way horizon to horizon at Coleman. No light pollution for 50 miles. ⭐",
+    text: "Milky Way horizon to horizon at Coleman. No light pollution for 50 miles.",
   },
 ];
 

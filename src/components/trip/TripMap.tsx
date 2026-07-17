@@ -45,17 +45,17 @@ L.Icon.Default.mergeOptions({
 });
 
 const CATEGORY_CONFIG: Record<string, { color: string; emoji: string; label: string }> = {
-  stay: { color: "#0d9488", emoji: "🛏️", label: "Stay" },
-  hike: { color: "#16a34a", emoji: "🥾", label: "Hike" },
-  water: { color: "#0284c7", emoji: "🚣", label: "Water" },
-  scenic: { color: "#d97706", emoji: "📸", label: "Scenic" },
-  wildlife: { color: "#65a30d", emoji: "🦌", label: "Wildlife" },
-  historic: { color: "#92400e", emoji: "🏛️", label: "Historic" },
-  dining: { color: "#dc2626", emoji: "🍽️", label: "Dining" },
-  railway: { color: "#7c2d12", emoji: "🚂", label: "Railway" },
-  proposal: { color: "#e11d48", emoji: "P", label: "Proposal" },
-  stargaze: { color: "#6d28d9", emoji: "🌌", label: "Stargaze" },
-  potential: { color: "#475569", emoji: "📍", label: "Nearby" },
+  stay: { color: "#0d9488", emoji: "", label: "Stay" },
+  hike: { color: "#16a34a", emoji: "", label: "Hike" },
+  water: { color: "#0284c7", emoji: "", label: "Water" },
+  scenic: { color: "#d97706", emoji: "", label: "Scenic" },
+  wildlife: { color: "#65a30d", emoji: "", label: "Wildlife" },
+  historic: { color: "#92400e", emoji: "", label: "Historic" },
+  dining: { color: "#dc2626", emoji: "", label: "Dining" },
+  railway: { color: "#7c2d12", emoji: "", label: "Railway" },
+  proposal: { color: "#e11d48", emoji: "", label: "Proposal" },
+  stargaze: { color: "#6d28d9", emoji: "", label: "Stargaze" },
+  potential: { color: "#475569", emoji: "", label: "Nearby" },
 };
 
 // Per-leg colors — derived from theme palette at runtime

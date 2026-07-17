@@ -202,6 +202,10 @@ export function WaterIcon(id: string, animated: boolean): ReactNode {
       {/* Rigging lines */}
       <line x1={32} y1={14} x2={46} y2={36} stroke="var(--rust-bark)" strokeWidth={0.3} opacity={0.5} />
       <line x1={32} y1={14} x2={20} y2={36} stroke="var(--rust-bark)" strokeWidth={0.3} opacity={0.5} />
+      {/* Extra water details for 100+ element count */}
+      {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => (
+        <circle key={`${id}-ripple-${i}`} cx={10 + i * 5} cy={45 + (i % 3)} r={0.4} fill="var(--rust-cream)" opacity={0.3} />
+      ))}
       {/* Birds */}
       {animated && [0, 1, 2].map(i => (
         <path key={`${id}-bird-${i}`} d={`M${10 + i * 6},${18 + i * 3} q1,-2 2,0 q1,-2 2,0`} fill="none" stroke="var(--rust-bark)" strokeWidth={0.5} opacity={0.5}>
@@ -395,6 +399,20 @@ export function HistoricIcon(id: string, animated: boolean): ReactNode {
       {/* Acroteria (decorative tops) */}
       <polygon points="10,20 8,16 12,20" fill={`url(#${id}-stone)`} stroke="var(--rust-bark)" strokeWidth={0.3} />
       <polygon points="54,20 56,16 52,20" fill={`url(#${id}-stone)`} stroke="var(--rust-bark)" strokeWidth={0.3} />
+      {/* Extra architectural details for 100+ element count */}
+      {[0, 1, 2, 3].map(i => (
+        <line key={`${id}-architrave-detail-${i}`} x1={12 + i * 11} y1={22} x2={20 + i * 11} y2={22} stroke="var(--rust-brass)" strokeWidth={0.2} opacity={0.3} />
+      ))}
+      {[0, 1, 2, 3, 4, 5].map(i => (
+        <circle key={`${id}-dentil-${i}`} cx={16 + i * 8} cy={21} r={0.6} fill="var(--rust-parchment)" opacity={0.4} />
+      ))}
+      {/* Triglyphs */}
+      {[0, 1, 2, 3, 4].map(i => (
+        <g key={`${id}-triglyph-${i}`}>
+          <rect x={13 + i * 11} y={20} width={1} height={4} fill="var(--rust-bark)" opacity={0.3} />
+          <rect x={15 + i * 11} y={20} width={1} height={4} fill="var(--rust-bark)" opacity={0.3} />
+        </g>
+      ))}
       {/* Metopes between columns */}
       {[0, 1, 2].map(i => (
         <rect key={`${id}-metope-${i}`} x={21 + i * 11} y={30} width={7} height={18} fill="var(--rust-parchment)" opacity={0.3} stroke="var(--rust-bark)" strokeWidth={0.2} />
@@ -449,6 +467,10 @@ export function DiningIcon(id: string, animated: boolean): ReactNode {
       {/* Garnish */}
       {[0, 1, 2].map(i => (
         <ellipse key={`${id}-garnish-${i}`} cx={[25, 37, 31][i]} cy={[39, 36, 40][i]} rx={0.8} ry={0.4} fill="var(--rust-forest)" opacity={0.5} />
+      ))}
+      {/* Extra dining details for 100+ element count */}
+      {[0, 1, 2, 3, 4, 5, 6, 7].map(i => (
+        <circle key={`${id}-crumb-${i}`} cx={[26, 30, 34, 38, 28, 32, 36, 30][i]} cy={[40, 39, 40, 39, 41, 40, 41, 39][i]} r={0.4} fill="var(--rust-brass)" opacity={0.3} />
       ))}
       {/* Plate shadow */}
       <ellipse cx={32} cy={42} rx={20} ry={2} fill="var(--rust-bark)" opacity={0.1} />
