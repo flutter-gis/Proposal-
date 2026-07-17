@@ -16,13 +16,19 @@ import {
   type CategoryIconName,
 } from "./category-icons-svg";
 import { CarIcon, LightningIcon, CroissantIcon } from "./day-icons-svg";
+import {
+  MountainIcon, WalkingIcon, NoneIcon,
+  WaterfallIcon, BridgeIcon, NatureIcon, GasIcon, CarrotIcon, TheaterIcon,
+  HeartIcon, SparkleIcon, FireIcon, StarIcon, LightbulbIcon, InfinityIcon,
+} from "./extra-icons-svg";
 
 // ── Icon name union (all supported icons) ─────────────────────────────
-// Phase 1: 14 category icons
-// Phase 2: 3 day icons (car, lightning, croissant)
 export type IconName =
   | CategoryIconName
-  | "car" | "lightning" | "croissant";
+  | "car" | "lightning" | "croissant"
+  | "mountain" | "walking" | "none"
+  | "waterfall" | "bridge" | "nature" | "gas" | "farmstand" | "theater" | "carrot"
+  | "heart" | "sparkle" | "fire" | "star" | "lightbulb" | "infinity";
 
 // ── Registry entry type ───────────────────────────────────────────────
 interface IconEntry {
@@ -50,6 +56,22 @@ export const ICON_REGISTRY: Record<IconName, IconEntry> = {
   car:       { render: CarIcon,       hasAnimations: true },
   lightning: { render: LightningIcon, hasAnimations: true },
   croissant: { render: CroissantIcon, hasAnimations: true },
+  mountain:  { render: MountainIcon,  hasAnimations: true },
+  walking:   { render: WalkingIcon,   hasAnimations: true },
+  none:      { render: NoneIcon,      hasAnimations: true },
+  waterfall: { render: WaterfallIcon, hasAnimations: true },
+  bridge:    { render: BridgeIcon,    hasAnimations: true },
+  nature:    { render: NatureIcon,    hasAnimations: true },
+  gas:       { render: GasIcon,       hasAnimations: true },
+  farmstand: { render: CarrotIcon,    hasAnimations: true },
+  theater:   { render: TheaterIcon,   hasAnimations: true },
+  carrot:    { render: CarrotIcon,    hasAnimations: true },
+  heart:     { render: HeartIcon,     hasAnimations: true },
+  sparkle:   { render: SparkleIcon,   hasAnimations: true },
+  fire:      { render: FireIcon,      hasAnimations: true },
+  star:      { render: StarIcon,      hasAnimations: true },
+  lightbulb: { render: LightbulbIcon, hasAnimations: true },
+  infinity:  { render: InfinityIcon,  hasAnimations: true },
 };
 
 // ── Category name → icon name mapping ─────────────────────────────────
@@ -84,32 +106,30 @@ export const DAY_ICON_MAP: IconName[] = [
   "car", "hike", "lightning", "proposal", "stargaze", "croissant",
 ];
 
-// ── Attraction type → icon name mapping (Phase 3-4 icons pending) ────
-// For types without custom icons yet, falls back to "nearby".
+// ── Attraction type → icon name mapping ───────────────────────────────
 export const TYPE_TO_ICON: Record<string, IconName> = {
+  waterfall: "waterfall",
+  viewpoint: "mountain",
   historic: "historic",
   dining: "dining",
+  oddity: "theater",
+  nature: "nature",
+  bridge: "bridge",
   hike: "hike",
   swimming: "swimming",
   brewery: "brewery",
   grocery: "grocery",
+  gas: "gas",
+  "farm-stand": "farmstand",
   "scenic-drive": "car",
   museum: "historic",
-  // These will map to new icons once extra-icons-svg is fixed:
-  waterfall: "water",
-  viewpoint: "scenic",
-  oddity: "scenic",
-  nature: "scenic",
-  bridge: "scenic",
-  gas: "grocery",
-  "farm-stand": "grocery",
 };
 
 // ── Difficulty → icon name mapping ────────────────────────────────────
 export const DIFFICULTY_TO_ICON: Record<string, IconName> = {
   "drive-up": "car",
-  "easy": "hike",
+  "easy": "walking",
   "moderate": "hike",
-  "strenuous": "hike",
-  "none": "nearby",
+  "strenuous": "mountain",
+  "none": "none",
 };

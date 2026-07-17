@@ -587,22 +587,33 @@ function DynamicSky({ icon }: { icon: IconTheme }) {
 
 // ── Main 3D Scene ────────────────────────────────────────────────────────
 function Scene({ phase, onBoxClick }: { phase: Phase; onBoxClick: () => void }) {
-  const { camera } = useThree();
+  const { camera, size } = useThree();
   const { effectiveIcon } = usePreferences();
-  // Camera is now STATIC — no dolly on box open. This eliminates the
-  // perceived jitter/flicker from constant position lerping every frame.
-  // The camera is positioned once on mount and never moves.
   const cameraInitialized = useRef(false);
 
+  // Responsive camera: adjust position and FOV based on viewport aspect ratio.
+  // On wide screens (tablet landscape, desktop), pull camera back slightly
+  // and widen FOV so the scene fills the viewport without black borders.
+  // On tall screens (mobile portrait), narrow FOV and push camera forward.
   useEffect(() => {
-    if (cameraInitialized.current) return;
-    cameraInitialized.current = true;
-    // Set a comfortable, slightly elevated viewing angle that frames
-    // both the ring box (foreground) and the scene (background).
-    camera.position.set(0, 1.4, 5.0);
+    const aspect = size.width / size.height;
+    const isWide = aspect > 1.3;
+    const isTablet = aspect > 0.9 && aspect < 1.3;
+
+    // Adjust camera distance based on aspect ratio
+    const dist = isWide ? 5.5 : isTablet ? 5.0 : 4.5;
+    // Adjust FOV — wider screens need wider FOV to avoid clipping
+    const fov = isWide ? 55 : isTablet ? 50 : 45;
+
+    camera.position.set(0, 1.4, dist);
     camera.lookAt(0, 0.3, 0);
-    camera.updateProjectionMatrix();
-  }, [camera]);
+    // Update perspective camera FOV if it's a PerspectiveCamera
+    if ("fov" in camera) {
+      (camera as THREE.PerspectiveCamera).fov = fov;
+      (camera as THREE.PerspectiveCamera).aspect = aspect;
+      camera.updateProjectionMatrix();
+    }
+  }, [camera, size.width, size.height]);
 
   // Pre-compute tree positions (stable across renders) — used only for
   // fallback when no wilderness scene is selected.
@@ -739,14 +750,17 @@ export default function EngagementReveal3D() {
         {phase === "reveal" && "J and Dee are getting engaged! Press Enter the adventure to continue."}
         {phase === "done" && "Engagement reveal complete."}
       </p>
-      {/* 3D Canvas — full screen */}
+      {/* 3D Canvas — full screen, responsive sizing */}
       <Canvas
         shadows
         camera={{ position: [0, 1.4, 5.0], fov: 50 }}
-        className={cn("absolute inset-0", phase === "box" && "cursor-pointer")}
+        className={cn("absolute inset-0 w-full h-full", phase === "box" && "cursor-pointer")}
+        style={{ width: "100%", height: "100%", display: "block" }}
         onCreated={({ gl }) => {
           // L-01: Use PCFShadowMap (non-deprecated) instead of PCFSoftShadowMap.
           gl.shadowMap.type = THREE.PCFShadowMap;
+          // Set clear color to match the dialog background so no black edges
+          gl.setClearColor("#0f0a1e", 1);
         }}
         gl={{
           antialias: true,
