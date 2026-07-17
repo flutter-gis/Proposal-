@@ -15,7 +15,11 @@ import {
   SwimmingIcon, BreweryIcon, GroceryIcon,
   type CategoryIconName,
 } from "./category-icons-svg";
-import { CarIcon, LightningIcon, CroissantIcon } from "./day-icons-svg";
+import { CarIcon as CarIconOld, LightningIcon as LightningIconOld, CroissantIcon } from "./day-icons-svg";
+import { ProposalIcon as ProposalHero } from "./icons/hero/ProposalIcon";
+import { StargazeIcon as StargazeHero } from "./icons/hero/StargazeIcon";
+import { CarIcon as CarHero } from "./icons/hero/CarIcon";
+import { LightningIcon as LightningHero } from "./icons/hero/LightningIcon";
 import {
   MountainIcon, WalkingIcon, NoneIcon,
   WaterfallIcon, BridgeIcon, NatureIcon, GasIcon, CarrotIcon, TheaterIcon,
@@ -47,14 +51,14 @@ export const ICON_REGISTRY: Record<IconName, IconEntry> = {
   historic:  { render: HistoricIcon,  hasAnimations: true },
   dining:    { render: DiningIcon,    hasAnimations: true },
   railway:   { render: RailwayIcon,   hasAnimations: true },
-  proposal:  { render: ProposalIcon,  hasAnimations: true },
-  stargaze:  { render: StargazeIcon,  hasAnimations: true },
+  proposal:  { render: ProposalHero,  hasAnimations: true },
+  stargaze:  { render: StargazeHero,  hasAnimations: true },
   nearby:    { render: NearbyIcon,    hasAnimations: true },
   swimming:  { render: SwimmingIcon,  hasAnimations: true },
   brewery:   { render: BreweryIcon,   hasAnimations: true },
   grocery:   { render: GroceryIcon,   hasAnimations: true },
-  car:       { render: CarIcon,       hasAnimations: true },
-  lightning: { render: LightningIcon, hasAnimations: true },
+  car:       { render: CarHero,       hasAnimations: true },
+  lightning: { render: LightningHero, hasAnimations: true },
   croissant: { render: CroissantIcon, hasAnimations: true },
   mountain:  { render: MountainIcon,  hasAnimations: true },
   walking:   { render: WalkingIcon,   hasAnimations: true },
