@@ -26,6 +26,7 @@ import {
   HeartIcon, SparkleIcon, FireIcon, StarIcon, LightbulbIcon, InfinityIcon,
 } from "./extra-icons-svg";
 import { StayIcon as StayHero, HikeIcon as HikeHero, WaterIcon as WaterHero, DiningIcon as DiningHero, RailwayIcon as RailwayHero, HistoricIcon as HistoricHero } from "./icons/category/CategoryHeroIcons";
+import { ScenicIcon as ScenicHero, WildlifeIcon as WildlifeHero, NearbyIcon as NearbyHero, SwimmingIcon as SwimmingHero, BreweryIcon as BreweryHero, GroceryIcon as GroceryHero, CroissantIcon as CroissantHero } from "./icons/category/CategoryHeroIcons2";
 
 // ── Icon name union (all supported icons) ─────────────────────────────
 export type IconName =
@@ -47,20 +48,20 @@ export const ICON_REGISTRY: Record<IconName, IconEntry> = {
   stay:      { render: StayHero,      hasAnimations: true },
   hike:      { render: HikeHero,      hasAnimations: true },
   water:     { render: WaterHero,     hasAnimations: true },
-  scenic:    { render: ScenicIcon,    hasAnimations: true },
-  wildlife:  { render: WildlifeIcon,  hasAnimations: true },
+  scenic:    { render: ScenicHero,    hasAnimations: true },
+  wildlife:  { render: WildlifeHero,  hasAnimations: true },
   historic:  { render: HistoricHero,  hasAnimations: true },
   dining:    { render: DiningHero,    hasAnimations: true },
   railway:   { render: RailwayHero,   hasAnimations: true },
   proposal:  { render: ProposalHero,  hasAnimations: true },
   stargaze:  { render: StargazeHero,  hasAnimations: true },
-  nearby:    { render: NearbyIcon,    hasAnimations: true },
-  swimming:  { render: SwimmingIcon,  hasAnimations: true },
-  brewery:   { render: BreweryIcon,   hasAnimations: true },
-  grocery:   { render: GroceryIcon,   hasAnimations: true },
+  nearby:    { render: NearbyHero,    hasAnimations: true },
+  swimming:  { render: SwimmingHero,  hasAnimations: true },
+  brewery:   { render: BreweryHero,   hasAnimations: true },
+  grocery:   { render: GroceryHero,   hasAnimations: true },
   car:       { render: CarHero,       hasAnimations: true },
   lightning: { render: LightningHero, hasAnimations: true },
-  croissant: { render: CroissantIcon, hasAnimations: true },
+  croissant: { render: CroissantHero, hasAnimations: true },
   mountain:  { render: MountainIcon,  hasAnimations: true },
   walking:   { render: WalkingIcon,   hasAnimations: true },
   none:      { render: NoneIcon,      hasAnimations: true },
