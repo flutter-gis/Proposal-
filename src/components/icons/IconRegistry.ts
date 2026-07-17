@@ -25,6 +25,7 @@ import {
   WaterfallIcon, BridgeIcon, NatureIcon, GasIcon, CarrotIcon, TheaterIcon,
   HeartIcon, SparkleIcon, FireIcon, StarIcon, LightbulbIcon, InfinityIcon,
 } from "./extra-icons-svg";
+import { StayIcon as StayHero, HikeIcon as HikeHero, WaterIcon as WaterHero, DiningIcon as DiningHero, RailwayIcon as RailwayHero, HistoricIcon as HistoricHero } from "./icons/category/CategoryHeroIcons";
 
 // ── Icon name union (all supported icons) ─────────────────────────────
 export type IconName =
@@ -43,14 +44,14 @@ interface IconEntry {
 
 // ── Registry ──────────────────────────────────────────────────────────
 export const ICON_REGISTRY: Record<IconName, IconEntry> = {
-  stay:      { render: StayIcon,      hasAnimations: true },
-  hike:      { render: HikeIcon,      hasAnimations: true },
-  water:     { render: WaterIcon,     hasAnimations: true },
+  stay:      { render: StayHero,      hasAnimations: true },
+  hike:      { render: HikeHero,      hasAnimations: true },
+  water:     { render: WaterHero,     hasAnimations: true },
   scenic:    { render: ScenicIcon,    hasAnimations: true },
   wildlife:  { render: WildlifeIcon,  hasAnimations: true },
-  historic:  { render: HistoricIcon,  hasAnimations: true },
-  dining:    { render: DiningIcon,    hasAnimations: true },
-  railway:   { render: RailwayIcon,   hasAnimations: true },
+  historic:  { render: HistoricHero,  hasAnimations: true },
+  dining:    { render: DiningHero,    hasAnimations: true },
+  railway:   { render: RailwayHero,   hasAnimations: true },
   proposal:  { render: ProposalHero,  hasAnimations: true },
   stargaze:  { render: StargazeHero,  hasAnimations: true },
   nearby:    { render: NearbyIcon,    hasAnimations: true },
