@@ -244,7 +244,7 @@ export default function RootLayout({
         {/* Icon sprite — defines all 33 icons as <symbol> elements ONCE.
             Icons reference these via <use href="#icon-{name}"> — 500+ element
             artwork exists in DOM once per icon type, not per instance. */}
-        <IconSprite />
+        {/* IconSprite disabled temporarily */}
         {/* G-01: Skip-to-content link — keyboard users bypass the app bar */}
         <a
           href="#main-content"
