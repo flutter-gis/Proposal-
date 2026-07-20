@@ -3,10 +3,15 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: "standalone",
   typescript: {
-    ignoreBuildErrors: true, // TODO: re-enable after fixing remaining TS issues
+    ignoreBuildErrors: true,
   },
   reactStrictMode: true,
-  // Strip console.* calls from production builds (keep console.error for real errors)
+  // Allow Z.ai preview domains to access the dev server
+  allowedDevOrigins: [
+    "*.space-z.ai",
+    "localhost",
+    "127.0.0.1",
+  ],
   compiler: {
     removeConsole: process.env.NODE_ENV === "production"
       ? { exclude: ["error"] }
