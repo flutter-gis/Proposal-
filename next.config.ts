@@ -1,12 +1,15 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const nextConfig: NextConfig = {
-  
+  output: "standalone",
   typescript: {
     ignoreBuildErrors: true,
   },
   reactStrictMode: true,
-  // Allow Z.ai preview domains to access the dev server
+  turbopack: {
+    root: path.resolve(__dirname),
+  },
   allowedDevOrigins: [
     "*.space-z.ai",
     "localhost",
