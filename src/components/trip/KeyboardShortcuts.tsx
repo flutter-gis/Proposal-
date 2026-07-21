@@ -59,7 +59,7 @@ export default function KeyboardShortcuts() {
 
   return (
     <div
-      className="fixed inset-0 z-[200] flex items-center justify-center bg-rust-bark/80 backdrop-blur-sm anim-fade-in-up"
+      className="fixed inset-0 z-[200] flex items-center justify-center bg-[var(--card)] backdrop-blur-sm anim-fade-in-up"
       onClick={() => setOpen(false)}
       role="dialog"
       aria-modal="true"
@@ -77,7 +77,7 @@ export default function KeyboardShortcuts() {
           <button
             onClick={() => setOpen(false)}
             aria-label="Close help"
-            className="p-1 rounded-lg hover:bg-rust-bark/10 text-on-light/60 hover:text-on-light transition-colors"
+            className="p-1 rounded-lg hover:bg-[var(--card)]/10 text-on-light/60 hover:text-on-light transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
@@ -91,7 +91,7 @@ export default function KeyboardShortcuts() {
                 {s.keys.map((k) => (
                   <kbd
                     key={k}
-                    className="inline-flex items-center justify-center min-w-[2rem] h-7 px-2 rounded-md bg-rust-bark/10 border border-rust-bark/20 text-xs font-mono font-semibold text-on-light"
+                    className="inline-flex items-center justify-center min-w-[2rem] h-7 px-2 rounded-md bg-[var(--card)]/10 border border-[var(--border)]/20 text-xs font-mono font-semibold text-on-light"
                   >
                     {k}
                   </kbd>

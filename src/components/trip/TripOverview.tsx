@@ -73,17 +73,17 @@ function TripOverviewImpl() {
       <div className="mx-auto max-w-5xl">
         {/* Heading */}
         <FlyIn className="mb-8 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full bg-rust-bark/80 px-3 py-1 text-[11px] uppercase tracking-widest text-rust-bg">
+          <div className="inline-flex items-center gap-2 rounded-full bg-[var(--card)] px-3 py-1 text-[11px] uppercase tracking-widest text-rust-bg">
             <span aria-hidden></span> The Trip at a Glance
           </div>
-          <h2 className="mt-3 font-lobster text-3xl sm:text-4xl md:text-6xl text-rust-bark">
+          <h2 className="mt-3 font-lobster text-3xl sm:text-4xl md:text-6xl text-on-light">
              What this week will feel like
           </h2>
         </FlyIn>
 
         {/* "What This Trip Is" — mood setter, not shown elsewhere */}
         <FlyIn className="leather-card parchment-texture rounded-3xl p-6 md:p-8 mb-6">
-          <p className="text-sm md:text-base text-rust-bark/80 leading-relaxed text-center">
+          <p className="text-sm md:text-base text-on-light/80 leading-relaxed text-center">
             Six days that start with no screens and no electricity, build through
             still water and wildlife, and arrive at a 1,000-foot granite cliff at
             the exact moment the sun turns it pink. Then dark skies, a cabin under
@@ -95,7 +95,7 @@ function TripOverviewImpl() {
         {/* The Arc — emotional narrative, not a map */}
         <FlyIn className="mb-6">
           <div className="leather-card parchment-texture rounded-3xl p-5 md:p-6">
-            <h3 className="mb-4 font-serif text-lg font-bold text-rust-bark text-center">
+            <h3 className="mb-4 font-serif text-lg font-bold text-on-light text-center">
                The Arc of the Week
             </h3>
             <div className="flex items-end justify-between gap-1 sm:gap-2">
@@ -121,13 +121,13 @@ function TripOverviewImpl() {
                       minHeight: "40px",
                     }}
                   />
-                  <div className="text-[9px] sm:text-[11px] font-semibold text-rust-bark/70 text-center leading-tight group-hover:text-rust-bark transition-colors">
+                  <div className="text-[9px] sm:text-[11px] font-semibold text-on-light/70 text-center leading-tight group-hover:text-on-light transition-colors">
                     {phase.label}
                   </div>
                 </button>
               ))}
             </div>
-            <p className="mt-4 text-xs text-rust-bark/60 text-center italic">
+            <p className="mt-4 text-xs text-on-light/60 text-center italic">
               The emotional shape of the trip  — from quiet start to crescendo to gentle return.
             </p>
           </div>
@@ -141,8 +141,8 @@ function TripOverviewImpl() {
                 <div className="mb-2 inline-flex h-9 w-9 items-center justify-center rounded-full" style={{ backgroundColor: `${e.color}22` }}>
                   <e.icon className="h-4 w-4" style={{ color: e.color }} />
                 </div>
-                <div className="font-serif text-sm font-bold text-rust-bark mb-1">{e.title}</div>
-                <p className="text-xs text-rust-bark/70 leading-relaxed">{e.text}</p>
+                <div className="font-serif text-sm font-bold text-on-light mb-1">{e.title}</div>
+                <p className="text-xs text-on-light/70 leading-relaxed">{e.text}</p>
               </div>
             </FlyInItem>
           ))}
@@ -151,8 +151,8 @@ function TripOverviewImpl() {
         {/*  Best Photo Opportunities — curated shot list */}
         <FlyIn className="bark-card rounded-3xl p-5 md:p-6">
           <div className="flex items-center gap-2 mb-4">
-            <Camera className="w-5 h-5 text-rust-brass" />
-            <h3 className="font-serif text-lg font-bold text-rust-cream">
+            <Camera className="w-5 h-5 text-on-brass" />
+            <h3 className="font-serif text-lg font-bold text-on-dark">
                Best Photo Opportunities
             </h3>
           </div>
@@ -160,13 +160,13 @@ function TripOverviewImpl() {
             {PHOTO_OPS.map((op, i) => (
               <div key={i} className="rounded-2xl bg-white/5 p-4 border border-white/10">
                 <div className="flex items-start gap-3">
-                  <op.icon className="w-4 h-4 text-rust-brass mt-0.5 flex-shrink-0" />
+                  <op.icon className="w-4 h-4 text-on-brass mt-0.5 flex-shrink-0" />
                   <div className="min-w-0">
-                    <div className="font-serif text-sm font-bold text-rust-cream">{op.title}</div>
-                    <div className="text-[10px] uppercase tracking-widest text-rust-brass/80 font-semibold mb-1">
+                    <div className="font-serif text-sm font-bold text-on-dark">{op.title}</div>
+                    <div className="text-[10px] uppercase tracking-widest text-on-brass/80 font-semibold mb-1">
                       {op.where}
                     </div>
-                    <p className="text-xs text-rust-cream/70 leading-relaxed">{op.text}</p>
+                    <p className="text-xs text-on-dark/70 leading-relaxed">{op.text}</p>
                   </div>
                 </div>
               </div>

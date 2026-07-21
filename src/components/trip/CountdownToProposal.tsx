@@ -115,7 +115,7 @@ export default function CountdownToProposal({ className }: { className?: string 
       <div className="relative z-10 text-center">
         <AdaptiveText
           as="div"
-          className="inline-flex items-center gap-2 rounded-full bg-rust-brass/20 px-3 py-1 text-[11px] uppercase tracking-widest mb-4"
+          className="inline-flex items-center gap-2 rounded-full bg-[var(--rust-brass)]/20 px-3 py-1 text-[11px] uppercase tracking-widest mb-4"
           lightColor="#faf3e3"
           darkColor="#1a1410"
         >
@@ -153,7 +153,7 @@ export default function CountdownToProposal({ className }: { className?: string 
             return (
               <div
                 key={t.key}
-                className="relative overflow-hidden rounded-2xl bark-card border border-rust-brass/30 p-4 md:p-6 anim-breathe"
+                className="relative overflow-hidden rounded-2xl bark-card border border-[var(--rust-brass)]/30 p-4 md:p-6 anim-breathe"
                 style={{ "--glow-color": "rgba(184,134,11,0.25)" } as React.CSSProperties}
               >
                 <div

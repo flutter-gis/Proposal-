@@ -60,13 +60,13 @@ export default function CouplePhotos() {
       <div className="mx-auto max-w-5xl">
         {/* Heading */}
         <FlyIn className="mb-8 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full bg-rust-bark/80 px-3 py-1 text-[11px] uppercase tracking-widest text-rust-bg">
+          <div className="inline-flex items-center gap-2 rounded-full bg-[var(--card)] px-3 py-1 text-[11px] uppercase tracking-widest text-rust-bg">
             <Heart className="w-3 h-3" /> Our Moments
           </div>
-          <h2 className="mt-3 font-serif text-2xl sm:text-3xl md:text-5xl font-bold text-rust-bark">
+          <h2 className="mt-3 font-serif text-2xl sm:text-3xl md:text-5xl font-bold text-on-light">
             The two of us, so far
           </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-sm md:text-base text-rust-bark/70 leading-relaxed">
+          <p className="mx-auto mt-3 max-w-2xl text-sm md:text-base text-on-light/70 leading-relaxed">
             Eleven moments from the journey that brought us here — from
             early adventures to the road that leads to the cliff. Tap any
             photo to see it full screen.
@@ -92,7 +92,7 @@ export default function CouplePhotos() {
                 {/* Gradient overlay on hover */}
                 <div className="absolute inset-0 bg-gradient-to-t from-rust-bark/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 {/* Heart badge */}
-                <div className="absolute bottom-2 right-2 h-7 w-7 rounded-full bg-rust-cream/90 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="absolute bottom-2 right-2 h-7 w-7 rounded-full bg-[var(--card)]/90 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <Heart className="w-3.5 h-3.5 text-rust-wax" fill="currentColor" />
                 </div>
               </button>
@@ -104,7 +104,7 @@ export default function CouplePhotos() {
       {/* Lightbox */}
       {lightboxIdx !== null && (
         <div
-          className="fixed inset-0 z-[200] flex items-center justify-center bg-rust-bark/95 backdrop-blur-md anim-fade-in-up"
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-[var(--card)]/95 backdrop-blur-md anim-fade-in-up"
           onClick={closeLightbox}
           role="dialog"
           aria-modal="true"
@@ -114,7 +114,7 @@ export default function CouplePhotos() {
           <button
             onClick={closeLightbox}
             aria-label="Close photo viewer"
-            className="absolute top-4 right-4 z-10 h-10 w-10 rounded-full bg-white/10 border border-white/20 text-rust-cream flex items-center justify-center hover:bg-white/20 transition-colors tap-feedback"
+            className="absolute top-4 right-4 z-10 h-10 w-10 rounded-full bg-white/10 border border-white/20 text-on-dark flex items-center justify-center hover:bg-white/20 transition-colors tap-feedback"
           >
             <X className="w-5 h-5" />
           </button>
@@ -123,7 +123,7 @@ export default function CouplePhotos() {
           <button
             onClick={(e) => { e.stopPropagation(); goPrev(); }}
             aria-label="Previous photo"
-            className="absolute left-2 sm:left-4 z-10 h-10 w-10 rounded-full bg-white/10 border border-white/20 text-rust-cream flex items-center justify-center hover:bg-white/20 transition-colors tap-feedback"
+            className="absolute left-2 sm:left-4 z-10 h-10 w-10 rounded-full bg-white/10 border border-white/20 text-on-dark flex items-center justify-center hover:bg-white/20 transition-colors tap-feedback"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
@@ -146,13 +146,13 @@ export default function CouplePhotos() {
           <button
             onClick={(e) => { e.stopPropagation(); goNext(); }}
             aria-label="Next photo"
-            className="absolute right-2 sm:right-4 z-10 h-10 w-10 rounded-full bg-white/10 border border-white/20 text-rust-cream flex items-center justify-center hover:bg-white/20 transition-colors tap-feedback"
+            className="absolute right-2 sm:right-4 z-10 h-10 w-10 rounded-full bg-white/10 border border-white/20 text-on-dark flex items-center justify-center hover:bg-white/20 transition-colors tap-feedback"
           >
             <ChevronRight className="w-5 h-5" />
           </button>
 
           {/* Counter */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-rust-cream text-xs font-semibold">
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-on-dark text-xs font-semibold">
             {lightboxIdx + 1} / {PHOTOS.length}
           </div>
         </div>

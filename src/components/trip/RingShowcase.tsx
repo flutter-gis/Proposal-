@@ -129,13 +129,13 @@ function RingShowcaseImpl() {
       <div className="mx-auto max-w-5xl">
         {/* Heading */}
         <FlyIn className="mb-8 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full bg-rust-bark/80 px-3 py-1 text-[11px] uppercase tracking-widest text-rust-bg">
+          <div className="inline-flex items-center gap-2 rounded-full bg-[var(--card)] px-3 py-1 text-[11px] uppercase tracking-widest text-rust-bg">
             The Ring · Partner Set
           </div>
-          <h2 className="mt-3 font-serif text-2xl sm:text-3xl md:text-5xl font-bold text-rust-bark">
+          <h2 className="mt-3 font-serif text-2xl sm:text-3xl md:text-5xl font-bold text-on-light">
             Forged from the forest &amp; the cliff
           </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-sm md:text-base text-rust-bark/70">
+          <p className="mx-auto mt-3 max-w-2xl text-sm md:text-base text-on-light/70">
             A partner set — two rings that mirror each other the way the lake
             mirrors the cliff. No price, just meaning.
           </p>
@@ -150,8 +150,8 @@ function RingShowcaseImpl() {
             <FlyInItem key={d.title}>
               <div className="leather-card parchment-texture anim-hover-lift rounded-2xl p-4 h-full">
                 <div className="mb-1 flex items-center justify-center" aria-hidden><SvgIcon name={d.icon as IconName} size={28} /></div>
-                <div className="font-serif text-base font-bold text-rust-bark">{d.title}</div>
-                <p className="mt-1 text-xs text-rust-bark/70 leading-relaxed">{d.text}</p>
+                <div className="font-serif text-base font-bold text-on-light">{d.title}</div>
+                <p className="mt-1 text-xs text-on-light/70 leading-relaxed">{d.text}</p>
               </div>
             </FlyInItem>
           ))}
@@ -159,16 +159,16 @@ function RingShowcaseImpl() {
 
         {/* 6 symbolism cards */}
         <FlyIn className="mb-8">
-          <h3 className="mb-4 text-center font-serif text-2xl font-bold text-rust-bark">
+          <h3 className="mb-4 text-center font-serif text-2xl font-bold text-on-light">
             Ring Meets Wilderness
           </h3>
           <FlyInStagger className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 md:gap-4">
             {SYMBOLISM.map((s) => (
               <FlyInItem key={s.title}>
-                <div className="bark-card rounded-2xl p-4 h-full text-rust-cream">
+                <div className="bark-card rounded-2xl p-4 h-full text-on-dark">
                   <div className="mb-1 flex items-center justify-center" aria-hidden><SvgIcon name={s.icon as IconName} size={28} /></div>
-                  <div className="font-serif text-base font-bold text-rust-brass">{s.title}</div>
-                  <p className="mt-1 text-xs text-rust-cream/80 leading-relaxed">{s.text}</p>
+                  <div className="font-serif text-base font-bold text-on-brass">{s.title}</div>
+                  <p className="mt-1 text-xs text-on-dark/80 leading-relaxed">{s.text}</p>
                 </div>
               </FlyInItem>
             ))}
@@ -178,13 +178,13 @@ function RingShowcaseImpl() {
         {/* U-05: Ring poem as full-bleed feature page */}
         <FlyIn className="mb-8">
           <div className="relative min-h-[50vh] flex items-center justify-center rounded-3xl overflow-hidden leather-card parchment-texture">
-            <div className="absolute inset-0 border-2 border-rust-brass/20 rounded-3xl" />
+            <div className="absolute inset-0 border-2 border-[var(--rust-brass)]/20 rounded-3xl" />
             <div className="relative z-10 px-6 py-12 text-center">
-              <svg viewBox="0 0 40 40" className="mx-auto mb-6 h-10 w-10 text-rust-brass" aria-hidden>
+              <svg viewBox="0 0 40 40" className="mx-auto mb-6 h-10 w-10 text-on-brass" aria-hidden>
                 <circle cx="20" cy="20" r="16" fill="none" stroke="currentColor" strokeWidth="1" />
                 <circle cx="20" cy="20" r="6" fill="currentColor" opacity="0.3" />
               </svg>
-              <p className="mx-auto max-w-2xl font-serif italic text-xl sm:text-2xl md:text-3xl leading-relaxed text-rust-bark">
+              <p className="mx-auto max-w-2xl font-serif italic text-xl sm:text-2xl md:text-3xl leading-relaxed text-on-light">
                 Where the cliff meets the lake, where the lake meets the sky,<br />
                 we forged us a ring of the moment gone by.<br />
                 Rose-gold for the sunset, green opal for pine,<br />
@@ -244,8 +244,8 @@ function RingPhotoGallery() {
                 onClick={() => setActiveIdx(i)}
                 className={`flex-shrink-0 h-14 w-14 rounded-lg overflow-hidden border-2 transition-all ${
                   i === activeIdx
-                    ? "border-rust-brass scale-105"
-                    : "border-rust-brass/20 opacity-60 hover:opacity-100"
+                    ? "border-[var(--rust-brass)] scale-105"
+                    : "border-[var(--rust-brass)]/20 opacity-60 hover:opacity-100"
                 }`}
                 aria-label={`View ring photo ${i + 1}`}
               >
@@ -257,10 +257,10 @@ function RingPhotoGallery() {
 
         {/* Description */}
         <div>
-          <h3 className="font-serif text-2xl font-bold text-rust-bark mb-2">
+          <h3 className="font-serif text-2xl font-bold text-on-light mb-2">
             Rose Gold · Green Fire Opal · Moss Agate
           </h3>
-          <p className="text-sm md:text-base text-rust-bark/80 leading-relaxed">
+          <p className="text-sm md:text-base text-on-light/80 leading-relaxed">
             A one-of-a-kind partner set, hand-fabricated to capture the
             trip. The rose-gold band borrows the warm blush of 7:30 PM
             granite; the green fire opal flashes the deep emerald of a pine
@@ -269,11 +269,11 @@ function RingPhotoGallery() {
             each band, the same engraving — a quiet promise shared between
             equals.
           </p>
-          <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-rust-forest/10 px-4 py-2">
+          <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-[var(--rust-primary)]/10 px-4 py-2">
             <span className="text-[10px] uppercase tracking-widest text-rust-forest font-semibold">
               Engraving
             </span>
-            <span className="font-serif italic text-rust-bark">8.7.26 | As One</span>
+            <span className="font-serif italic text-on-light">8.7.26 | As One</span>
           </div>
         </div>
       </div>

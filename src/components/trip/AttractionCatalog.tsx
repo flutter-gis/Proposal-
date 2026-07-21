@@ -110,7 +110,7 @@ export default function AttractionCatalog({ legId }: { legId?: string }) {
           </div>
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="inline-flex items-center gap-1 text-xs font-semibold text-rust-brass hover:text-rust-ember min-h-[44px] px-3 rounded-full border border-rust-brass/30 hover:border-rust-brass/50"
+            className="inline-flex items-center gap-1 text-xs font-semibold text-on-brass hover:text-on-accent min-h-[44px] px-3 rounded-full border border-[var(--rust-brass)]/30 hover:border-[var(--rust-brass)]/50"
             aria-expanded={showFilters}
             aria-haspopup="true"
             aria-controls="catalog-filters-panel"
@@ -129,7 +129,7 @@ export default function AttractionCatalog({ legId }: { legId?: string }) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             aria-label="Search attractions"
-            className="w-full pl-10 pr-4 py-2.5 rounded-full bg-rust-cream/60 border border-rust-brass/30 text-sm text-on-light placeholder:text-on-light/40 focus:outline-none focus:border-rust-brass focus:ring-1 focus:ring-rust-brass min-h-[44px]"
+            className="w-full pl-10 pr-4 py-2.5 rounded-full bg-[var(--card)]/60 border border-[var(--rust-brass)]/30 text-sm text-on-light placeholder:text-on-light/40 focus:outline-none focus:border-[var(--rust-brass)] focus:ring-1 focus:ring-rust-brass min-h-[44px]"
           />
         </div>
 
@@ -137,7 +137,7 @@ export default function AttractionCatalog({ legId }: { legId?: string }) {
         {showFilters && (
           <div
             id="catalog-filters-panel"
-            className="mb-4 space-y-3 p-4 bg-rust-cream/40 rounded-2xl border border-rust-brass/20 anim-fade-in-up"
+            className="mb-4 space-y-3 p-4 bg-[var(--card)]/40 rounded-2xl border border-[var(--rust-brass)]/20 anim-fade-in-up"
           >
             {/* Type filters */}
             <div>
@@ -151,7 +151,7 @@ export default function AttractionCatalog({ legId }: { legId?: string }) {
                       "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-all min-h-[32px]",
                       selectedTypes.has(type as AttractionType)
                         ? "text-white border-transparent"
-                        : "bg-transparent text-on-light/60 border-rust-brass/30 hover:border-rust-brass/50"
+                        : "bg-transparent text-on-light/60 border-[var(--rust-brass)]/30 hover:border-[var(--rust-brass)]/50"
                     )}
                     style={selectedTypes.has(type as AttractionType) ? { backgroundColor: meta.color } : {}}
                   >
@@ -173,7 +173,7 @@ export default function AttractionCatalog({ legId }: { legId?: string }) {
                       "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-all min-h-[32px]",
                       selectedDifficulty.has(diff as Difficulty)
                         ? "text-white border-transparent"
-                        : "bg-transparent text-on-light/60 border-rust-brass/30 hover:border-rust-brass/50"
+                        : "bg-transparent text-on-light/60 border-[var(--rust-brass)]/30 hover:border-[var(--rust-brass)]/50"
                     )}
                     style={selectedDifficulty.has(diff as Difficulty) ? { backgroundColor: meta.color } : {}}
                   >
@@ -192,8 +192,8 @@ export default function AttractionCatalog({ legId }: { legId?: string }) {
                   className={cn(
                     "px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-all min-h-[32px]",
                     selectedPosition.has("in-between")
-                      ? "bg-rust-forest text-white border-transparent"
-                      : "bg-transparent text-on-light/60 border-rust-brass/30 hover:border-rust-brass/50"
+                      ? "bg-[var(--rust-primary)] text-white border-transparent"
+                      : "bg-transparent text-on-light/60 border-[var(--rust-brass)]/30 hover:border-[var(--rust-brass)]/50"
                   )}
                 >
                   In-between stops
@@ -203,8 +203,8 @@ export default function AttractionCatalog({ legId }: { legId?: string }) {
                   className={cn(
                     "px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-all min-h-[32px]",
                     selectedPosition.has("near-stop")
-                      ? "bg-rust-forest text-white border-transparent"
-                      : "bg-transparent text-on-light/60 border-rust-brass/30 hover:border-rust-brass/50"
+                      ? "bg-[var(--rust-primary)] text-white border-transparent"
+                      : "bg-transparent text-on-light/60 border-[var(--rust-brass)]/30 hover:border-[var(--rust-brass)]/50"
                   )}
                 >
                   Near a stop
@@ -262,7 +262,7 @@ function CatalogCard({
   return (
     <div className={cn(
       "relative rounded-2xl border-2 transition-all overflow-hidden",
-      expanded ? "border-rust-brass bg-rust-cream/80" : "border-rust-brass/20 bg-rust-cream/50 hover:border-rust-brass/40",
+      expanded ? "border-[var(--rust-brass)] bg-[var(--card)]/80" : "border-[var(--rust-brass)]/20 bg-[var(--card)]/50 hover:border-[var(--rust-brass)]/40",
       isOnMap && "ring-2 ring-rust-forest/50"
     )}>
       {/* Rank + hidden gem + map toggle */}
@@ -272,14 +272,14 @@ function CatalogCard({
         <button
           type="button"
           onClick={onViewOnMap}
-          className="w-6 h-6 min-h-[28px] min-w-[28px] rounded-full bg-rust-brass text-rust-cream flex items-center justify-center text-[10px] font-bold shadow-md hover:bg-rust-ember transition-colors tap-feedback"
+          className="w-6 h-6 min-h-[28px] min-w-[28px] rounded-full bg-rust-brass text-on-dark flex items-center justify-center text-[10px] font-bold shadow-md hover:bg-rust-ember transition-colors tap-feedback"
           aria-label={`Show ${entry.name} on map`}
           title="Show on map"
         >
           {rank}
         </button>
         {entry.hiddenGem && (
-          <div className="w-6 h-6 rounded-full bg-rust-forest text-rust-cream flex items-center justify-center shadow-md" title="Hidden Gem">
+          <div className="w-6 h-6 rounded-full bg-[var(--rust-primary)] text-on-dark flex items-center justify-center shadow-md" title="Hidden Gem">
             <Gem className="w-2.5 h-2.5" aria-hidden />
           </div>
         )}
@@ -333,13 +333,13 @@ function CatalogCard({
         {/* Theme tags */}
         <div className="flex flex-wrap gap-1 mt-1">
           {entry.themes.slice(0, 4).map(tag => (
-            <span key={tag} className="text-[8px] px-1.5 py-0.5 rounded-full bg-rust-brass/10 text-rust-brass/60 font-semibold">
+            <span key={tag} className="text-[8px] px-1.5 py-0.5 rounded-full bg-[var(--rust-brass)]/10 text-on-brass/60 font-semibold">
               {tag}
             </span>
           ))}
         </div>
 
-        <div className="flex items-center gap-1 mt-2 text-xs font-semibold text-rust-brass">
+        <div className="flex items-center gap-1 mt-2 text-xs font-semibold text-on-brass">
           <ChevronDown className={cn("w-3 h-3 transition-transform", expanded && "rotate-180")} aria-hidden />
           {expanded ? "Less" : "More"}
         </div>
@@ -365,18 +365,18 @@ function CatalogCard({
           {entry.phone && <div className="text-[11px] text-on-light/60">{entry.phone}</div>}
 
           <div className="flex gap-2">
-            <a href={directionsLink} target="_blank" rel="noopener noreferrer" className="flex-1 inline-flex items-center justify-center gap-1 rounded-full bg-rust-forest text-rust-cream px-3 py-2 text-[11px] font-bold hover:bg-rust-forest/90 min-h-[44px]">
+            <a href={directionsLink} target="_blank" rel="noopener noreferrer" className="flex-1 inline-flex items-center justify-center gap-1 rounded-full bg-[var(--rust-primary)] text-on-dark px-3 py-2 text-[11px] font-bold hover:bg-[var(--rust-primary)]/90 min-h-[44px]">
               <Navigation className="w-3 h-3" /> Directions
             </a>
             {entry.website && (
-              <a href={entry.website} target="_blank" rel="noopener noreferrer" className="flex-1 inline-flex items-center justify-center gap-1 rounded-full bg-rust-wax/20 border border-rust-wax/40 text-on-light px-3 py-2 text-[11px] font-bold hover:bg-rust-wax/30 min-h-[44px]">
+              <a href={entry.website} target="_blank" rel="noopener noreferrer" className="flex-1 inline-flex items-center justify-center gap-1 rounded-full bg-[var(--rust-wax)]/20 border border-rust-wax/40 text-on-light px-3 py-2 text-[11px] font-bold hover:bg-[var(--rust-wax)]/30 min-h-[44px]">
                 <ExternalLink className="w-3 h-3" /> Website
               </a>
             )}
           </div>
 
           {/* Footnote */}
-          <div className="text-[9px] text-on-light/40 border-t border-rust-brass/10 pt-2">
+          <div className="text-[9px] text-on-light/40 border-t border-[var(--rust-brass)]/10 pt-2">
             <sup>[{entry.footnoteId}]</sup>{" "}
             <a href={entry.sourceUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">
               {entry.source}

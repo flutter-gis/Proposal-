@@ -82,13 +82,13 @@ function DaySlideImpl({ day, index, total, onSelectPlace }: DaySlideProps) {
       <DayHeader day={day} index={index} />
 
       {/* Epigraph */}
-      <p className="mt-4 mb-2 px-1 font-serif text-base sm:text-lg italic text-rust-ember/80">
+      <p className="mt-4 mb-2 px-1 font-serif text-base sm:text-lg italic text-on-accent/80">
         {DAY_EPIGRAPHS[index] ?? ""}
       </p>
 
       {/* Driving leg info (inline, not a sidebar) */}
       {leg && (
-        <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-rust-bark/80 px-4 py-2 text-xs text-rust-bg">
+        <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-[var(--card)] px-4 py-2 text-xs text-rust-bg">
           <SvgIcon name="car" size={14} />
           <span className="font-semibold">{leg.from} → {leg.to}</span>
           <span className="opacity-60">· {leg.miles} mi · {leg.duration}</span>
@@ -130,7 +130,7 @@ function DaySlideImpl({ day, index, total, onSelectPlace }: DaySlideProps) {
 
       {/* Highlights + Quote at the bottom */}
       <div className="mt-6 leather-card parchment-texture rounded-2xl p-4">
-        <div className="mb-2 text-[10px] uppercase tracking-widest text-rust-ember font-semibold">
+        <div className="mb-2 text-[10px] uppercase tracking-widest text-on-accent font-semibold">
           Day {index + 1} Highlights
         </div>
         <ul className="space-y-1.5">
@@ -222,7 +222,7 @@ export default function DayTimeline({
       <h1 className="sr-only">Trip Itinerary — Six Days of Wilderness Romance</h1>
       <div className="mx-auto max-w-3xl">
         <FlyIn className="mb-6 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full bg-rust-bark/80 px-3 py-1 text-[11px] uppercase tracking-widest text-rust-bg">
+          <div className="inline-flex items-center gap-2 rounded-full bg-[var(--card)] px-3 py-1 text-[11px] uppercase tracking-widest text-rust-bg">
             The Adventure Timeline
           </div>
           <h2 className="mt-3 font-lobster text-2xl sm:text-3xl md:text-5xl text-on-light">
@@ -234,13 +234,13 @@ export default function DayTimeline({
           <div className="mt-3 flex items-center justify-center gap-3 text-xs">
             <button
               onClick={expandAll}
-              className="rounded-full bg-rust-brass/20 px-3 py-1 font-semibold text-rust-brass hover:bg-rust-brass/30 min-h-[32px]"
+              className="rounded-full bg-[var(--rust-brass)]/20 px-3 py-1 font-semibold text-on-brass hover:bg-rust-brass/30 min-h-[32px]"
             >
               Expand all
             </button>
             <button
               onClick={collapseAll}
-              className="rounded-full bg-rust-bark/10 px-3 py-1 font-semibold text-on-light/70 hover:bg-rust-bark/20 min-h-[32px]"
+              className="rounded-full bg-[var(--card)]/10 px-3 py-1 font-semibold text-on-light/70 hover:bg-[var(--card)]/20 min-h-[32px]"
             >
               Collapse all
             </button>
@@ -326,7 +326,7 @@ export default function DayTimeline({
                     {!isExpanded && places.length > 0 && (
                       <div className="mt-2 flex flex-wrap gap-1.5">
                         {places.slice(0, 3).map(p => (
-                          <span key={p.id} className="text-[10px] px-2 py-0.5 rounded-full bg-rust-bark/10 text-on-light/60">
+                          <span key={p.id} className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--card)]/10 text-on-light/60">
                             <SvgIcon name={CATEGORY_TO_ICON[p.category] ?? "nearby"} size={12} /> {p.name}
                           </span>
                         ))}

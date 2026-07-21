@@ -388,7 +388,7 @@ export default function PlaceDetailDialog({
             href={directionsLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full rounded-full bg-rust-forest text-rust-cream px-4 py-3 text-sm font-bold hover:bg-rust-forest/90 transition-colors tap-feedback min-h-[44px] mt-2"
+            className="flex items-center justify-center gap-2 w-full rounded-full bg-[var(--rust-primary)] text-on-dark px-4 py-3 text-sm font-bold hover:bg-[var(--rust-primary)]/90 transition-colors tap-feedback min-h-[44px] mt-2"
           >
             <Navigation className="w-4 h-4" /> Navigate Here
           </a>

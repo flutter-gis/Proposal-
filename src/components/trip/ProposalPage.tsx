@@ -129,14 +129,14 @@ function ProposalPageImpl() {
  "--glow-color": "rgba(184,134,11,0.35)"} as React.CSSProperties
  }
  />
- <div className="relative z-10 text-center text-rust-cream">
- <div className="inline-flex items-center gap-2 rounded-full bg-rust-brass/20 px-3 py-1 text-[11px] uppercase tracking-widest text-rust-brass">
+ <div className="relative z-10 text-center text-on-dark">
+ <div className="inline-flex items-center gap-2 rounded-full bg-[var(--rust-brass)]/20 px-3 py-1 text-[11px] uppercase tracking-widest text-on-brass">
  <Sparkles className="w-3 h-3" /> The Proposal
  </div>
  <h2 className="mt-3 font-satisfy text-4xl sm:text-5xl md:text-7xl">
  One knee at the cliff's edge
  </h2>
- <p className="mx-auto mt-3 max-w-2xl text-sm md:text-base text-rust-cream/80">
+ <p className="mx-auto mt-3 max-w-2xl text-sm md:text-base text-on-dark/80">
  Friday, August 7, 2026 · 7:30 PM Eastern · Lake Gloriette, Dixville
  Notch — where the 1,000-ft vertical granite face of Table Rock fills
  the horizon and the calm lake mirrors the sunset.
@@ -160,8 +160,8 @@ function ProposalPageImpl() {
  <div className="mb-1 flex items-center justify-center" aria-hidden>
  <SvgIcon name={f.icon as IconName} size={28} />
  </div>
- <div className="font-serif text-base md:text-lg font-bold text-rust-bark">{f.value}</div>
- <div className="text-[10px] uppercase tracking-widest text-rust-bark/60">{f.label}</div>
+ <div className="font-serif text-base md:text-lg font-bold text-on-light">{f.value}</div>
+ <div className="text-[10px] uppercase tracking-widest text-on-light/60">{f.label}</div>
  </div>
  </FlyInItem>
  ))}
@@ -169,10 +169,10 @@ function ProposalPageImpl() {
 
  {/* P-03: Why this spot — first-person love letter */}
  <FlyIn className="leather-card parchment-texture rounded-3xl p-6 md:p-8 mb-8">
- <h3 className="font-lobster text-3xl text-rust-bark mb-3">
+ <h3 className="font-lobster text-3xl text-on-light mb-3">
  Why this spot?
  </h3>
- <p className="font-tinos text-base md:text-lg leading-relaxed text-rust-bark/80 italic">
+ <p className="font-tinos text-base md:text-lg leading-relaxed text-on-light/80 italic">
  We chose Lake Gloriette because the mountain does the talking. Table
  Rock rises 1,000 feet straight out of the water — not a slope, a wall.
  At golden hour in early August, the setting sun will hit that granite
@@ -194,15 +194,15 @@ function ProposalPageImpl() {
  {new Date() < new Date("2026-08-07T00:00:00") ? (
  <div className="leather-card parchment-texture rounded-3xl p-8 text-center">
  <div className="text-4xl mb-3">shh</div>
- <h3 className="font-lobster text-2xl text-rust-bark mb-2">The plan is a secret</h3>
- <p className="text-sm text-rust-bark/70 max-w-md mx-auto">
+ <h3 className="font-lobster text-2xl text-on-light mb-2">The plan is a secret</h3>
+ <p className="text-sm text-on-light/70 max-w-md mx-auto">
  The staging timeline reveals the surprise. It will unlock automatically on August 7, 2026.
  Until then, it's under wraps.
  </p>
  </div>
  ) : (
  <>
- <h3 className="mb-4 text-center font-lobster text-3xl text-rust-bark">
+ <h3 className="mb-4 text-center font-lobster text-3xl text-on-light">
  The Staging Timeline
  </h3>
  <ol className="relative space-y-4 pl-6 md:pl-8">
@@ -220,12 +220,12 @@ function ProposalPageImpl() {
  </span>
  <div className="flex-1">
  <div className="flex items-center justify-between gap-2">
- <div className="font-serif text-lg font-bold text-rust-bark">{s.title}</div>
- <span className="rounded-full bg-rust-forest/15 px-2 py-0.5 text-[10px] uppercase tracking-widest text-rust-forest font-semibold">
+ <div className="font-serif text-lg font-bold text-on-light">{s.title}</div>
+ <span className="rounded-full bg-[var(--rust-primary)]/15 px-2 py-0.5 text-[10px] uppercase tracking-widest text-rust-forest font-semibold">
  {s.time}
  </span>
  </div>
- <p className="mt-1 text-sm text-rust-bark/75 leading-relaxed">{s.text}</p>
+ <p className="mt-1 text-sm text-on-light/75 leading-relaxed">{s.text}</p>
  </div>
  </div>
  </div>
@@ -241,33 +241,33 @@ function ProposalPageImpl() {
  <div className="leather-card parchment-texture rounded-3xl p-5 md:p-6">
  <div className="mb-4 flex items-center gap-2">
  <Heart className="w-4 h-4 text-rust-wax" />
- <h3 className="font-serif text-lg font-bold text-rust-bark">The Afterglow</h3>
+ <h3 className="font-serif text-lg font-bold text-on-light">The Afterglow</h3>
  </div>
  <div className="space-y-4">
- <div className="border-l-2 border-rust-brass/40 pl-4 relative group">
- <div className="text-[10px] uppercase tracking-widest text-rust-brass font-bold mb-1">8:00 PM</div>
- <p className="text-sm text-rust-bark/80 leading-relaxed">
+ <div className="border-l-2 border-[var(--rust-brass)]/40 pl-4 relative group">
+ <div className="text-[10px] uppercase tracking-widest text-on-brass font-bold mb-1">8:00 PM</div>
+ <p className="text-sm text-on-light/80 leading-relaxed">
  We will drive north to Coleman in a daze, windows down, warm August air rushing in. The ring will feel impossibly light.
  </p>
  <ShareQuote text="The ring will feel impossibly light." />
  </div>
- <div className="border-l-2 border-rust-brass/40 pl-4 relative group">
- <div className="text-[10px] uppercase tracking-widest text-rust-brass font-bold mb-1">8:30 PM</div>
- <p className="text-sm text-rust-bark/80 leading-relaxed">
+ <div className="border-l-2 border-[var(--rust-brass)]/40 pl-4 relative group">
+ <div className="text-[10px] uppercase tracking-widest text-on-brass font-bold mb-1">8:30 PM</div>
+ <p className="text-sm text-on-light/80 leading-relaxed">
  Perch Cabin will welcome us with porch lights strung above the pines. We will toast with artisan cider under the stars.
  </p>
  <ShareQuote text="We will toast with artisan cider under the stars." />
  </div>
- <div className="border-l-2 border-rust-brass/40 pl-4 relative group">
- <div className="text-[10px] uppercase tracking-widest text-rust-brass font-bold mb-1">11:00 PM</div>
- <p className="text-sm text-rust-bark/80 leading-relaxed">
+ <div className="border-l-2 border-[var(--rust-brass)]/40 pl-4 relative group">
+ <div className="text-[10px] uppercase tracking-widest text-on-brass font-bold mb-1">11:00 PM</div>
+ <p className="text-sm text-on-light/80 leading-relaxed">
  Under the Bortle Class 2 sky, the Milky Way will stretch from horizon to horizon. We will lie on the dock and not speak for twenty minutes.
  </p>
  <ShareQuote text="We will lie on the dock and not speak for twenty minutes." />
  </div>
  <div className="border-l-2 border-rust-wax/40 pl-4 relative group">
  <div className="text-[10px] uppercase tracking-widest text-rust-wax font-bold mb-1">2:00 AM</div>
- <p className="text-sm text-rust-bark/80 leading-relaxed">
+ <p className="text-sm text-on-light/80 leading-relaxed">
  A celebratory midnight swim in Little Diamond Pond. The water will be warmer than the air. We will laugh until we can&apos;t breathe.
  </p>
  <ShareQuote text="We will laugh until we can't breathe." />
@@ -284,8 +284,8 @@ function ProposalPageImpl() {
  {/* Ring engraving + celebrate */}
  <FlyIn className="bark-card anim-breathe rounded-3xl p-6 md:p-8 text-center"
  style={{ "--glow-color": "rgba(184,134,11,0.3)" } as React.CSSProperties}>
- <div className="text-[10px] uppercase tracking-widest text-rust-brass">Ring Engraving</div>
- <div className="mt-2 font-caveat text-2xl sm:text-3xl md:text-4xl text-rust-cream">
+ <div className="text-[10px] uppercase tracking-widest text-on-brass">Ring Engraving</div>
+ <div className="mt-2 font-caveat text-2xl sm:text-3xl md:text-4xl text-on-dark">
  {TRIP_STATS.ringEngraving}
  </div>
  <div className="mt-4 flex flex-wrap justify-center gap-3">
@@ -312,7 +312,7 @@ function ProposalPageImpl() {
  } catch {}
  }
  }}
- className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold uppercase tracking-wider bg-white/10 border border-white/20 text-rust-cream hover:bg-white/15 tap-feedback min-h-[44px]"
+ className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold uppercase tracking-wider bg-white/10 border border-white/20 text-on-dark hover:bg-white/15 tap-feedback min-h-[44px]"
  >
  <Share2 className="w-4 h-4" /> Share This Moment
  </button>
@@ -350,23 +350,23 @@ function ThePause({ onComplete }: { onComplete: () => void }) {
 
  return (
  <div
- className="fixed inset-0 z-[200] flex items-center justify-center bg-rust-bark/95 backdrop-blur-md"
+ className="fixed inset-0 z-[200] flex items-center justify-center bg-[var(--card)]/95 backdrop-blur-md"
  onClick={done ? onComplete : undefined}
  >
  {done ? (
- <p className="font-satisfy text-3xl sm:text-4xl md:text-5xl text-rust-brass anim-fade-in-up">
+ <p className="font-satisfy text-3xl sm:text-4xl md:text-5xl text-on-brass anim-fade-in-up">
  That was the moment.
  </p>
  ) : (
  <div className="text-center">
  <div
- className="font-dejavu-mono text-7xl sm:text-8xl md:text-9xl font-bold text-rust-ember anim-breathe tabular-nums"
+ className="font-dejavu-mono text-7xl sm:text-8xl md:text-9xl font-bold text-on-accent anim-breathe tabular-nums"
  style={{ "--glow-color": "rgba(225,29,72,0.5)" } as React.CSSProperties}
  key={count}
  >
  00:00:0{count}
  </div>
- <p className="mt-4 text-sm uppercase tracking-widest text-rust-cream/50">
+ <p className="mt-4 text-sm uppercase tracking-widest text-on-dark/50">
  Breathe.
  </p>
  </div>
@@ -392,10 +392,10 @@ function ShareQuote({ text }: { text: string }) {
  return (
  <button
  onClick={handleShare}
- className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full hover:bg-rust-brass/10 tap-feedback"
+ className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full hover:bg-[var(--rust-brass)]/10 tap-feedback"
  aria-label="Share this moment"
  >
- <Share2 className="w-3 h-3 text-rust-brass/60" />
+ <Share2 className="w-3 h-3 text-on-brass/60" />
  </button>
  );
 }

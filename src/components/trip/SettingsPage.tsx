@@ -31,13 +31,13 @@ function SettingsPageImpl() {
       <div className="mx-auto max-w-3xl">
         {/* Heading */}
         <FlyIn className="mb-8 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full bg-rust-bark/80 px-3 py-1 text-[11px] uppercase tracking-widest text-rust-bg">
+          <div className="inline-flex items-center gap-2 rounded-full bg-[var(--card)] px-3 py-1 text-[11px] uppercase tracking-widest text-rust-bg">
             <SettingsIcon className="w-3 h-3" /> Settings
           </div>
-          <h2 className="mt-3 font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-rust-bark">
+          <h2 className="mt-3 font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-on-light">
             Make it yours
           </h2>
-          <p className="mx-auto mt-3 max-w-xl text-sm md:text-base text-rust-bark/70">
+          <p className="mx-auto mt-3 max-w-xl text-sm md:text-base text-on-light/70">
             Choose an app icon — the color theme follows automatically.
             In auto mode, the icon changes with the time of day.
           </p>
@@ -53,13 +53,13 @@ function SettingsPageImpl() {
               />
             </div>
             <div className="min-w-0 flex-1">
-              <div className="text-[10px] uppercase tracking-widest text-rust-ember font-semibold">
+              <div className="text-[10px] uppercase tracking-widest text-on-accent font-semibold">
                 Current Icon
               </div>
-              <div className="font-serif text-xl font-bold text-rust-bark capitalize">
+              <div className="font-serif text-xl font-bold text-on-light capitalize">
                 {effectiveIcon}
               </div>
-              <div className="text-xs text-rust-bark/60 mt-0.5">
+              <div className="text-xs text-on-light/60 mt-0.5">
                 {prefs.iconMode === "auto"
                   ? "Auto-switching based on time of day"
                   : "Manually selected"}
@@ -78,8 +78,8 @@ function SettingsPageImpl() {
 
         {/* Icon mode toggle + picker */}
         <FlyIn className="leather-card parchment-texture rounded-3xl p-6 mb-6">
-          <h3 className="mb-4 font-serif text-lg font-bold text-rust-bark flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-rust-brass" />
+          <h3 className="mb-4 font-serif text-lg font-bold text-on-light flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-on-brass" />
             App Icon
           </h3>
 
@@ -90,8 +90,8 @@ function SettingsPageImpl() {
               className={cn(
                 "flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all tap-feedback",
                 prefs.iconMode === "auto"
-                  ? "bg-rust-forest text-rust-cream shadow-md"
-                  : "bg-rust-cream/50 text-rust-bark/70 hover:bg-rust-cream"
+                  ? "bg-[var(--rust-primary)] text-on-dark shadow-md"
+                  : "bg-[var(--card)]/50 text-on-light/70 hover:bg-[var(--card)]"
               )}
             >
               <Clock className="w-4 h-4" />
@@ -102,8 +102,8 @@ function SettingsPageImpl() {
               className={cn(
                 "flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all tap-feedback",
                 prefs.iconMode === "manual"
-                  ? "bg-rust-forest text-rust-cream shadow-md"
-                  : "bg-rust-cream/50 text-rust-bark/70 hover:bg-rust-cream"
+                  ? "bg-[var(--rust-primary)] text-on-dark shadow-md"
+                  : "bg-[var(--card)]/50 text-on-light/70 hover:bg-[var(--card)]"
               )}
             >
               <Sparkles className="w-4 h-4" />
@@ -113,7 +113,7 @@ function SettingsPageImpl() {
 
           {/* Auto mode info */}
           {prefs.iconMode === "auto" && (
-            <div className="mb-4 rounded-xl bg-rust-forest/10 p-3 text-xs text-rust-bark/70">
+            <div className="mb-4 rounded-xl bg-[var(--rust-primary)]/10 p-3 text-xs text-on-light/70">
               <div className="flex items-center gap-1.5 mb-1">
                 <Clock className="w-3.5 h-3.5 text-rust-forest" />
                 <span className="font-semibold">Auto-switching active</span>
@@ -142,8 +142,8 @@ function SettingsPageImpl() {
                   className={cn(
                     "relative flex flex-col items-center gap-1.5 rounded-2xl p-3 transition-all tap-feedback",
                     isSelected
-                      ? "bg-rust-brass/20 border-2 border-rust-brass"
-                      : "bg-rust-cream/50 border-2 border-transparent hover:bg-rust-cream"
+                      ? "bg-[var(--rust-brass)]/20 border-2 border-[var(--rust-brass)]"
+                      : "bg-[var(--card)]/50 border-2 border-transparent hover:bg-[var(--card)]"
                   )}
                   aria-label={`Select ${icon.label} icon`}
                 >
@@ -151,17 +151,17 @@ function SettingsPageImpl() {
                     name={icon.name}
                     className="h-12 w-12 rounded-xl shadow-sm"
                   />
-                  <div className="text-[10px] font-semibold text-rust-bark text-center leading-tight">
+                  <div className="text-[10px] font-semibold text-on-light text-center leading-tight">
                     {icon.label}
                   </div>
                   {icon.timeRange && (
-                    <div className="text-[8px] text-rust-bark/50 text-center">
+                    <div className="text-[8px] text-on-light/50 text-center">
                       {icon.timeRange}
                     </div>
                   )}
                   {isCurrent && (
-                    <div className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-rust-forest flex items-center justify-center">
-                      <Check className="w-3 h-3 text-rust-cream" />
+                    <div className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-[var(--rust-primary)] flex items-center justify-center">
+                      <Check className="w-3 h-3 text-on-dark" />
                     </div>
                   )}
                 </button>
@@ -172,7 +172,7 @@ function SettingsPageImpl() {
 
         {/* Motion preference */}
         <FlyIn className="leather-card parchment-texture rounded-3xl p-6 mb-6">
-          <h3 className="mb-4 font-serif text-lg font-bold text-rust-bark">
+          <h3 className="mb-4 font-serif text-lg font-bold text-on-light">
             Motion
           </h3>
           <button
@@ -180,24 +180,24 @@ function SettingsPageImpl() {
             className={cn(
               "w-full flex items-center justify-between rounded-xl px-4 py-3 transition-all tap-feedback",
               prefs.reducedMotion
-                ? "bg-rust-forest/15"
-                : "bg-rust-cream/50 hover:bg-rust-cream"
+                ? "bg-[var(--rust-primary)]/15"
+                : "bg-[var(--card)]/50 hover:bg-[var(--card)]"
             )}
           >
             <div className="flex items-center gap-3">
-              <div className={cn("h-5 w-5 rounded-full", prefs.reducedMotion ? "bg-rust-forest" : "bg-rust-brass/30")} />
+              <div className={cn("h-5 w-5 rounded-full", prefs.reducedMotion ? "bg-[var(--rust-primary)]" : "bg-rust-brass/30")} />
               <div>
-                <div className="text-sm font-semibold text-rust-bark">
+                <div className="text-sm font-semibold text-on-light">
                   Reduced motion
                 </div>
-                <div className="text-xs text-rust-bark/60">
+                <div className="text-xs text-on-light/60">
                   Minimize animations and transitions
                 </div>
               </div>
             </div>
             <div className={cn(
               "relative h-6 w-11 rounded-full transition-colors",
-              prefs.reducedMotion ? "bg-rust-forest" : "bg-rust-bark/20"
+              prefs.reducedMotion ? "bg-[var(--rust-primary)]" : "bg-[var(--card)]/20"
             )}>
               <div className={cn(
                 "absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform",
@@ -209,10 +209,10 @@ function SettingsPageImpl() {
 
         {/* Reset & Replay */}
         <FlyIn className="leather-card parchment-texture rounded-3xl p-6 mb-6">
-          <h3 className="mb-4 font-serif text-lg font-bold text-rust-bark">
+          <h3 className="mb-4 font-serif text-lg font-bold text-on-light">
             Replay Opening
           </h3>
-          <p className="text-xs text-rust-bark/60 mb-4 leading-relaxed">
+          <p className="text-xs text-on-light/60 mb-4 leading-relaxed">
             Reset the engagement reveal so it plays again next time you visit.
             This clears the session cache — the 3D sunset forest, ring box,
             and celebration will replay from the beginning.
@@ -221,7 +221,7 @@ function SettingsPageImpl() {
             onClick={() => {
               window.location.reload();
             }}
-            className="w-full flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold bg-rust-wax/20 border border-rust-wax/40 text-rust-wax hover:bg-rust-wax/30 transition-all tap-feedback"
+            className="w-full flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold bg-[var(--rust-wax)]/20 border border-rust-wax/40 text-rust-wax hover:bg-[var(--rust-wax)]/30 transition-all tap-feedback"
           >
             <RotateCcw className="w-4 h-4" />
             Reset & Replay Opening
@@ -230,11 +230,11 @@ function SettingsPageImpl() {
 
         {/* H-04: Download for Offline — caches all 6 day pages + proposal page */}
         <FlyIn className="leather-card parchment-texture rounded-3xl p-6 mb-6">
-          <h3 className="mb-2 font-serif text-lg font-bold text-rust-bark flex items-center gap-2">
+          <h3 className="mb-2 font-serif text-lg font-bold text-on-light flex items-center gap-2">
             <Download className="w-5 h-5 text-rust-forest" aria-hidden />
             Download for Offline
           </h3>
-          <p className="text-xs text-rust-bark/60 mb-4 leading-relaxed">
+          <p className="text-xs text-on-light/60 mb-4 leading-relaxed">
             Day 1 is off-grid (no service, devices in the trunk). Pre-download
             the itinerary, proposal details, and access codes so they work
             without internet. Tapping this caches every page, every photo,
@@ -247,7 +247,7 @@ function SettingsPageImpl() {
         <ScenePreview />
 
         {/* About */}
-        <FlyIn className="text-center text-xs text-rust-bark/50 italic">
+        <FlyIn className="text-center text-xs text-on-light/50 italic">
           Preferences are saved locally. The PWA icon + colors update automatically.
         </FlyIn>
       </div>
@@ -318,7 +318,7 @@ function DownloadForOfflineButton() {
 
   if (status === "done") {
     return (
-      <div className="rounded-xl bg-rust-forest/10 border border-rust-forest/30 px-4 py-3 text-sm text-rust-forest font-semibold flex items-center gap-2">
+      <div className="rounded-xl bg-[var(--rust-primary)]/10 border border-rust-forest/30 px-4 py-3 text-sm text-rust-forest font-semibold flex items-center gap-2">
         <Check className="w-4 h-4" aria-hidden />
         {count} resources cached. Site works offline.
       </div>
@@ -337,7 +337,7 @@ function DownloadForOfflineButton() {
     <button
       onClick={handleDownload}
       disabled={status === "downloading"}
-      className="w-full flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold bg-rust-forest text-rust-cream hover:bg-rust-forest/90 transition-all tap-feedback disabled:opacity-60 disabled:cursor-wait min-h-[44px]"
+      className="w-full flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold bg-[var(--rust-primary)] text-on-dark hover:bg-[var(--rust-primary)]/90 transition-all tap-feedback disabled:opacity-60 disabled:cursor-wait min-h-[44px]"
     >
       {status === "downloading" ? (
         <>

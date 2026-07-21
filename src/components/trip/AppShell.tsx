@@ -67,7 +67,7 @@ export default function AppShell() {
       <header
         className={cn(
           "fixed top-0 inset-x-0 z-[100] transition-all duration-300",
-          "bark-card border-b border-rust-brass/20 text-rust-cream",
+          "bark-card border-b border-[var(--rust-brass)]/20 text-on-dark",
           scrolled ? "py-2" : "py-3"
         )}
       >
@@ -84,7 +84,7 @@ export default function AppShell() {
             />
             <div className="hidden sm:block leading-tight">
               <div className="font-serif text-sm font-bold">J &amp; Dee</div>
-              <div className="text-[10px] uppercase tracking-widest text-rust-brass/80">
+              <div className="text-[10px] uppercase tracking-widest text-on-brass/80">
                 Aug 4–9 · 2026
               </div>
             </div>
@@ -104,7 +104,7 @@ export default function AppShell() {
               aria-label="Open settings"
               aria-expanded={settingsOpen}
             >
-              <SettingsIcon className="h-4 w-4 text-rust-brass" />
+              <SettingsIcon className="h-4 w-4 text-on-brass" />
             </button>
 
             {/* Mobile hamburger */}
@@ -121,16 +121,16 @@ export default function AppShell() {
 
         {/* Settings popover */}
         {settingsOpen && (
-          <div className="absolute top-full right-2 sm:right-4 md:right-6 w-64 bark-card rounded-2xl border border-rust-brass/20 shadow-2xl p-4 anim-fade-in-up z-[110]">
+          <div className="absolute top-full right-2 sm:right-4 md:right-6 w-64 bark-card rounded-2xl border border-[var(--rust-brass)]/20 shadow-2xl p-4 anim-fade-in-up z-[110]">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs uppercase tracking-widest font-bold text-rust-brass">Settings</span>
-              <button onClick={() => setSettingsOpen(false)} className="text-rust-cream/50 hover:text-rust-cream p-1 min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Close settings">
+              <span className="text-xs uppercase tracking-widest font-bold text-on-brass">Settings</span>
+              <button onClick={() => setSettingsOpen(false)} className="text-on-dark/50 hover:text-on-dark p-1 min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Close settings">
                 <X className="w-4 h-4" />
               </button>
             </div>
             <button
               onClick={goSettings}
-              className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-white/5 text-sm text-rust-cream/80 transition-colors tap-feedback min-h-[44px]"
+              className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-white/5 text-sm text-on-dark/80 transition-colors tap-feedback min-h-[44px]"
             >
               <span className="opacity-80 mr-2"><SettingsIcon className="w-4 h-4 inline" /></span>
               All Settings
@@ -140,7 +140,7 @@ export default function AppShell() {
 
         {/* Mobile dropdown */}
         {menuOpen && (
-          <nav className="md:hidden absolute top-full inset-x-0 bark-card border-b border-rust-brass/20 px-4 py-3 anim-fade-in-up">
+          <nav className="md:hidden absolute top-full inset-x-0 bark-card border-b border-[var(--rust-brass)]/20 px-4 py-3 anim-fade-in-up">
             <ul className="grid grid-cols-1 gap-1">
               {TABS.map((t, i) => (
                 <li key={t.id}>
@@ -149,8 +149,8 @@ export default function AppShell() {
                     className={cn(
                       "w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm",
                       currentPage === i
-                        ? "bg-rust-brass/20 text-rust-brass font-semibold"
-                        : "hover:bg-white/5 text-rust-cream/80"
+                        ? "bg-[var(--rust-brass)]/20 text-on-brass font-semibold"
+                        : "hover:bg-white/5 text-on-dark/80"
                     )}
                   >
                     <span className="opacity-80">{t.icon}</span>
@@ -168,7 +168,7 @@ export default function AppShell() {
 
       {/* ── Bottom tab bar (mobile + desktop) ──────────────────────────── */}
       <nav
-        className="fixed bottom-0 inset-x-0 z-[100] bark-card border-t border-rust-brass/20"
+        className="fixed bottom-0 inset-x-0 z-[100] bark-card border-t border-[var(--rust-brass)]/20"
         aria-label="Page navigation"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
@@ -189,8 +189,8 @@ export default function AppShell() {
                 className={cn(
                   "flex w-full flex-col items-center justify-center gap-0.5 py-2 text-[9px] sm:text-[10px] uppercase tracking-wider tap-feedback",
                   currentPage === i
-                    ? "text-rust-brass font-semibold"
-                    : "text-rust-cream/60 hover:text-rust-cream"
+                    ? "text-on-brass font-semibold"
+                    : "text-on-dark/60 hover:text-on-dark"
                 )}
                 aria-current={currentPage === i ? "page" : undefined}
                 aria-label={t.label}

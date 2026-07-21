@@ -131,7 +131,7 @@ function GlassStopCardImpl({
         <div className="flex gap-3 md:gap-4">
           {/* Thumbnail with masked edge */}
           <div
-            className="relative h-16 w-20 sm:h-20 sm:w-28 flex-shrink-0 overflow-hidden rounded-xl bg-rust-bark/40"
+            className="relative h-16 w-20 sm:h-20 sm:w-28 flex-shrink-0 overflow-hidden rounded-xl bg-[var(--card)]/40"
             style={{
               maskImage:
                 "linear-gradient(115deg, transparent 0%, black 14%, black 100%)",

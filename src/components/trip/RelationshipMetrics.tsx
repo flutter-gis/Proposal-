@@ -60,11 +60,11 @@ function HeartbeatAvatar({ name, birth, now }: { name: string; birth: Date; now:
           />
         </svg>
       </div>
-      <div className="font-serif text-xl font-bold text-rust-bark">{name}</div>
-      <div className="mt-1 text-[11px] uppercase tracking-widest text-rust-ember">
+      <div className="font-serif text-xl font-bold text-on-light">{name}</div>
+      <div className="mt-1 text-[11px] uppercase tracking-widest text-on-accent">
         Age
       </div>
-      <div className="text-sm font-semibold text-rust-bark/80 tabular-nums">
+      <div className="text-sm font-semibold text-on-light/80 tabular-nums">
         {age.years}y {age.months}m {age.days}d
       </div>
     </div>
@@ -150,23 +150,23 @@ function RelationshipMetricsImpl() {
         {/* Big live timer */}
         <FlyIn className="relative overflow-hidden bark-card anim-breathe rounded-3xl p-6 md:p-10 mb-8 text-center"
                style={{ "--glow-color": "rgba(184,134,11,0.3)" } as React.CSSProperties}>
-          <div className="text-[10px] uppercase tracking-widest text-rust-brass">
+          <div className="text-[10px] uppercase tracking-widest text-on-brass">
             Together Since · October 4, 2021
           </div>
-          <div className="mt-1 text-[11px] text-rust-cream/50 italic">
+          <div className="mt-1 text-[11px] text-on-dark/50 italic">
             Since our first date, 11:00 AM on a Monday.
           </div>
-          <div className="mt-3 font-serif text-2xl sm:text-3xl md:text-5xl font-bold text-rust-cream">
-            {dur.years} <span className="text-rust-brass">years</span>{" "}
-            {dur.months} <span className="text-rust-brass">months</span>{" "}
-            {dur.days} <span className="text-rust-brass">days</span>
+          <div className="mt-3 font-serif text-2xl sm:text-3xl md:text-5xl font-bold text-on-dark">
+            {dur.years} <span className="text-on-brass">years</span>{" "}
+            {dur.months} <span className="text-on-brass">months</span>{" "}
+            {dur.days} <span className="text-on-brass">days</span>
           </div>
-          <div className="mt-2 font-mono text-xl sm:text-2xl md:text-3xl tabular-nums text-rust-cream/90">
+          <div className="mt-2 font-mono text-xl sm:text-2xl md:text-3xl tabular-nums text-on-dark/90">
             {String(dur.hours).padStart(2, "0")}:
             {String(dur.minutes).padStart(2, "0")}:
             {String(dur.seconds).padStart(2, "0")}
           </div>
-          <div className="mt-2 text-xs text-rust-cream/60">
+          <div className="mt-2 text-xs text-on-dark/60">
             {formatDistance(RELATIONSHIP_START, now)} · and counting
           </div>
         </FlyIn>
@@ -185,13 +185,13 @@ function RelationshipMetricsImpl() {
                 <div className="mb-1 flex items-center justify-center" aria-hidden>
                   <SvgIcon name={c.icon as IconName} size={28} />
                 </div>
-                <div className="font-serif text-xl md:text-2xl font-bold text-rust-ember tabular-nums">
+                <div className="font-serif text-xl md:text-2xl font-bold text-on-accent tabular-nums">
                   {c.format(metrics)}
                 </div>
-                <div className="mt-1 text-[11px] uppercase tracking-widest text-rust-bark/60">
+                <div className="mt-1 text-[11px] uppercase tracking-widest text-on-light/60">
                   {c.title}
                 </div>
-                <div className="text-[10px] text-rust-bark/50 mt-0.5">{c.sub(metrics)}</div>
+                <div className="text-[10px] text-on-light/50 mt-0.5">{c.sub(metrics)}</div>
               </div>
             </FlyInItem>
           ))}

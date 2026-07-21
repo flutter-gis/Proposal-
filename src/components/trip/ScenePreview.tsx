@@ -75,10 +75,10 @@ export default function ScenePreview() {
   if (!active) {
     return (
       <div className="leather-card parchment-texture rounded-2xl p-6 mt-6">
-        <h3 className="font-lobster text-2xl text-rust-bark mb-2">
+        <h3 className="font-lobster text-2xl text-on-light mb-2">
           3D Scene Preview
         </h3>
-        <p className="text-sm text-rust-bark/70 mb-4">
+        <p className="text-sm text-on-light/70 mb-4">
           Preview all 12 wilderness 3D scenes one after another. Each scene
           has unique terrain, wildlife, and atmospheric effects.
         </p>
@@ -94,14 +94,14 @@ export default function ScenePreview() {
   }
 
   return (
-    <div className="fixed inset-0 z-[250] bg-rust-bark/95 backdrop-blur-md flex flex-col">
+    <div className="fixed inset-0 z-[250] bg-[var(--card)]/95 backdrop-blur-md flex flex-col">
       {/* Header bar */}
-      <div className="flex items-center justify-between px-4 py-3 bg-rust-bark/80 border-b border-rust-brass/30">
+      <div className="flex items-center justify-between px-4 py-3 bg-[var(--card)] border-b border-[var(--rust-brass)]/30">
         <div className="flex items-center gap-3">
-          <span className="text-xs uppercase tracking-widest text-rust-brass font-bold">
+          <span className="text-xs uppercase tracking-widest text-on-brass font-bold">
             Scene {idx + 1} / {ICON_LIST.length}
           </span>
-          <span className="text-sm font-serif text-rust-cream">
+          <span className="text-sm font-serif text-on-dark">
             {desc.title}
           </span>
         </div>
@@ -109,14 +109,14 @@ export default function ScenePreview() {
           <button
             onClick={() => setAutoPlay(!autoPlay)}
             aria-label={autoPlay ? "Pause" : "Play"}
-            className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full text-rust-cream hover:bg-rust-brass/20 transition-colors tap-feedback"
+            className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full text-on-dark hover:bg-[var(--rust-brass)]/20 transition-colors tap-feedback"
           >
             {autoPlay ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
           </button>
           <button
             onClick={() => setActive(false)}
             aria-label="Close preview"
-            className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full text-rust-cream hover:bg-rust-brass/20 transition-colors tap-feedback"
+            className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full text-on-dark hover:bg-[var(--rust-brass)]/20 transition-colors tap-feedback"
           >
             <X className="w-4 h-4" />
           </button>
@@ -149,21 +149,21 @@ export default function ScenePreview() {
         <button
           onClick={goPrev}
           aria-label="Previous scene"
-          className="absolute left-4 top-1/2 -translate-y-1/2 p-3 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full bg-rust-bark/60 text-rust-cream hover:bg-rust-brass/30 transition-colors tap-feedback"
+          className="absolute left-4 top-1/2 -translate-y-1/2 p-3 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full bg-[var(--card)]/60 text-on-dark hover:bg-rust-brass/30 transition-colors tap-feedback"
         >
           <ChevronLeft className="w-6 h-6" />
         </button>
         <button
           onClick={goNext}
           aria-label="Next scene"
-          className="absolute right-4 top-1/2 -translate-y-1/2 p-3 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full bg-rust-bark/60 text-rust-cream hover:bg-rust-brass/30 transition-colors tap-feedback"
+          className="absolute right-4 top-1/2 -translate-y-1/2 p-3 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full bg-[var(--card)]/60 text-on-dark hover:bg-rust-brass/30 transition-colors tap-feedback"
         >
           <ChevronRight className="w-6 h-6" />
         </button>
       </div>
 
       {/* Footer — select as active scene */}
-      <div className="px-4 py-4 bg-rust-bark/80 border-t border-rust-brass/30 text-center">
+      <div className="px-4 py-4 bg-[var(--card)] border-t border-[var(--rust-brass)]/30 text-center">
         <button
           onClick={() => {
             selectScene(currentIcon);
@@ -183,7 +183,7 @@ export default function ScenePreview() {
             onClick={() => setIdx(i)}
             aria-label={`Go to ${icon.label} scene`}
             className={`h-2 rounded-full transition-all tap-feedback ${
-              i === idx ? "w-6 bg-rust-brass" : "w-2 bg-rust-cream/30 hover:bg-rust-cream/50"
+              i === idx ? "w-6 bg-rust-brass" : "w-2 bg-[var(--card)]/30 hover:bg-[var(--card)]/50"
             }`}
           />
         ))}

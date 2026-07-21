@@ -228,8 +228,8 @@ export default function QuoteCallout({
             className={cn(
               "pointer-events-auto rounded-full p-1.5 min-h-[32px] min-w-[32px] flex items-center justify-center transition-colors tap-feedback",
               light
-                ? "bg-rust-bark/40 text-rust-cream/80 hover:bg-rust-bark/60 hover:text-rust-cream"
-                : "bg-rust-cream/40 text-rust-bark/70 hover:bg-rust-cream/60 hover:text-rust-bark"
+                ? "bg-[var(--card)]/40 text-on-dark/80 hover:bg-[var(--card)]/60 hover:text-on-dark"
+                : "bg-[var(--card)]/40 text-on-light/70 hover:bg-[var(--card)]/60 hover:text-on-light"
             )}
             aria-label="Previous quote"
           >
@@ -244,8 +244,8 @@ export default function QuoteCallout({
             className={cn(
               "pointer-events-auto rounded-full p-1.5 min-h-[32px] min-w-[32px] flex items-center justify-center transition-colors tap-feedback",
               light
-                ? "bg-rust-bark/40 text-rust-cream/80 hover:bg-rust-bark/60 hover:text-rust-cream"
-                : "bg-rust-cream/40 text-rust-bark/70 hover:bg-rust-cream/60 hover:text-rust-bark"
+                ? "bg-[var(--card)]/40 text-on-dark/80 hover:bg-[var(--card)]/60 hover:text-on-dark"
+                : "bg-[var(--card)]/40 text-on-light/70 hover:bg-[var(--card)]/60 hover:text-on-light"
             )}
             aria-label="Next quote"
           >
