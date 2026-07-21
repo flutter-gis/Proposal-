@@ -295,6 +295,29 @@ export const PLACES: Place[] = [
  cost: "FREE to view exterior",
  imageKeys: ["balsams_resort_real"]},
  {
+  id: "common-man-donuts",
+  name: "The Common Man Donut Shop",
+  category: "dining",
+  coords: { lat: 44.0497, lng: -71.6712 },
+  address: "10 Portal Place, Lincoln, NH 03251",
+  description:
+    "A beloved roadside stop for fresh-made donuts, coffee, and snacks in the heart of Lincoln. The Common Man is a New Hampshire institution, known for their warm cider donuts, locally roasted coffee, and cozy rustic lodge atmosphere. Perfect for a quick fuel-up before the scenic drive through Franconia Notch or a celebratory snack after the railway. The shop also stocks local maple products, fudge, and NH-made gifts.",
+  highlights: [
+    "Fresh-made cider donuts",
+    "Locally roasted coffee",
+    "Rustic lodge atmosphere",
+    "Local maple products & fudge",
+    "NH-made gifts and souvenirs"],
+  tips: [
+    "Cider donuts are best when warm — ask if a fresh batch is coming.",
+    "Stock up on snacks for the drive north to Dixville.",
+    "Restrooms available — last clean stop before Franconia Notch."],
+  cost: "$5-12 per person",
+  imageKeys: ["scenic_drive"],
+  effort: "none",
+  vibe: "Cozy roadside donut shop with the smell of warm cider and fresh coffee"
+},
+{
  id: "coleman-sp",
  name: "Coleman State Park",
  category: "stay",
@@ -340,6 +363,30 @@ export const PLACES: Place[] = [
  cost: "FREE",
  imageKeys: ["stargazing", "canoe"]},
  {
+  id: "zebs-general-store",
+  name: "Zeb's General Store",
+  category: "nearby",
+  coords: { lat: 44.7976, lng: -71.4994 },
+  address: "8 Lancaster St, Colebrook, NH 03576",
+  description:
+    "A classic northern New England general store with everything you need for a wilderness weekend. Zeb's stocks groceries, camping supplies, firewood, local beer, fishing licenses, and NH-made products. The store has a old-fashioned candy counter, a deli with fresh sandwiches, and a surprisingly good wine selection. It's the last real provisioning stop before heading into the remote Great North Woods around Coleman State Park.",
+  highlights: [
+    "Full grocery & camping supplies",
+    "Firewood & ice for cabin stays",
+    "Local beer & wine selection",
+    "Old-fashioned candy counter",
+    "Deli with fresh sandwiches"],
+  tips: [
+    "Buy firewood here — don't transport across state lines.",
+    "Stock up on water and snacks for Coleman State Park.",
+    "Fishing licenses available at the counter.",
+    "Open early (6 AM) for breakfast sandwiches."],
+  cost: "Variable — $20-50 for provisioning",
+  imageKeys: ["scenic_drive"],
+  effort: "none",
+  vibe: "Classic North Country general store with creaky floors and everything you forgot"
+},
+{
  id: "border-slash",
  name: "US-Canada Border 'The Slash'",
  category: "scenic",
@@ -807,7 +854,7 @@ export const DAY_PLANS: DayPlan[] = [
  theme: "THE MOMENT",
  description:
  "11:00 AM: Check out of Pawtuckaway → drive north into the White Mountains. 1:00 PM: Board the Granite State Scenic Railway in Lincoln for a romantic riverside charcuterie lunch excursion. 2:20 PM: Quick 15-min leg-stretcher at The Basin in Franconia Notch — a 30-ft glacial pothole waterfall. 2:40 PM: Stop at the Old Man of the Mountain Memorial Plaza — the iconic 'man face rock' that was NH's state symbol until it collapsed in 2003. Steel profilers recreate the face from the exact original viewing angle. 5:30 PM: Deploy the surprise landscape painting date setup at the edge of Lake Gloriette in Dixville Notch. 7:00 PM: Photo team sneaks into hidden tracking slots along the highway brush line. 7:30 PM: THE PROPOSAL — drop to one knee as the setting sun turns the 1,000-foot vertical granite cliffs pink and orange. Night: Drive 20 minutes north to Coleman State Park and celebrate inside the cozy Perch Cabin.",
- placeIds: ["granite-railway", "the-basin", "old-man-mountain", "balsams-resort", "dixville-notch", "table-rock", "coleman-sp"],
+ placeIds: ["granite-railway", "common-man-donuts", "the-basin", "old-man-mountain", "balsams-resort", "dixville-notch", "table-rock", "coleman-sp"],
  legId: "leg-3",
  highlights: [
  "Granite State Scenic Railway 1:00 PM departure",
@@ -826,7 +873,7 @@ export const DAY_PLANS: DayPlan[] = [
  theme: "CELEBRATE",
  description:
  "Afternoon: Journey to Pittsburg, NH and hike the border circuit to stand directly on the physical US-Canada line ('The Slash'). 8:30 PM: Take a twilight run up Route 3 through 'Moose Alley' to locate giant native moose feeding in the peat bogs. 2:00 AM: Leverage an exceptional Bortle Class 2 star field to view the Milky Way and take a celebratory dip in Little Diamond Pond!",
- placeIds: ["border-slash", "moose-alley", "little-diamond-pond"],
+ placeIds: ["zebs-general-store", "border-slash", "moose-alley", "little-diamond-pond"],
  highlights: [
  "US-Canada border 'Slash' hike",
  "Moose Alley twilight wildlife run @ 8:30 PM",
